@@ -168,7 +168,7 @@ local function play(homeBall: boolean)
 		assist = nil
 	end
 	local rating = ShotFeel.rating(team[shooter], kind)
-	local base = ({ jumper = 0.45, three = 0.37, dunk = 0.93 })[kind]
+	local base = ({ jumper = 0.45, three = 0.37, dunk = 0.8 })[kind]
 	local made = rng:chance(math.clamp(base + (rating - 70) * 0.006, 0.05, 0.98))
 	-- Misses get a rebound: about one in four is an offensive board by a big.
 	local rebounder = nil
@@ -180,9 +180,11 @@ local function play(homeBall: boolean)
 	end
 	local plan = Possession.plan({ offense = offense, dir = homeBall and 1 or -1, result = { kind = kind, shooter = shooter, assist = assist, made = made, rebounder = rebounder } })
 	local clip = AnimClips.Clips[plan.shotClip]
-	if kind == "dunk" then
-		made = true -- the view has no blocked dunk yet
-		plan.result.made = true
+	if kind == "dunk" and not made then
+		task.delay(plan.block.tBlock, function()
+			pop(rng:pick({ "REJECTED!", "GET THAT OUT!", "DENIED!" }), Color3.fromRGB(150, 200, 255))
+		end)
+	elseif kind == "dunk" then
 		task.delay(plan.tShot + clip.hoopAt[1], function()
 			flashRim(plan.dir)
 			pop(rng:pick({ "SLAM!", "POSTER!", "BOOM!" }), Color3.fromRGB(255, 120, 60))

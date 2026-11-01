@@ -935,6 +935,29 @@ test("a miss ends in a rebound grabbed at the top of the jump", function()
 	assert(made.rebound == nil, "makes have no rebound")
 end)
 
+test("a missed dunk is a block by the help big", function()
+	local sets = {}
+	for i = 1, 5 do
+		sets[i] = AnimSets.clips({ shot = "Textbook", dunk = "Tomahawk", moves = { "Crossover" } })
+	end
+	for _, dir in ipairs({ 1, -1 }) do
+		local plan = Possession.plan({ offense = sets, dir = dir, result = { kind = "dunk", shooter = 3, assist = 1, made = false } })
+		local blk = plan.block
+		assert(blk and blk.who == 10 and plan.rebound == nil, "help big blocks")
+		assert(blk.tJump > plan.tCatch and blk.tBlock > plan.tShot and plan.length > blk.tBlock, "block beats")
+		assert(Possession.frame(plan, blk.tBlock - 0.05).ball.owner == 3, "dunker has it until the swat")
+		local f = Possession.frame(plan, blk.tBlock + 0.3)
+		assert(f.ball.free and f.ball.swat and f.players[10].clip == "Block", "swatted away")
+		local rimDist = math.sqrt((dir * 37.575 - f.players[10].x) ^ 2 + f.players[10].z ^ 2)
+		assert(rimDist < 3, "blocker at the rim")
+		for t = 0, plan.length, 0.1 do
+			for _, q in ipairs(Possession.frame(plan, t).players) do
+				assert(AnimClips.Clips[q.clip] and math.abs(q.x) < 47 * 0.9 and math.abs(q.z) < 25 * 0.9, "valid frame")
+			end
+		end
+	end
+end)
+
 print(string.format("%d passed, %d failed", passed, failed))
 if failed > 0 then
 	error("tests failed")

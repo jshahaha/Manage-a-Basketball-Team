@@ -94,6 +94,42 @@ function CourtView:missBall(plan, S, clip, ct, place, rim)
 	return front + Vector3.yAxis * 0.6 -- after the rim the plan's rebound takes over
 end
 
+-- A block: where the dunker has the ball when the swat lands, and how far the blocker has to
+-- shift and rise so their hand gets there.
+function CourtView:blockFit(plan, homeHasBall)
+	local fit = self.dunks[plan.block]
+	if fit then
+		return fit
+	end
+	local blk = plan.block
+	local rim = self.rims[plan.dir]
+	-- The dunker at the moment of the block, with the dunk fit applied.
+	local dp = Possession.frame(plan, blk.tBlock).players[plan.shooter]
+	local dS = self.S[bodyFor(plan.shooter, homeHasBall)]
+	local dclip = AnimClips.Clips[dp.clip]
+	local dfit = self:dunkFit(plan, dS, dclip, rim)
+	local ct = dp.t
+	local up = ct < dfit.hoopAt and smooth((ct - 0.55) / (dfit.hoopAt - 0.55)) or 1 - smooth((ct - dfit.hoopAt - 0.3) / 0.4)
+	local dplace = PoseSolver.place(dS, dclip, self.center.X + dp.x, self.center.Z + dp.z, self.floorY, dp.face)
+		+ dfit.shift * smooth(ct / 0.6) + Vector3.yAxis * (dfit.lift * up)
+	local ballAt = PoseSolver.ball(dS, dclip, ct, dplace, rim) or rim
+	-- The blocker's hand at the hit.
+	local bp = Possession.frame(plan, blk.tBlock).players[blk.who]
+	local bS = self.S[bodyFor(blk.who, homeHasBall)]
+	local bclip = AnimClips.Clips.Block
+	local bplace = PoseSolver.place(bS, bclip, self.center.X + bp.x, self.center.Z + bp.z, self.floorY, bp.face)
+	local cf = PoseSolver.solve(bS, bclip, bp.t, bplace)
+	local hand = cf[bS.rh].Position + Vector3.yAxis * (PoseSolver.BallRadius + 0.02)
+	fit = {
+		ball = ballAt,
+		shift = Vector3.new(ballAt.X - hand.X, 0, ballAt.Z - hand.Z),
+		lift = math.max(0, ballAt.Y - hand.Y),
+		land = Vector3.new(self.center.X + blk.land.x, self.floorY + PoseSolver.BallRadius, self.center.Z + blk.land.z),
+	}
+	self.dunks[plan.block] = fit
+	return fit
+end
+
 -- Where the rebounder's hands are at the top of their jump, so the ball lands right in them.
 function CourtView:reboundHands(plan, homeHasBall)
 	local fit = self.dunks[plan.rebound]
@@ -127,6 +163,11 @@ function CourtView:render(plan, t: number, homeHasBall: boolean)
 			local up = ct < fit.hoopAt and smooth((ct - 0.55) / (fit.hoopAt - 0.55)) or 1 - smooth((ct - fit.hoopAt - 0.3) / 0.4)
 			place = place + fit.shift * smooth(ct / 0.6) + Vector3.yAxis * (fit.lift * up)
 		end
+		if plan.block and i == plan.block.who and p.clip == "Block" then
+			local fit = self:blockFit(plan, homeHasBall)
+			local up = ct < 0.76 and smooth((ct - 0.4) / 0.36) or 1 - smooth((ct - 1.0) / 0.25)
+			place = place + fit.shift * smooth(ct / 0.5) + Vector3.yAxis * (fit.lift * up)
+		end
 		PoseSolver.pose(S, p.clip, ct, place)
 		if f.ball.owner == i then
 			local miss = i == plan.shooter and p.clip == plan.shotClip and plan.result.made == false and not clip.hoopAt
@@ -136,7 +177,11 @@ function CourtView:render(plan, t: number, homeHasBall: boolean)
 			end
 		end
 	end
-	if f.ball.free and f.ball.rebound then
+	if f.ball.free and f.ball.swat then
+		local fit = self:blockFit(plan, homeHasBall)
+		local u = f.ball.swat
+		ballPos = fit.ball:Lerp(fit.land, u) + Vector3.yAxis * (3 * 4 * u * (1 - u))
+	elseif f.ball.free and f.ball.rebound then
 		local reb = plan.rebound
 		local a = Vector3.new(self.center.X + reb.front.x, rim.Y + 0.6, self.center.Z + reb.front.z)
 		local b = self:reboundHands(plan, homeHasBall)
@@ -158,6 +203,7 @@ end
 function CourtView:play(plan, homeHasBall: boolean, onEvent)
 	local RunService = game:GetService("RunService")
 	local t, lastClip, lastT = 0, nil, -1
+	local blocked = false
 	while t <= plan.length do
 		self:render(plan, t, homeHasBall)
 		if onEvent then
@@ -179,6 +225,11 @@ function CourtView:play(plan, homeHasBall: boolean, onEvent)
 					onEvent(ev)
 				end
 				lastClip, lastT = owner.clip, ct
+			end
+			if plan.block and not blocked and t >= plan.block.tBlock then
+				blocked = true
+				onEvent("Block")
+				onEvent("CrowdOoh")
 			end
 		end
 		t += RunService.RenderStepped:Wait()

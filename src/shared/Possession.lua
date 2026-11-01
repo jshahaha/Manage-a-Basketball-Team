@@ -98,8 +98,36 @@ function Possession.plan(opts)
 	plan.handler, plan.shooter, plan.passer = handler, shooter, (passer and passer ~= shooter) and passer or nil
 	if r.made == false and r.kind ~= "dunk" then
 		Possession.addRebound(plan, r.rebounder or (shooter == 5 and 9 or 10))
+	elseif r.made == false and r.kind == "dunk" then
+		Possession.addBlock(plan, r.blocker or (shooter == 5 and 9 or 10))
 	end
 	return plan
+end
+
+-- A missed dunk is a block: the help big rotates over, meets the dunker at the rim and swats it
+-- toward the sideline. `who` is a defense slot (6-10).
+local BLOCK_HIT = 0.76 -- the Block clip's hand reaches the ball this far in
+function Possession.addBlock(plan, who: number)
+	local dir = plan.dir
+	local rim = { x = dir * RIM_X, z = 0 }
+	local clip = AnimClips.Clips[plan.shotClip]
+	local hoopAt = clip and clip.hoopAt and clip.hoopAt[1] or 1.1
+	local from = plan.driveFrom
+	local ax, az = from.x - rim.x, from.z - rim.z
+	local len = math.sqrt(ax * ax + az * az)
+	ax, az = ax / len, az / len -- unit vector from the rim back toward where the dunker came from
+	local side = from.z >= 0 and 1 or -1
+	local blk = {
+		who = who,
+		tBlock = plan.tShot + hoopAt - 0.06,
+		spot = { x = rim.x + ax * 1.6, z = rim.z + az * 1.6 },
+		land = { x = rim.x + ax * 7, z = side * 21 }, -- out toward the sideline on the dunker's side
+	}
+	blk.tJump = blk.tBlock - BLOCK_HIT
+	blk.from = Possession.frame(plan, plan.tCatch).players[who]
+	blk.face = math.deg(math.atan2(ax, az)) -- facing the dunker
+	plan.block = blk
+	plan.length = blk.tBlock + 1.8
 end
 
 -- When the shot clip's ball reaches the rim.
@@ -222,8 +250,24 @@ function Possession.frame(plan, t)
 			p.clip, p.t = "Rebound", t - reb.tJump
 		end
 	end
+	local blk = plan.block
+	if blk and t >= plan.tCatch then
+		-- The help big leaves their man, rotates to the rim and goes up to meet the dunk.
+		local p = out.players[blk.who]
+		local u = smooth((t - plan.tCatch) / math.max(0.1, blk.tJump - plan.tCatch))
+		p.x, p.z = lerp(blk.from.x, blk.spot.x, u), lerp(blk.from.z, blk.spot.z, u)
+		p.face = blk.face
+		if t < blk.tJump then
+			p.clip, p.t = "DefSlide", t % 0.9
+		else
+			p.clip, p.t = "Block", t - blk.tJump
+		end
+	end
 	-- Ball: with the handler until the pass, in the air during the pass, then the shot clip owns it.
-	if reb and t >= reb.tCatch then
+	if blk and t >= blk.tBlock then
+		local u = clamp01((t - blk.tBlock) / 0.9)
+		out.ball = { free = true, swat = u, x = lerp(blk.spot.x, blk.land.x, u), z = lerp(blk.spot.z, blk.land.z, u), y = lerp(9.5, 0.64, u) + 3 * 4 * u * (1 - u) }
+	elseif reb and t >= reb.tCatch then
 		out.ball = { owner = reb.who }
 	elseif reb and t >= reb.tRim then
 		local u = clamp01((t - reb.tRim) / (reb.tCatch - reb.tRim))
