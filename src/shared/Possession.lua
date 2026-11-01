@@ -73,7 +73,7 @@ function Possession.plan(opts)
 		tShot = tShot + DRIVE
 	end
 	plan.shotClip, plan.moveClip, plan.tMove, plan.tPass, plan.tShot, plan.tCatch = shotClip, moveClip, tMove, tPass, tShot, tCatch
-	plan.length = tShot + 2.6
+	plan.length = tShot + (r.made == false and r.kind ~= "dunk" and 3.8 or 2.6) -- a miss bounces away
 	-- Where everyone ends up: the shooter at their shot spot, the rest at their spots.
 	local finals = {}
 	for i = 1, 5 do

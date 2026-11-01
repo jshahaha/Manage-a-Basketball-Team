@@ -131,7 +131,7 @@ function CourtView:render(plan, t: number, homeHasBall: boolean)
 		PoseSolver.pose(S, p.clip, ct, place)
 		if f.ball.owner == i then
 			local miss = i == plan.shooter and p.clip == plan.shotClip and plan.result.made == false and not clip.hoopAt
-			ballPos = miss and self:missBall(plan, S, clip, ct, place, rim) or PoseSolver.ball(S, clip, ct, place, rim)
+			ballPos = miss and self:missBall(plan, S, clip, p.t, place, rim) or PoseSolver.ball(S, clip, ct, place, rim)
 			if not ballPos and not clip.ball then
 				ballPos = S.rh.Position + Vector3.yAxis * 0.7 -- clips without a ball track: carry it
 			end
