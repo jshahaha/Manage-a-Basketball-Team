@@ -4,6 +4,13 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.0.2 (2026-11-01): Design v2
+### Changed
+- Rewrote [Main Game Idea](MAIN_GAME_IDEA.md) around the real genre loop: a walkable lobby with Home Courts, one-tap PvP matchmaking against real clubs, matches played by 3D players, packs with Finishes, a cross-server market, daily quests and chemistry
+- Redid the UI mockups in the new bright, mobile-first style
+
+---
+
 ## v0.0.1 (2026-11-01): Project setup
 ### Added
 - Repo docs: [Main Game Idea](MAIN_GAME_IDEA.md), [Ideas Queue](IDEAS_QUEUE.md), [General Rules](GENERAL_RULES.md) and this log

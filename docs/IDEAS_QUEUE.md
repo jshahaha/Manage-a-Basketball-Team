@@ -19,7 +19,7 @@ Template:
 ### Rage-quit forfeit
 - Status: next
 - Added by / date: Claude, 2026-11-01
-- What: Leaving during a league game counts as a loss, so players can't dodge losses by quitting.
+- What: Leaving during a ranked game counts as a loss, so players can't dodge losses by quitting.
 - Size: S
 
 ### Injuries & medical staff
@@ -27,12 +27,6 @@ Template:
 - Added by / date: Claude, 2026-11-01
 - What: There's a small chance a player gets injured in a game and misses 1 to 3 games. The Recovery Center shortens the time out.
 - Why it's fun: You have to rely on depth, so bench players matter.
-- Size: M
-
-### Player chemistry
-- Status: inbox
-- Added by / date: Claude, 2026-11-01
-- What: Players who start together for several games build chemistry, which gives a small boost to assists and turnovers.
 - Size: M
 
 ## Inbox
@@ -49,11 +43,11 @@ Template:
 - What: A leaderboard across all servers for titles and fans, using OrderedDataStore.
 - Size: S
 
-### Async league vs real players
+### 3v3 street mode
 - Status: inbox
 - Added by / date: Claude, 2026-11-01
-- What: Fill some AI slots in a division with snapshots of real players' teams.
-- Size: L
+- What: Quick 3v3 games on the plaza courts using your three best players.
+- Size: M
 
 ### Draft night event
 - Status: inbox

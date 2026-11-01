@@ -1,121 +1,133 @@
-# Main Game Idea
+# Main Game Idea (v2)
 
-**Working title:** Manage a Basketball Team (in-game brand: *Hardwood Dynasty*. We can pick one before launch.)
-**Platform:** Roblox, written in Luau and synced with Rojo
-**Genre:** Sports management sim (you run the club and don't control a player)
+**Working title:** Manage a Basketball Team
+**Platform:** Roblox (Luau + Rojo)
+**Genre:** Social sports-manager collector. You hang out in a lobby, collect and trade players, and play quick PvP matches that you watch in 3D.
+
+> v2 replaces the first draft. That draft was a slow single-player menu sim, which missed what makes this genre fun on Roblox: a hangout world, matches against **real players**, players on the court as **3D characters**, the hype of pack openings, and trading. See [What changed from v1](#what-changed-from-v1).
 
 ## One-line pitch
 
-Start a basketball franchise from nothing. Scout and develop players, set the game plan, and call the clutch play in the final two minutes as you climb from the Rec League to the Dynasty Elite.
+Build a basketball club in a hangout world, open packs and trade for stars, then press PLAY to go up against real managers' teams. Your squad plays the game as full 3D players, and you call the shots from the sideline.
 
-## Where the idea comes from (and what we don't copy)
+## What we take from the genre, and what stays ours
 
-The reference is a Roblox club-management sim in another sport. We take the **genre conventions** that are common to the whole management-sim category:
+The reference is a soccer-manager experience on Roblox. We share the genre's **conventions**, which many Roblox and sports games use: a walkable lobby, a PLAY button for matchmaking, packs with rarity tiers and shown odds, a player market, daily quests, chemistry, and stat training.
 
-- create a team, collect players, train them, simulate matches, earn money and fans, and climb leagues
+We **don't** copy its name, logo, art, models, map, UI layout or wording. We also don't copy its specific named features such as its Black Market, its ICON players or its card variant names. Everything below has its own names, its own basketball mechanics and our own look. See [GENERAL_RULES.md](GENERAL_RULES.md#originality).
 
-We do **not** copy that game's name, branding, logo, assets, map, UI layout, text, or its signature features, such as its card-pack opening, its secret market or its icon players. Every system below has been redesigned for basketball and has its own twist. See [GENERAL_RULES.md](GENERAL_RULES.md#originality).
-
-## Core loop
+## Core loop (sessions of 30 seconds to 5 minutes)
 
 ```
-Scout prospects ─► Sign one ─► Train skills ─► Set lineup & game plan
-      ▲                                              │
-      │                                              ▼
-  Spend cash ◄── Earn cash + fans ◄── Play live game (call Clutch Timeouts)
-                         │
-                         ▼
-           Season ends ─► Promotion / relegation ─► New season
+ Lobby ──► PLAY ──► Match found (VS screen) ──► 3D game, 2–3 min ──► Coins + fans + rating
+   ▲                                                                   │
+   │                                                                   ▼
+ Trade on market ◄── Train / upgrade ◄── Open packs / scout ◄────── Spend coins
 ```
 
-A session of 5 to 10 minutes covers one game, a few drills and a scouting trip. A full season is 10 games.
+Meta goals: climb the **rating ladder**, finish **daily quests**, complete your **collection**, and raise your **fan count**, which pays you passive income.
 
-## Systems
+## 1. The lobby (hangout world)
 
-### 1. Franchise creation
-- You choose a team name and city (both run through Roblox text filtering), two colors from a 12-color palette, and an emblem (★ ◆ ⚡ ♛ …).
-- A three-letter short code (for example `HAW`) is generated for the scoreboard.
-- You start with 8 players (one per position plus 3 extras), $3,000 and 50 fans.
+- A server holds up to **8 managers**. Each manager claims a **Home Court** plot around a central plaza.
+- Your Home Court is painted in your team's colors and has your logo at center court. Your current starting five practice on it, shooting around and running drills, so other players can see your team.
+- **Plaza stations** (walk up to one, or tap its HUD button):
+  - **Pack Shop:** buy packs with coins or Robux.
+  - **Trade Board:** the player market.
+  - **Scout Office:** send scouts out on timed trips.
+  - **Quest Board:** daily and weekly quests.
+  - **Hall of Fame:** leaderboards for rating, fans and collection value.
+- **The Traveling Scout:** a van parks somewhere in the plaza for 5 minutes, roughly every 40 minutes, and sells one Hall of Fame tier player. A server-wide alert announces it and everyone runs to it. (This is our take on the "roaming merchant" convention.)
+- You start with a free player package. You walk your avatar around, emote, and stand courtside at your own games.
 
-### 2. Players
-- **Positions:** PG, SG, SF, PF, C
-- **Six skills (1–99):** Shooting, Finishing, Playmaking, Defense, Rebounding, Athleticism
-- **Overall** is a weighted mix of the skills that depends on position. For example, a C's overall leans on Finishing, Defense and Rebounding.
-- **Potential:** each skill has a hidden cap. Scouting only shows potential as a range, for example "OVR 54 · POT 61–66".
-- **Age** sets how fast a player grows. Players 21 and under grow fast and those over 32 grow slowly. Players age every season, and from 32 they start to decline.
-- **Tiers:** Prospect (grey), Rotation (green), Starter (blue), All-Star (purple), Legend (gold)
+## 2. PLAY: matchmaking against real clubs
 
-### 3. Scouting (replaces "card packs")
-You send scouts to an event and they bring back **3 prospects**. You **sign one** and the other two are gone. You make a choice instead of just opening a pack.
+- One big **PLAY** button. It queues you **across servers** through MemoryStore.
+  - If a live opponent is found within about 8 seconds, it's a real-time match, and both managers see the game and can call plays.
+  - Otherwise you're matched against a **snapshot of a real player's club** (their lineup, tactics and name), taken from any server. It always feels like PvP, and the queue never stalls.
+- **VS screen:** both managers' avatars, club badges, team OVR, chemistry and rating.
+- **Friendly:** challenge someone in your server. It doesn't affect rating.
+- **Rating ladder:** you gain rating for wins and lose some for losses. The tiers are **Blacktop → Varsity → College → Pro → All-League → Hall of Fame**, and higher tiers pay more per win. Each season lasts 2 weeks and ends with rewards based on your tier.
 
-| Event | Cost | Odds (Prospect / Rotation / Starter / All-Star / Legend) |
+## 3. Matches (3D, about 2 to 3 minutes)
+
+- The game is played at the **home team's court**. Ten R15 characters wear their team's kits and numbers. A server-authoritative sim decides each possession (see the existing `MatchSim`), and the client **acts it out**: dribbling, passing, jump shots, layups, dunks, blocks and rebounds, with animations.
+- There are 4 quarters of about 30 to 40 seconds each, run on a fast game clock.
+- The camera is a broadcast-style three-quarter view that follows the ball, and you can switch to a sideline view where your avatar is coaching.
+- **Highlight moments:** dunks, blocks and buzzer-beaters play in **slow motion** and then show an **instant replay**.
+- **Coach controls during the game:**
+  - Switch **tactics** between quarters: Pace & Space, Inside Out or Motion on offense, and Man, Zone or Press on defense. Each counters another.
+  - **Clutch Timeout** (our signature feature): in the last minute of a close game, you pick the final play yourself: Isolation, Pick & Roll or Kick-Out Three.
+- Afterward you see the score, an MVP card, coins, fans and rating change, and progress on your quests.
+
+## 4. Players & collection
+
+- **Positions:** PG, SG, SF, PF, C. **Stats:** Shooting, Inside, Passing, Defense, Rebounding, Speed. OVR is weighted by position.
+- **Rarity:** Common (grey), Rare (blue), Epic (purple), Legendary (orange) and **Hall of Fame** (gold, above Legendary). Hall of Fame players are fictional legends we invent, such as "Big Moe Okonkwo".
+- **Finishes** are rare cosmetic variants that also give a stat boost, and any player can roll one:
+  - **Hot Hand** (flame trail, +3 OVR)
+  - **Ice Veins** (frost aura, +5)
+  - **Prism** (rainbow shimmer, +8, about 1 in 500)
+- **Archetypes** are tags that drive chemistry: Sniper, Slasher, Floor General, Lockdown and Glass Cleaner.
+- **Duplicates:** combine copies of the same player to raise their **star level** (1★ to 5★), which raises their stat caps. This means you can upgrade without buying packs.
+
+## 5. Packs
+
+| Pack | Price | Common / Rare / Epic / Legendary / HoF |
 |---|---|---|
-| Local Gym Run | $400 (free every 4h) | 70 / 25 / 4.6 / 0.38 / 0.02 % |
-| College Showcase | $2,500 | 25 / 45 / 25 / 4.7 / 0.3 % |
-| Global Combine | $12,000 | — / 20 / 52 / 25 / 3 % |
+| Blacktop Pack | 5,000 coins | 70 / 24 / 5 / 0.9 / 0.1 % |
+| Pro Pack | 40,000 coins | 35 / 40 / 19 / 5.5 / 0.5 % |
+| All-Star Pack | 250,000 coins | — / 40 / 42 / 16 / 2 % |
 
-The Scouting Department upgrade raises the odds of Starter tier and above. The roster cap is 13, so you sometimes have to release a player, which pays back some cash.
+- Odds are always shown in-game, and Robux packs follow Roblox's rules on paid random items.
+- **Reveal:** the pack slams on the floor, the jerseys flip one by one, and the rarity color and an announcer line ("FROM DOWNTOWN!") play. On a Legendary or better, the whole server gets an alert.
 
-### 4. Development (training)
-- There are six drills, one per skill: Shootaround, Finishing Circuit, Film & Passing, Defensive Slides, Box-Out Battles and Conditioning.
-- Each drill costs **25 energy** and some cash, which goes up as the skill gets higher. Energy regenerates over time, and the Recovery Center makes it regenerate faster.
-- Each drill gives +0 to +3 to the skill, scaled by age and the Training Center level. You can't train a skill past its hidden cap, and the last few points come more slowly.
+## 6. Training, scouting & chemistry
 
-### 5. Game plan
-Before each game you pick one offense and one defense. Offenses and defenses counter each other in a small rock-paper-scissors:
+- **Training:** spend coins to raise one stat. It has a short cooldown for each player, and training up to a player's cap needs star levels.
+- **Scout Office:** send a scout on a 5-minute, 30-minute or 2-hour trip, and they come back with a player card. Longer trips find better odds. You start with 1 scout slot and can get more through progression or a game pass. This gives players a reason to come back.
+- **Chemistry (0–100%)** boosts your whole team in matches. It goes up when:
+  - your lineup's archetypes complement each other (a Floor General plus two Snipers, a Slasher plus a Glass Cleaner)
+  - players fit their positions
+  - the same five play games together
 
-| Offense | Strong vs | Weak vs |
-|---|---|---|
-| Pace & Space (fast, many threes) | Zone | Press |
-| Inside Out (post-ups, paint) | Man | Zone |
-| Motion (cuts, assists) | Press | Man |
+## 7. Market (Trade Board)
 
-Before tip-off you can see the opponent's tactics, so you can counter them. The effect is small, about ±2.5% on make chance, so talent still matters most.
+- **Listings:** list a player at your own price. A sale takes a 5% fee, which removes coins from the economy.
+- Browse by position, rarity or Finish. You can buy instantly.
+- **Direct trade:** offer players and coins to someone in your server, and both sides confirm.
+- The market is cross-server, using MemoryStore with a DataStore backup. Everything is checked on the server, and trades are atomic.
 
-### 6. Live games
-- Games are simulated one possession at a time on the server, covering turnovers, steals, shot selection, blocks, fouls, free throws, offensive rebounds, fatigue and substitutions.
-- You watch on the 3D court. Players appear as colored tokens with numbers and the ball arcs to the rim. A play-by-play feed and a scoreboard sit on screen, and you can watch at 1×, 2× or skip.
-- **Highlights** (dunks, buzzer-beaters, late lead changes) slow down and show a banner.
-- **Clutch Timeout:** in the last 2:00 of the 4th quarter, when the game is within 6 points, the game pauses on your possession and you pick a play:
-  - **Isolation:** your best scorer goes one-on-one
-  - **Pick & Roll:** a two-man game between your best playmaker and your best big
-  - **Kick-Out Three:** a drive and kick to your best shooter
-  - **Let them play:** keeps your timeout for later
-  You get 2 per game. This is the main "I'm the coach" moment.
-- Scoring and balance were tested over 1,000+ simulated games. Teams average about 95 to 110 points, and overtime happens.
+## 8. Economy & progression
 
-### 7. Seasons & divisions
-- There are 8-team divisions (you plus 7 AI franchises) and seasons are 10 games long.
-- Division ladder: **Rec League → Regional Circuit → National Pro → Dynasty Elite**
-- At the end of a season the top 2 are promoted and the bottom 2 are relegated. Prize money depends on where you finish.
-- In the off-season every player ages by one year.
+- **Coins** are the main currency, with big numbers and fast growth.
+- **Fans** grow with wins and pay passive income every minute you're online. Upgrading your Home Court (seats, scoreboard, lights) raises how much each fan pays.
+- **Daily quests:** for example, play 3 matches, score 60 points with threes, or win 2 games. **Weekly quests** are larger.
+- There's also a login streak and codes (`TIPOFF`, `FASTBREAK`).
+- **Robux (later):** VIP (2× coins), an extra scout slot, Robux packs with shown odds, and court cosmetics. Nothing is pay-to-win only.
 
-### 8. Economy
-| Source | Notes |
-|---|---|
-| Game result | Win/loss payouts go up with the division |
-| Ticket sales | Home games only: fans × Seating Bowl level |
-| Season prize | Depends on where you finish |
-| Team Store | Passive income every minute you're online |
-| Exhibitions | Small payout |
-| Codes | `TIPOFF`, `FASTBREAK` |
+## 9. Look & feel
 
-### 9. Arena upgrades (5 levels each)
-These are Seating Bowl, Training Center, Scouting Department, Recovery Center and Team Store.
-
-### 10. Social
-- **Exhibition challenge:** challenge any manager in your server. Both of you watch the same game and both of you can call Clutch Timeouts.
-- **Direct trades:** offer up to 5 of your players plus optional cash for up to 5 of theirs. Everything is checked again on the server when the trade is accepted.
-- The leaderboard shows your Division and Fans.
+- The world is bright, sunny and cartoony, with outdoor courts, palm trees and plaza hoops. The UI uses chunky rounded buttons, bold outlined text, and large coin counters with juicy "+coins" pops.
+- Our own palette uses court orange, sky blue and pine green, with rarity colors on top.
+- It's built for mobile first, with big touch targets and the PLAY button in thumb reach.
 
 ## Technical shape
 
-- **Server-authoritative:** every purchase, drill, trade and match result is computed on the server.
-- The **shared** modules (Config, Rng, PlayerFactory, MatchSim) are pure Luau, so the sim can be unit-tested outside Roblox.
-- One `RemoteFunction` handles requests and one `RemoteEvent` handles server pushes.
-- Data is saved to DataStore with autosave, plus a save when a player leaves and when the server shuts down.
-- The arena is built from parts in code, so no imported assets are needed for v0.1. Custom meshes can come later from Blender.
+- The server is authoritative. Matchmaking and the market use MemoryStoreService, and profiles use DataStore with autosave.
+- Shared, pure-Luau modules (Config, Rng, PlayerFactory, MatchSim) can be tested outside Roblox.
+- **MatchSim** produces a list of possession events. The client "director" turns each event into character movement and animations.
+- Character models are R15 rigs coloured per team, with an animation set for dribble, shoot, dunk, pass, defend and celebrate. Custom meshes and animations can be made in Blender.
 
-## Status
+## What changed from v1
 
-Design and UI are **in review**. The match sim and server services are drafted locally but not committed. They will land after the design and UI are approved.
+| v1 (missed the point) | v2 |
+|---|---|
+| Menus only, dark esports UI | A walkable bright lobby with Home Courts |
+| Single-player league against AI | One-tap PvP matchmaking against real clubs |
+| Colored tokens on a court | 3D players acting out every play, slow-mo and replays |
+| Pick 1 of 3 scouting instead of packs | Packs with rarity and Finishes, plus timed scout trips |
+| Trades only within the server | Cross-server market plus direct trades |
+| No retention hooks | Daily quests, passive fan income, a traveling scout and a rating season |
+
+The parts we kept from v1 are the possession sim, the tactics counters, the **Clutch Timeout**, training with caps, and server authority.
