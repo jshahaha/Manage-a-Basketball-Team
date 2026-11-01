@@ -12,6 +12,7 @@ local Ratings2 = require("../src/shared/Ratings")
 local AnimClips = require("../src/shared/AnimClips")
 local PlayerModel = require("../src/shared/PlayerModel")
 local AnimSets = require("../src/shared/AnimSets")
+local Possession = require("../src/shared/Possession")
 local Scouting = require("../src/shared/Scouting")
 local Cosmetics = require("../src/shared/Cosmetics")
 local Facilities = require("../src/shared/Facilities")
@@ -850,6 +851,29 @@ test("every player gets a shot, dunk and dribble moves that exist as clips", fun
 	assert(seen.Spin360 and seen.TwoHand, "all dunks show up")
 	local old = AnimSets.clips(nil)
 	assert(old.shot == "Shoot" and old.dunk == "Dunk", "old saves get defaults")
+end)
+
+test("a possession plan puts the shooter at the spot and plays real clips", function()
+	local sets = {}
+	for i = 1, 5 do
+		sets[i] = AnimSets.clips({ shot = "Fade", dunk = "Windmill", moves = { "Spin" } })
+	end
+	for _, kind in ipairs({ "jumper", "three", "dunk" }) do
+		local plan = Possession.plan({ offense = sets, dir = 1, result = { kind = kind, shooter = 2, assist = 1, made = true } })
+		assert(plan.passer == 1 and plan.length > plan.tShot, "beats")
+		for t = 0, plan.length, 0.1 do
+			local f = Possession.frame(plan, t)
+			assert(#f.players == 10 and f.ball, "frame")
+			for _, p in ipairs(f.players) do
+				assert(AnimClips.Clips[p.clip], "clip " .. tostring(p.clip))
+				assert(math.abs(p.x) < 47 * 0.9 and math.abs(p.z) < 25 * 0.9, "on the court")
+			end
+		end
+		local last = Possession.frame(plan, plan.tShot + 0.5).players[2]
+		assert(last.clip == (kind == "dunk" and "DunkWindmill" or "ShootFade"), "signature clip")
+		local rimDist = 37.575 - last.x
+		assert(kind ~= "three" or rimDist > 23.75 * 0.9, "three is behind the line")
+	end
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))
