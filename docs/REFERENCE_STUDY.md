@@ -2,7 +2,7 @@
 
 These are study notes on the soccer-manager Roblox experience that js linked. They record **how the genre plays**, so our basketball game matches its feel without copying it. For what we may and may not borrow, see [GENERAL_RULES.md](GENERAL_RULES.md#originality).
 
-**Sources (2026-11-01):** the experience's public page and API data (description, game passes, developer products, votes), about 25 YouTube gameplay videos (titles, plus auto-generated frames and thumbnails, since transcripts weren't available), and fan guide sites.
+**Sources (2026-11-01):** the experience's public page and API data (description, game passes, developer products, votes), about 40 YouTube gameplay videos (titles, plus auto-generated frames and thumbnails, since transcripts weren't available), and fan guide sites.
 
 ## Snapshot
 - Released 2026-10-08. After about 3 weeks it had roughly 4.3M visits, 6 to 9k players online, and a 98% like ratio.
@@ -68,6 +68,68 @@ These are study notes on the soccer-manager Roblox experience that js linked. Th
 | Collection | Club capacity, sell and quick-sell, and lineup presets. |
 | Retention | Daily quests, boost timers, a free reward timer, and limited-time event packs. |
 | Monetization (later) | Starter Pack, then a bundle chain, VIP, and gifting. All odds are shown. |
+
+## Deep study, round 2 (zoomed-in frames)
+
+These notes come from about 60 more full-resolution frames across 18 more videos, read panel by panel. The numbers are the reference game's and are recorded only so we understand its pacing. We set our own numbers.
+
+### Club creation (first session)
+- A new manager picks one of about 5 badge shapes, a main color and a second color (about 12 each), and types a club name. "Your colors are used on your badge and your kits." The whole world (kits, stands, dugout) then wears your colors.
+
+### Lobby HUD, read precisely
+- **Top left:** the club card shows the badge, club name, @username, the **division** (for example AMATEUR or PROFESSIONAL) and a **fan count**.
+- **Top center:** money with a + button.
+- **Live boost banner:** for example "2X MONEY 2X FANS · UPDATE DAY" with a countdown, so update days feel like events.
+- **Bottom bar:** SQUAD, CARDS, TRAINING, then PLAY, then MARKET, TOURNAMENTS (with a NEW badge) and SHOP. Pressing PLAY turns the button into **CANCEL** with a "FINDING A MATCH… 00:11" timer and a "Looking for an opponent…" toast.
+- **Daily Quests** panel on the right with a reset countdown, 3 free quests plus 1 VIP-only quest that advertises VIP. Examples: open a pack, score 6 goals, keep a clean sheet, start 2 training sessions, play 3 matches, win 2 matches. Rewards are small cash amounts or a basic pack. The panel stays on screen during matches too.
+- Chat has a Here (server) tab and a Global tab.
+
+### Squad
+- **6-a-side** with formations such as 4-1, 3-2, 2-3 and 1-4.
+- **Synergy %** (for example 63–70%) gives a flat bonus to all stats ("+9.5% to all stats"). A single **Team Power** number sums up the squad.
+- Several saved **squad tabs** (the later ones locked behind Robux), a KIT tab, plus AUTO FILL and CLEAR. Players in training are tagged and can't be picked.
+
+### Cards (collection)
+- Tabs by position group, sort by Overall, Rarity or Newest, and a capacity counter (for example 16/50).
+- Each card shows 5 stats, OVR, a nation flag and an IN SQUAD tag.
+- The detail panel shows **career stats** (matches, goals, assists, average rating, MVP awards; clean sheets and saves for goalkeepers), a **MAX potential** value, and SELL or QUICK SELL with the quick-sell price on the button.
+
+### Training
+- **3 slots.** Pick a card and a focus (one stat or ALL). A session gives a fixed chunk of XP, shows "OVR 78 → 80" progress, and **takes 2 hours, running while you're offline**. A card stops at its potential (hidden as "???" unless you own the reveal pass). Skipping costs Robux, and a toast announces "<player> started SPRINT!".
+
+### Market
+- **Packs tab:** every pack gives 2 to 3 players and lists odds as **OVR bands** (for example 62-69 28%, 70-76 40%, 77-79 28%, 80-87 4%), payable with cash or Robux. Prices climb steeply from tier to tier.
+- **Community tab:** search by name or country, position, rarity and sort, with "by seller". **A 30% tax is taken from every sale** (a pass lowers it to 10%). That heavy tax is the main money sink.
+- **Rare-player shop:** appears without warning for a few minutes. Each player has **10 copies shared by every server**, so it sells out fast. Robux only.
+
+### Tournaments
+- **Daily Cup:** a points race over the day. Entry needs a minimum fan count, it shows how many managers joined, and it has a countdown. Top places win cash plus a pack.
+- **Major Cup:** a longer race with a higher fan requirement and bigger prizes.
+- This gives fan count a purpose beyond income: it unlocks competitions.
+
+### Matches, read precisely
+- The camera sits **behind the coach at the dugout on the touchline**, looking across and along the pitch. Your coach avatar fills the left foreground. A HEAD COACH card at the bottom left shows the club and your @username.
+- **Bottom center score bar:** both badges, club names and @usernames, a LIVE tag, the half and clock, a possession % bar under it, and an expandable scorer list ("P. Abdullahi 3', 16'").
+- Every goal gets a **REPLAY**: a close-up from a new angle with a lower third ("GOAL · N. FARKAS 42' · club") and TAP TO SKIP. Players wear their name and number on their backs, and a floating tag ("9 N. FARKAS") marks whoever has the ball.
+- Between highlights the camera can pull up to a high wide shot of the whole pitch.
+- The end is a **VICTORY!** shot with the squad celebrating in front of the camera above the final score.
+- The world scoreboard by your pitch shows the live score, so passers-by can see it.
+
+### Sister game
+- The same studio runs an F1 manager built on the same formula (lobby, PLAY, packs, market, training slots), which confirms that the sport is a swappable layer on top of one shared loop.
+
+## What round 2 changes for us
+| Area | Decision |
+|---|---|
+| Lineup | Basketball is 5 on the floor plus a bench. We keep a **starting five plus 3 bench** spots and **lineup presets** (Small Ball, Twin Towers, Balanced) in place of formations. |
+| Chemistry | Shown as a % that grants a flat bonus to every stat, next to a single **Team Power** number. |
+| Training | **3 timed slots** with a stat focus, sessions run while offline, and progress stops at potential. |
+| Collection | Cards show **career stats** (points, rebounds, assists, MVPs) plus a potential cap. |
+| Market fee | Raise our fee from 5% to **15%** so the market removes money from the economy. A VIP perk lowers it, but never to zero. |
+| Competitions | Add **Weekend Tournaments**: a points race whose entry needs fans. Our own names and formats. |
+| Match camera | Bench camera behind the coach, a **REPLAY** close-up after big plays, and a tag on the ball handler. |
+| Club setup | First session: badge shape, two colors and a name. The colors paint your Home Court and kits. |
+| Divisions | Shown on the club card next to fans. |
 
 ## What we will NOT copy
 Its name or "Be a ___ Manager" title pattern, logo, characters, map, card frame art, UI layout and colors, its wording and banners, its rare-player shop and that tier's name, pass names, prices, and any real athletes' names or likenesses.
