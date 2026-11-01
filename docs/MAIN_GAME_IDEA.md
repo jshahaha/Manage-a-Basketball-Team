@@ -176,8 +176,8 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 
 ## 6. Training, scouting & chemistry
 
-- **Training:** **3 timed slots.** You pick a player and a focus (Shooting, Finishing, Playmaking, Defense, Rebounding, Athleticism, or All). A session lasts about 1 hour and keeps running while you're offline. Progress stops at the player's potential, and star levels raise that cap.
-- **Scouting Report:** your scouts bring back a report of **5 players**. You see some of each player's info, **never their OVR**, and sign the one you want for coins. A new report comes every few hours. You can refresh early for coins, or for free with a **Scout Ticket** (a pack item).
+- **Training:** **3 timed slots**, up to **5** with gems (150, then 400). You pick a player and a focus (Shooting, Finishing, Playmaking, Defense, Rebounding, Athleticism, or All). A session lasts about 1 hour and keeps running while you're offline. Progress stops at the player's potential, and star levels raise that cap.
+- **Scouting Report:** your scouts bring back a report of **3 players**, up to **6** with gems (100, 250, then 650 gems for each extra slot). You see some of each player's info, **never their OVR**, and sign the one you want for coins. The price scales with the player's OVR but is overpriced next to packs (x1.3 to x1.8 a fair value, rolled per player), so prices overlap and can't be read as an OVR. Each scout level takes 4% off. A new report comes every few hours. You can refresh early for coins, or for free with a **Scout Ticket** (a pack item).
 - **Scout team levels** (upgraded with gems). Each level reveals more, so a better scout team means better guesses:
 
   | Level | Reveals |
@@ -195,13 +195,24 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
   - players fit their positions
   - the same five play games together
 
+## 6a. Facilities (Arena and Training Facility)
+
+Club buildings, upgraded with **coins** over a build timer (`src/shared/Facilities.lua`). **Gems only skip the timer** (15 gems an hour), so Robux can speed you up but can't buy the upgrade.
+
+| Building | Each level (max 10) | At level 10 | Level 1 cost, then x1.8 | Build time |
+|---|---|---|---|---|
+| **Arena** | +4% coins from every game, win or loss, and +0.2 OVR to your players at home | +40% coins, +2 OVR at home | 20,000 | level x 2 hours |
+| **Training Facility** | sessions 5% shorter and gains 3% bigger | 50% shorter, +30% gains | 15,000 | level x 1.5 hours |
+
+Arena looks (lights, scoreboard, seat colors) are separate and bought with gems, because they're cosmetic.
+
 ## 6b. Cosmetics
 
-Looks only, never stats. They come from the Cosmetic pack item, the gem shop, achievements and events. Each goes in one of **15 slots** and a club equips one per slot (`src/shared/Cosmetics.lua`, 73 items):
+Looks only, never stats. They come from the Cosmetic pack item, the gem shop, achievements and events. Each goes in one of **15 slots** and a club equips one per slot (`src/shared/Cosmetics.lua`, 76 items):
 
 - **Team look:** Jersey, Shoes, Accessory (headband, sleeves, goggles, face paint), Coach Outfit
-- **Home court (visitors see it):** Court floor (Park Blacktop, Rooftop, Boardwalk, Neon Night, Zero-G Arena...), Net (Chain Net jingles on a swish), Ball, Mascot, Walk-in Music
-- **Moments:** Shot Trail on made threes, Dunk Effect on the rim, Celebration after big plays, Walkout Effect for Legendary and Hall of Fame pulls
+- **Home court (visitors see it):** Court floor (Park Blacktop, Rooftop, Boardwalk, Neon Night, Zero-G Arena...), Ball, Mascot, Walk-in Music
+- **Moments:** Shot Trail behind made shots, Score Effect at the rim after a make, Dunk Effect on the rim, Celebration after big plays, Walkout Effect for Legendary and Hall of Fame pulls
 - **Profile:** Card Frame, Club Banner
 
 Rarity inside the Cosmetic pack item: Common 60%, Rare 28%, Epic 10%, Legendary 2%. Gem shop prices: 30 / 80 / 200 / 500 gems.
@@ -221,7 +232,7 @@ Rarity inside the Cosmetic pack item: Common 60%, Rare 28%, Epic 10%, Legendary 
 ## 9. Economy & progression
 
 - **Coins** are the main currency, with big numbers and fast growth. They buy packs, badges (equip cost), market buys, scouted players and early report refreshes.
-- **Gems** are the premium currency. Free players earn them slowly from daily quests, achievements and Elo milestones, and they can also be bought with Robux. Gems buy **scout team upgrades, cosmetics, the Gem Pack, and skipping training timers**. They never buy players or badges directly, so the market stays coin-based.
+- **Gems** are the premium currency. Free players earn them slowly from daily quests, achievements and Elo milestones, and they can also be bought with Robux. Gems buy **scout team upgrades, extra scout and training slots, cosmetics (including arena looks), the Gem Pack, and skipping timers** (training sessions and facility builds). Possible later: a second saved lineup, renaming the club. They never buy players or badges directly, so the market stays coin-based.
 - **Fans** grow with wins and pay passive income every minute you're online. Upgrading your Home Court (seats, scoreboard, lights) raises how much each fan pays.
 - **Daily quests:** 3 a day, drawn from a pool and reset at 00:00 UTC. Each pays coins, from 1,000 to 4,000. Examples: win 2 games, make 15 threes, throw down 8 dunks, open a pack, call 3 timeouts, or play a server challenge.
 - **Achievements:** lifetime goals with tiers that each pay once. The big tiers pay packs. Examples: Winner (1 / 10 / 50 / 250 / 1,000 wins), From Downtown (threes), Posterizer (dunks), Pack Rat, Collector, Climber (reach each Elo tier), Hot Streak, Clipboard Coach (timeouts), Challenger and Legend Hunter (pull Hall of Fame players).

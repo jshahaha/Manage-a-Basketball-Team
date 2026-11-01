@@ -12,6 +12,7 @@ local Config = require(Shared.Config)
 local PlayerFactory = require(Shared.PlayerFactory)
 local Stats = require(Shared.Stats)
 local Scouting = require(Shared.Scouting)
+local Facilities = require(Shared.Facilities)
 
 local DataService = {}
 DataService.profiles = {} -- [Player] = profile
@@ -56,6 +57,8 @@ function DataService.newProfile(userId: number)
 		gems = Config.StartingGems,
 		scouting = Scouting.newState(), -- see Scouting.lua
 		scoutTickets = 0,
+		facilities = Facilities.newState(), -- see Facilities.lua
+		trainingSlots = Config.GemSlots.Training.start, -- 3, up to 5 with gems (Config.slotCost)
 		cosmetics = {}, -- owned cosmetic ids = true, see Cosmetics.lua
 		equipped = {}, -- [slot] = cosmetic id
 		fans = Config.StartingFans,

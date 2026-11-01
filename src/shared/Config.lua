@@ -13,7 +13,7 @@ Config.StartingFans = 0
 Config.MaxCoins = 1e12
 
 -- Gems: the premium currency. Earned slowly by playing, or bought with Robux.
--- They buy scout team upgrades, cosmetics, the Gem Pack and skipping training timers.
+-- They buy scout team upgrades, extra scout and training slots, cosmetics, the Gem Pack and skipping training timers.
 -- They never buy players or badges directly, so the market stays coin-based.
 Config.StartingGems = 25
 Config.Gems = {
@@ -21,7 +21,25 @@ Config.Gems = {
 	achievementTier = 5, -- every achievement tier
 	eloTier = { [2] = 20, [3] = 40, [4] = 80, [5] = 150, [6] = 300 }, -- first time reaching each Elo tier
 	skipTrainingPerHour = 10, -- finish a training session early (rounded up to the hour)
+	skipBuildPerHour = 15, -- finish an Arena or Training Facility upgrade early
 }
+
+-- Extra slots bought with gems. Each slot costs `growth` times the one before.
+--   Scouting Report: 3 players, up to 6 (100 / 250 / 650 gems)
+--   Training: 3 slots, up to 5 (150 / 400 gems)
+Config.GemSlots = {
+	Scout = { start = 3, max = 6, base = 100, growth = 2.5 },
+	Training = { start = 3, max = 5, base = 150, growth = 2.5 },
+}
+
+-- Gems for the next slot when you have `owned` (nil at max). Rounded to 50.
+function Config.slotCost(kind: string, owned: number): number?
+	local s = Config.GemSlots[kind]
+	if owned >= s.max then
+		return nil
+	end
+	return math.floor(s.base * s.growth ^ (owned - s.start) / 50 + 0.5) * 50
+end
 
 -- Collection --------------------------------------------------------------
 Config.ClubCapacity = 50

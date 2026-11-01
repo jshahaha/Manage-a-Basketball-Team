@@ -1,6 +1,6 @@
 --!nonstrict
--- Scouting Report: your scouts bring back 5 players. You never see their OVR. What you do see depends
--- on your scout team level, and every player costs the same to sign, so the price gives nothing away.
+-- Scouting Report: your scouts bring back 3 to 6 players. You never see their OVR. What you do see depends
+-- on your scout team level. Prices scale with the player but are overpriced and spread out, so they overlap.
 --
 --   Level 0  best stat
 --   Level 1  + position
@@ -9,7 +9,7 @@
 --   Level 4  + 3rd best stat
 --   Level 5  + rarity
 --
--- State saved on the profile: profile.scouting = { level, report = { players = {ids}, signed = {bool}, expires } }
+-- State saved on the profile: profile.scouting = { level, slots, report = { players = {ids}, signed = {bool}, expires } }
 
 local function load(name)
 	return require(script and script.Parent:FindFirstChild(name) or "./" .. name)
@@ -20,8 +20,13 @@ local PlayerFactory = load("PlayerFactory")
 
 local Scouting = {}
 
-Scouting.ReportSize = 5
-Scouting.SignCost = 25000 -- coins, same for every player
+-- Players per report: Config.GemSlots.Scout (3, up to 6 with gems). Saved as state.slots.
+-- Sign price: scales with the player's OVR but always overpriced next to packs, with a random spread
+-- (x1.3 to x1.8) so prices overlap and don't give away the OVR or rarity. Each scout level takes 4% off.
+Scouting.PriceBase = 3000 -- value of a 55 OVR player
+Scouting.PriceGrowth = 1.13 -- value grows 13% per OVR point
+Scouting.Markup = { 1.3, 1.8 }
+Scouting.DiscountPerLevel = 0.04
 Scouting.RefreshCost = 5000 -- coins, to refresh before the timer runs out
 -- Same odds at every level: upgrades buy information, not better players.
 Scouting.Odds = { Common = 50, Rare = 32, Epic = 13, Legendary = 4.5, HallOfFame = 0.5 }
@@ -38,7 +43,24 @@ Scouting.Levels = {
 Scouting.MaxLevel = 5
 
 function Scouting.newState()
-	return { level = 0, report = nil }
+	return { level = 0, slots = Config.GemSlots.Scout.start, report = nil }
+end
+
+function Scouting.size(state): number
+	return state.slots or Config.GemSlots.Scout.start
+end
+
+-- Buy one more report slot with gems. Returns ok, reason, gems spent. Shows from the next report.
+function Scouting.buySlot(state, gems: number)
+	local cost = Config.slotCost("Scout", Scouting.size(state))
+	if not cost then
+		return false, "Max slots."
+	end
+	if gems < cost then
+		return false, "Not enough gems."
+	end
+	state.slots = Scouting.size(state) + 1
+	return true, nil, cost
 end
 
 -- The player's top `n` ratings, best first: { { key, name, value }, ... }
@@ -58,6 +80,25 @@ function Scouting.topStats(player, n: number)
 		out[i] = list[i]
 	end
 	return out
+end
+
+-- List price rolled when the report is made (before the scout discount).
+function Scouting.listPrice(rng, player): number
+	local value = Scouting.PriceBase * Scouting.PriceGrowth ^ (PlayerFactory.overall(player) - 55)
+	local mult = rng:range(Scouting.Markup[1], Scouting.Markup[2])
+	return math.max(1000, math.floor(value * mult / 100 + 0.5) * 100)
+end
+
+-- Cheapest and dearest list price for an OVR (before the scout discount).
+function Scouting.priceRange(ovr: number)
+	local value = Scouting.PriceBase * Scouting.PriceGrowth ^ (ovr - 55)
+	return value * Scouting.Markup[1], value * Scouting.Markup[2]
+end
+
+-- What you pay at your scout level.
+function Scouting.price(listPrice: number, level: number): number
+	local off = 1 - Scouting.DiscountPerLevel * math.clamp(level, 0, Scouting.MaxLevel)
+	return math.floor(listPrice * off / 100 + 0.5) * 100
 end
 
 -- What the UI may show for one scouted player at this level. Never includes OVR.
@@ -81,16 +122,17 @@ function Scouting.roll(rng, state, now: number, drawFn)
 			table.insert(entries, { r.id, p })
 		end
 	end
-	local players, seen = {}, {}
-	while #players < Scouting.ReportSize do
+	local players, prices, seen = {}, {}, {}
+	while #players < Scouting.size(state) do
 		local card = drawFn(rng, rng:weighted(entries))
 		if not seen[card.id] then
 			seen[card.id] = true
 			table.insert(players, card.id)
+			table.insert(prices, Scouting.listPrice(rng, card))
 		end
 	end
 	local hours = Scouting.Levels[state.level].hours
-	state.report = { players = players, signed = {}, expires = now + math.floor(hours * 3600) }
+	state.report = { players = players, prices = prices, signed = {}, expires = now + math.floor(hours * 3600) }
 	return state.report
 end
 
@@ -124,10 +166,11 @@ function Scouting.canSign(state, index: number, coins: number)
 	if report.signed[index] then
 		return false, "already signed"
 	end
-	if coins < Scouting.SignCost then
+	local cost = Scouting.price(report.prices[index], state.level)
+	if coins < cost then
 		return false, "not enough coins"
 	end
-	return true
+	return true, nil, cost
 end
 
 function Scouting.upgradeCost(level: number): number?

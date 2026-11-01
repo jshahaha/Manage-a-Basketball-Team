@@ -10,9 +10,9 @@ Cosmetics.Slots = {
 	{ id = "Shoes", name = "Shoes", where = "Team sneakers (colorway)" },
 	{ id = "Accessory", name = "Accessory", where = "Headbands, sleeves and goggles on one player" },
 	{ id = "Court", name = "Court", where = "Your home court floor (opponents see it when they play you)" },
-	{ id = "Net", name = "Net", where = "The nets on your home court" },
 	{ id = "Ball", name = "Ball", where = "The game ball at your home court" },
-	{ id = "ShotTrail", name = "Shot Trail", where = "A trail behind your made threes" },
+	{ id = "ShotTrail", name = "Shot Trail", where = "A trail behind the ball on your made shots" },
+	{ id = "ScoreFX", name = "Score Effect", where = "A burst at the rim right after your shot goes in" },
 	{ id = "DunkFX", name = "Dunk Effect", where = "A burst on the rim when your team dunks" },
 	{ id = "Celebration", name = "Celebration", where = "After a big play or a win" },
 	{ id = "Walkout", name = "Walkout Effect", where = "Your Legendary and Hall of Fame pack walkouts" },
@@ -64,10 +64,6 @@ Cosmetics.List = {
 	{ "CourtNeon", "Court", "Neon Night", "Epic", "Glowing lines" },
 	{ "CourtIce", "Court", "Frozen Lake", "Epic" },
 	{ "CourtSpace", "Court", "Zero-G Arena", "Legendary", "Stars under a glass floor" },
-	-- Nets
-	{ "NetWhite", "Net", "White Nylon", "Common" },
-	{ "NetChain", "Net", "Chain Net", "Rare", "Jingles on a swish" },
-	{ "NetNeon", "Net", "Neon Net", "Epic" },
 	-- Balls
 	{ "BallClassic", "Ball", "Classic Orange", "Common" },
 	{ "BallTricolor", "Ball", "Tricolor", "Rare", "Red, white and blue panels" },
@@ -79,6 +75,13 @@ Cosmetics.List = {
 	{ "TrailFire", "ShotTrail", "Fire", "Epic" },
 	{ "TrailIce", "ShotTrail", "Frost", "Epic" },
 	{ "TrailRainbow", "ShotTrail", "Rainbow", "Legendary" },
+	-- Score effects (after a made shot)
+	{ "ScorePop", "ScoreFX", "Net Pop", "Common", "The net flicks up with a puff of chalk" },
+	{ "ScoreConfetti", "ScoreFX", "Confetti Burst", "Rare" },
+	{ "ScoreSplash", "ScoreFX", "Splash", "Rare", "A water splash for threes" },
+	{ "ScoreFlameRing", "ScoreFX", "Flame Ring", "Epic", "The rim lights up in a ring of fire" },
+	{ "ScoreStars", "ScoreFX", "Star Shower", "Epic" },
+	{ "ScoreNova", "ScoreFX", "Supernova", "Legendary", "A shockwave rolls out across the court" },
 	-- Dunk effects
 	{ "DunkShake", "DunkFX", "Rim Shake", "Common" },
 	{ "DunkSparks", "DunkFX", "Rim Sparks", "Rare" },
