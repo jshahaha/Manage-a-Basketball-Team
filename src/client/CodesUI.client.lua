@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
+local Audio = require(script.Parent:WaitForChild("Audio"))
 
 local player = Players.LocalPlayer
 local INK = Color3.fromRGB(27, 33, 64)
@@ -134,10 +135,12 @@ local function submit()
 		return Net.request():InvokeServer("redeemCode", box.Text)
 	end)
 	if ok and res and res.ok then
+		Audio.play("CodeRedeemed")
 		result.TextColor3 = GREEN
 		result.Text = res.data.message
 		box.Text = ""
 	else
+		Audio.play("UIError")
 		result.TextColor3 = RED
 		result.Text = (ok and res and res.err) or "Couldn't reach the server."
 	end
@@ -146,6 +149,7 @@ local function submit()
 end
 
 open.Activated:Connect(function()
+	Audio.play(panel.Visible and "UIClosePanel" or "UIOpenPanel")
 	panel.Visible = not panel.Visible
 	result.Text = ""
 end)
@@ -200,6 +204,7 @@ Net.push().OnClientEvent:Connect(function(kind, data)
 	if kind == "notice" then
 		toast(data.text, INK, 10)
 	elseif kind == "questDone" then
+		Audio.play("QuestComplete")
 		toast("Quest complete: " .. data.text .. "  (+" .. data.coins .. " coins to claim)", GREEN)
 	end
 end)

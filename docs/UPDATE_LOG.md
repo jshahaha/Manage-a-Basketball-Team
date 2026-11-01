@@ -4,6 +4,13 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.1 (2026-11-01): Sound
+### Added
+- `docs/AUDIO.md`: every sound the game needs (ball and court, crowd, in-game moments, menus, pack opening, music), where to get each one, and the full commentator script
+- `Sounds.lua` registry and `Audio.lua` player: volume groups, random variants and pitch, cooldowns, and a commentator queue that never talks over itself. Sounds stay silent until their asset IDs are filled in
+- The CODES panel plays open, close, success and error sounds
+- Design: pack opening animation (drop, shake, rip, cards fly out, tap to flip, special reveals for Legendary and Hall of Fame)
+
 ## v0.1.0 (2026-11-01): First code
 ### Added
 - Rojo project with tests (`luau tests/run.luau`), run by GitHub Actions on every push

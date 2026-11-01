@@ -12,6 +12,7 @@ local Quests = require("../src/shared/Quests")
 local Achievements = require("../src/shared/Achievements")
 local Projection = require("../src/shared/Projection")
 local Stats = require("../src/shared/Stats")
+local Sounds = require("../src/shared/Sounds")
 
 local passed, failed = 0, 0
 local function test(name: string, fn: () -> ())
@@ -406,6 +407,43 @@ end)
 
 test("mvp picks the best line", function()
 	eq(Stats.mvp({ a = line({ pts = 30, fgm = 12, fga = 20, ast = 5 }), b = line({ pts = 8, fgm = 3, fga = 12, tov = 4 }) }), "a")
+end)
+
+-- Sounds ------------------------------------------------------------------------
+test("every sound has a real group and sane settings", function()
+	local groups = {}
+	for _, g in ipairs(Sounds.Groups) do
+		groups[g] = true
+	end
+	local n = 0
+	for name, s in pairs(Sounds.List) do
+		n += 1
+		ok(groups[s.group], name .. " has unknown group " .. tostring(s.group))
+		ok(s.volume > 0 and s.volume <= 1, name .. " volume")
+		for _, id in ipairs(s.ids) do
+			ok(type(id) == "number" and id > 0, name .. " has a bad asset id")
+		end
+	end
+	ok(n > 80, "expected the full sound list, got " .. n)
+end)
+
+test("unfilled sounds are silent, variants pick in range", function()
+	eq(Sounds.pickId("Swish", 0.5), nil)
+	eq(Sounds.pickId("NoSuchSound", 0.5), nil)
+	Sounds.List.Swish.ids = { 11, 22, 33 }
+	eq(Sounds.pickId("Swish", 0), 11)
+	eq(Sounds.pickId("Swish", 0.999), 33)
+	Sounds.List.Swish.ids = {}
+end)
+
+test("every commentator event has lines with text", function()
+	for event, e in pairs(Sounds.Lines) do
+		ok(#e.lines > 0, event .. " has no lines")
+		for _, l in ipairs(e.lines) do
+			ok(#l.text > 0, event .. " empty line")
+		end
+	end
+	ok(Sounds.Lines.PackHallOfFame.priority > Sounds.Lines.Miss.priority, "big moments outrank small ones")
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))
