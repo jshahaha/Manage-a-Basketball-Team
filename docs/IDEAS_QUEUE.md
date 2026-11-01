@@ -37,6 +37,12 @@ Template:
 - What: Paint your floor in your team colors, with a center-court emblem and banners. Meshes would be made in Blender.
 - Size: M
 
+### Ranked seasons
+- Status: inbox (idea only, not planned)
+- Added by / date: js via Claude, 2026-11-01
+- What: Two-week seasons with rewards for the highest tier reached and a badge for the top 100, then an Elo soft reset (`1000 + (old − 1000) × 0.75`).
+- Size: M
+
 ### Global leaderboard
 - Status: inbox
 - Added by / date: Claude, 2026-11-01
@@ -52,7 +58,7 @@ Template:
 ### Draft night event
 - Status: inbox
 - Added by / date: Claude, 2026-11-01
-- What: Once a season there's a live server event where managers take turns picking from a shared pool of prospects.
+- What: Every so often there's a live server event where managers take turns picking from a shared pool of prospects.
 - Size: L
 
 ### Coach hires

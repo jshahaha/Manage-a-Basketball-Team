@@ -47,7 +47,10 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
   - If a live opponent is found within about 8 seconds, it's a real-time match, and both managers see the game and can call plays.
   - Otherwise you're matched against a **snapshot of a real player's club** (their lineup, tactics and name), taken from any server. It always feels like PvP, and the queue never stalls.
 - **VS screen:** both managers' avatars, club badges, team OVR, chemistry and rating.
-- **Friendly:** challenge someone in your server. It doesn't affect rating.
+- **Server challenge:** walk up to any manager in your server, or tap their name, and challenge them. If they accept, it's a **live game** played on the challenger's Home Court, so the rest of the server can come and watch.
+  - It's **longer** than a queued game: 4 quarters of about 75 seconds each, so **about 5 to 6 minutes** in total.
+  - **Both coaches call their own timeouts** (4 each), make subs and switch styles in real time. The game only pauses while a timeout is running.
+  - It's unranked by default, so it doesn't change Elo.
 - **Elo rating:** every club has an Elo number, shown on its badge, on the Match Found screen and on leaderboards.
   - You **start at 1000**.
   - After each ranked game: `new = old + K × (result − expected)`, where `expected = 1 / (1 + 10^((opp − you)/400))` and the result is 1 for a win and 0 for a loss.
@@ -70,13 +73,19 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
   | Hall of Fame | 1900+ | ×2.5 |
 
   - **Demotion shield:** right after you reach a new tier, you get 3 games of protection before you can drop out of it.
-- **Seasons:** each lasts 2 weeks. You earn rewards for the highest tier you reached, and the top 100 get a badge for their club card. Then Elo **soft-resets**: `new = 1000 + (old − 1000) × 0.75`.
 - **Leaderboards:** global top 100, your server, and your friends.
 
-## 3. Matches (3D, about 2 to 3 minutes)
+## 3. Matches (3D)
 
 - The game is played at the **home team's court**. Ten R15 characters wear their team's kits and numbers. A server-authoritative sim decides each possession (see the existing `MatchSim`), and the client **acts it out**: dribbling, passing, jump shots, layups, dunks, blocks and rebounds, with animations.
-- There are 4 quarters of about 30 to 40 seconds each, run on a fast game clock.
+- **How long a game lasts:**
+
+  | Mode | Quarters | Real time |
+  |---|---|---|
+  | Queued (PLAY) | 4 × about 35 s, plus breaks | **about 2.5 to 3 min** |
+  | Server challenge (live) | 4 × about 75 s, plus breaks | **about 5 to 6 min** |
+
+  The game clock always shows 12-minute quarters (48 minutes in all), and it runs fast. A timeout pauses the game for up to 15 seconds.
 - **The court is watched from the side.** The camera sits on the sideline and the court runs left to right across the screen, like a TV broadcast. Your coach avatar stands at the bench in the foreground under a HEAD COACH tag and can use emotes. The camera pans left and right to follow the ball.
 - The game is played **on the home team's Home Court in the lobby world**, so other managers can walk over and watch.
 - **Ball-handler tag:** a floating name tag marks whoever has the ball. Jerseys show names and numbers.
@@ -178,6 +187,6 @@ Every player pack gives **3 players**. The shop shows odds both by rarity and by
 | Colored tokens on a court | 3D players acting out every play, slow-mo and replays |
 | Pick 1 of 3 scouting instead of packs | Packs with rarity and Finishes, plus timed scout trips |
 | Trades only within the server | Cross-server market plus direct trades |
-| No retention hooks | Daily quests, passive fan income, a traveling scout and a rating season |
+| No retention hooks | Daily quests, passive fan income, a traveling scout and Elo tiers |
 
 The parts we kept from v1 are the possession sim, the tactics counters, the **Clutch Timeout**, training with caps, and server authority.

@@ -4,9 +4,12 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
-## v0.0.7 (2026-11-01): Elo
+## v0.0.7 (2026-11-01): Elo & challenges
+### Changed
+- Server challenges are live games of about 5 to 6 minutes, with timeouts for both coaches. Queued games last about 2.5 to 3 minutes
+- Ranked seasons moved to the Ideas Queue (idea only)
 ### Added
-- Elo rating: start at 1000, K = 40 for placement and 24 after, half K for the owner of a saved team, an Elo-based matchmaking range, tiers from Elo with coin multipliers, a demotion shield, a 2-week season with soft reset, and leaderboards
+- Elo rating: start at 1000, K = 40 for placement and 24 after, half K for the owner of a saved team, an Elo-based matchmaking range, tiers from Elo with coin multipliers, a demotion shield and leaderboards
 
 ---
 
