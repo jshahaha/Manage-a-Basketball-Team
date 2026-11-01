@@ -8,6 +8,7 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 ### Changed
 - Server challenges are live games of about 5 to 6 minutes, with timeouts for both coaches. Queued games last about 2.5 to 3 minutes
 - Ranked seasons moved to the Ideas Queue (idea only)
+- PLAY always matches you against saved teams of real clubs. Live games happen only through server challenges
 ### Added
 - Elo rating: start at 1000, K = 40 for placement and 24 after, half K for the owner of a saved team, an Elo-based matchmaking range, tiers from Elo with coin multipliers, a demotion shield and leaderboards
 

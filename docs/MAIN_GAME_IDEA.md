@@ -43,9 +43,11 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 ## 2. PLAY: matchmaking against real clubs
 
-- One big **PLAY** button. It queues you **across servers** through MemoryStore.
-  - If a live opponent is found within about 8 seconds, it's a real-time match, and both managers see the game and can call plays.
-  - Otherwise you're matched against a **snapshot of a real player's club** (their lineup, tactics and name), taken from any server. It always feels like PvP, and the queue never stalls.
+- One big **PLAY** button. It always matches you against a **saved team**: a snapshot of a real manager's club from any server, near your Elo. The snapshot includes their lineup, minutes, coaches, styles, name and avatar.
+  - The match starts within seconds, and the other manager doesn't need to be online.
+  - Their AI coach calls their timeouts.
+  - Every club's snapshot is saved whenever its lineup or coaches change. The owner gets a notification like "Copper Ridge beat your team 88–81 while you were away", which shows their Elo change and a Rematch button.
+- **Live games happen only through server challenges** (below).
 - **VS screen:** both managers' avatars, club badges, team OVR, chemistry and rating.
 - **Server challenge:** walk up to any manager in your server, or tap their name, and challenge them. If they accept, it's a **live game** played on the challenger's Home Court, so the rest of the server can come and watch.
   - It's **longer** than a queued game: 4 quarters of about 75 seconds each, so **about 5 to 6 minutes** in total.
@@ -59,7 +61,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
     - Two equal clubs trade about ±16.
   - **K-factor:** 40 for your first 10 placement games, then 24.
   - **Saved-team matches** count fully for you. The saved club's owner isn't online, so their Elo moves at half K, which stops anyone farming offline players.
-  - **Matchmaking** looks for an opponent within ±100 Elo. The range widens by 50 every 3 seconds, up to ±400.
+  - **Matchmaking** picks a saved team within ±100 Elo. If none is free, the range widens step by step up to ±400.
   - **Leaving a game counts as a loss.** Friendlies are unranked.
 - **Tiers (from Elo):**
 
