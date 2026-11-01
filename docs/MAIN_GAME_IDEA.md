@@ -103,6 +103,13 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
     - give a team talk: Fire Up, Calm Down or Lock In, which lasts 2 minutes
 
     The five players on the floor get +15% energy, and the opponent's run resets. If you don't pick in time, your coaches decide.
+  - **Interactive moments:** quick taps during play. You still coach and never control players directly.
+    - **Coach's Calls:** 2 to 3 times a quarter, a 3-second choice pops up, for example "They're doubling Deuce!" with **Kick it out** or **Force it**. The right read for that situation (based on ratings and styles) gives a better chance on that possession. If you don't pick, your coaches choose.
+    - **Heat check 🔥:** a player who makes 3 shots in a row catches fire, with a flame on his tag and a small make% boost. Tap **Feed him** to double his shot share for about a minute of game time. A cold player (missed 4 in a row) gets a ❄ and you can tap **Sit him**.
+    - **Defensive assignments:** the Matchups panel shows who guards who. It's set automatically by position, and you can change it **any time** during the game. Drag your defender onto an opponent, and the swap takes effect at the next dead ball. In a zone, the panel shows zone spots instead (who guards the paint, the wings and the top).
+      - **Lock him up** is a shortcut: when an opponent catches fire, tap him to move your best Perimeter D (or Interior D for a big) onto him.
+    - **Clutch shot meter:** on the final shot of a close game (within 3 points, last 24 seconds), you time a release meter for the shooter. Ratings decide most of it. Perfect timing adds up to +6% and a bad release takes off up to −6%. In live challenges both coaches get one. On saved teams the AI coach times it at a random, average skill.
+    - **Coach's challenge:** once a game, challenge a foul call. A slow-mo replay plays, and about 40% of calls get overturned. A failed challenge costs a timeout.
   - **Clutch Timeout** (our signature feature): in the last minute of a close game, you pick the final play yourself: Isolation, Pick & Roll or Kick-Out Three.
 - Afterward you see the score, a **box score** for both teams (MIN, PTS, FG, 3PT, FT, REB, AST, STL, BLK, TO), an MVP card, coins, fans, your Elo change and progress on your quests.
 - **Team stats** page: W–L, PPG, opponent PPG, point differential, FG%, 3P%, FT%, RPG, APG, SPG, BPG and turnovers per game. Each player's card has the same stats for their career.
