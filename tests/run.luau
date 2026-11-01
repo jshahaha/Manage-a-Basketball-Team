@@ -139,6 +139,19 @@ test("player info: nationality, weight, positions, no club yet", function()
 	end
 end)
 
+test("out of position costs OVR unless listed or Positionless", function()
+	local rng = Rng.new(8)
+	local p = PlayerFactory.generate(rng, { rarity = "Epic", pos = "PG", ovr = 78, finish = false })
+	p.altPos, p.positionless = { "SG" }, nil
+	eq(PlayerFactory.positionPenalty(p, "PG"), 0)
+	eq(PlayerFactory.positionPenalty(p, "SG"), 0)
+	eq(PlayerFactory.positionPenalty(p, "SF"), 6)
+	eq(PlayerFactory.positionPenalty(p, "C"), 15)
+	ok(PlayerFactory.overallAt(p, "C") < PlayerFactory.overall(p), "C is worse")
+	p.positionless = true
+	eq(PlayerFactory.positionPenalty(p, "C"), 0)
+end)
+
 test("nobody goes above the OVR cap", function()
 	ok(Config.MaxOvr <= 93, "cap is 93 for now")
 	for _, r in ipairs(Config.Rarities) do

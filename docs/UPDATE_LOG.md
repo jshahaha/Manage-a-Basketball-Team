@@ -13,8 +13,10 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 - Packs now have 3, 4 or 5 cards, a guaranteed best card in the bigger packs, and `PlayerFactory.openPack`. Hall of Famers only drop from the All-Star Pack and event packs
 - Hover effect on Epic or better cards, and a walkout cutscene for Legendary and Hall of Fame pulls
 - Player info: nationality, weight, extra positions, and the owning club (never a real team)
+- Positions: anyone can play anywhere, with an OVR penalty at unlisted positions. Some players list extra positions, and a few are Positionless
 - Home court edge: shaky away free throws, crowd energy, faster bench recovery
 ### Changed
+- Coaches have no rating, only rarity. Rarity boosts their play style and sets how many styles they know
 - Queued games: quarters go from about 35 s to about 45 s (about 4 to 4.5 min in total with stops). Server challenges take about 6 to 7 min
 
 ## v0.1.0 (2026-11-01): First code

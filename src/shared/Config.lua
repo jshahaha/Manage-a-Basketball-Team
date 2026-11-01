@@ -28,6 +28,22 @@ Config.SecondaryPositions = {
 	PF = { "SF", "C" },
 	C = { "PF" },
 }
+-- Playing out of position: anyone can play anywhere. Listed positions (main + altPos)
+-- have no penalty. Otherwise OVR drops by steps away on the PG-SG-SF-PF-C line.
+Config.OutOfPositionPenalty = { 3, 6, 10, 15 }
+-- Chance an Epic or better player is Positionless (no penalty at any position).
+Config.PositionlessChance = 0.05
+
+-- Coaches have no rating, only rarity. Rarity makes their play style hit harder
+-- (multiplier on the style edge) and decides how many styles they know.
+Config.CoachRarity = {
+	Common = { styleBoost = 1.00, styles = 1 },
+	Rare = { styleBoost = 1.10, styles = 1 },
+	Epic = { styleBoost = 1.20, styles = 2 },
+	Legendary = { styleBoost = 1.30, styles = 2 },
+	HallOfFame = { styleBoost = 1.40, styles = 3 },
+}
+
 -- Weight range in lb by position.
 Config.Weight = { PG = { 170, 205 }, SG = { 180, 215 }, SF = { 200, 235 }, PF = { 220, 255 }, C = { 235, 280 } }
 -- Nationalities for generated players: ISO code and how common it is.

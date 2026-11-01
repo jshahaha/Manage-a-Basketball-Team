@@ -101,7 +101,8 @@ function PlayerFactory.generate(rng, opts)
 		id = id,
 		name = opts.name or Names.player(rng, rarity.id),
 		pos = pos,
-		altPos = alt, -- other positions they can play, e.g. { "SG" }
+		altPos = alt, -- other positions they can play with no penalty, e.g. { "SG" }
+		positionless = rarity.order >= Config.RarityById.Epic.order and rng:next() < Config.PositionlessChance or nil,
 		nation = opts.nation or rng:weighted(nations),
 		weight = rng:int(w[1], w[2]),
 		club = nil, -- set to the owning club's id when kept; nil shows "Free Agent"
@@ -115,6 +116,23 @@ function PlayerFactory.generate(rng, opts)
 		faceSeed = id, -- the icon generator draws the face from this
 		career = Stats.newCareer(),
 	}
+end
+
+local POS_INDEX = { PG = 1, SG = 2, SF = 3, PF = 4, C = 5 }
+
+-- OVR lost when this player plays `slot`. 0 for their main, listed or any position if Positionless.
+function PlayerFactory.positionPenalty(player, slot: string): number
+	if slot == player.pos or player.positionless or table.find(player.altPos or {}, slot) then
+		return 0
+	end
+	local steps = math.abs(POS_INDEX[slot] - POS_INDEX[player.pos])
+	return Config.OutOfPositionPenalty[steps] or 0
+end
+
+-- OVR when playing `slot`: rated with that position's weights, minus the penalty.
+function PlayerFactory.overallAt(player, slot: string): number
+	local ovr = Ratings.ovr(player.ratings, slot) + PlayerFactory.finishBonus(player) - PlayerFactory.positionPenalty(player, slot)
+	return math.max(1, math.min(Config.MaxOvr, ovr))
 end
 
 function PlayerFactory.finishBonus(player): number

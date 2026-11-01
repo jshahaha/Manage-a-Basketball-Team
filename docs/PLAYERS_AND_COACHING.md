@@ -29,7 +29,10 @@ Every rating runs from 1 to 99. There are 20 ratings in 6 groups.
 **Player info** on the card and detail panel:
 - **Nationality**, shown as a flag. Nations are picked with weights, so most players are from the US with plenty from around the world.
 - **Height, wingspan and weight**, such as 6'9", 7'1" wingspan, 228 lb. Players have no rating for these, but they nudge blocks, rebounds, contested shots and post-ups.
-- **Positions:** a main position and up to two others the player can also play (for example SG with PG, SF). Playing a player at another of their listed positions has no penalty. Any other position gives a small penalty.
+- **Positions:** anyone can play any position. Each player has a main position, and some list one or two more they can play with no downside (for example SG with PG, SF).
+  - At an unlisted position the player loses OVR depending on how far it is on the PG–SG–SF–PF–C line: −3 for one step, −6 for two, −10 for three, −15 for four. Their ratings are also weighted for the new position, so a center at point guard is judged on ball handling and passing.
+  - A few Epic or better players are **Positionless** (about 5%): no penalty anywhere.
+  - The Rotation screen shows each player's OVR at the slot they're in, with a red arrow when they're out of position.
 - **Club:** the card shows the club that owns it, with your club's name and badge. When the player is traded or sold, the badge changes to the new owner's club. A new pull shows "Free Agent" until you keep it. **No real NBA or college teams appear anywhere.**
 
 **Archetypes** come from the ratings. For example, high 3PT gives Sniper, high Driving Dunk plus Speed gives Slasher, high Block plus Interior Defense gives Rim Protector, and high Passing plus Ball Handling gives Floor General. Chemistry uses archetypes.
@@ -132,7 +135,15 @@ Each coach knows **one main play style** and sometimes a second one. Your team c
 ### Coach cards
 - **What a coach has:**
   - A rarity from Common to Hall of Fame.
-  - A **Coaching rating** from 1 to 99. A higher rating makes their style stronger.
+  - **No rating.** Rarity is what makes a coach better:
+
+    | Rarity | Play style strength | Styles known |
+    |---|---|---|
+    | Common | normal | 1 |
+    | Rare | +10% | 1 |
+    | Epic | +20% | 2 |
+    | Legendary | +30% | 2 |
+    | Hall of Fame (event packs only) | +40% | 3 |
   - Their play style or styles.
   - One **trait**. For example:
     - Three-Point Guru gives +3PT inside their system.
@@ -152,4 +163,4 @@ The existing `MatchSim` already handles possessions, fatigue, fouls and rotation
 - Swap its 6 stats for the 20 ratings above.
 - Pick the shot type (3PT, mid-range, layup, dunk, close shot or post-up) from the players' ratings, then use the matching rating for the make %.
 - Track energy for each player and follow the minutes targets when making subs.
-- Replace the 3-and-3 tactic matchups with the style table above, and apply the coach's rating and trait.
+- Replace the 3-and-3 tactic matchups with the style table above, and apply the coach's rarity boost and trait.
