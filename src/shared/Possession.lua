@@ -71,8 +71,11 @@ function Possession.plan(opts)
 		finals[i] = spot(dir, SPOTS[i])
 	end
 	local shotFeet = SHOT_SPOT[r.kind] or 15
-	local sz = finals[shooter].z / math.max(1e-3, math.abs(SPOTS[shooter][1] * FT)) * shotFeet * FT
-	finals[shooter] = { x = dir * (RIM_X - shotFeet * FT), z = r.kind == "dunk" and 0 or sz }
+	-- Same angle from the rim as their spot, at the shot's distance.
+	local s = SPOTS[shooter]
+	local k = shotFeet / math.sqrt(s[1] ^ 2 + s[2] ^ 2)
+	finals[shooter] = r.kind == "dunk" and { x = dir * (RIM_X - shotFeet * FT), z = 0 }
+		or { x = dir * (RIM_X - s[1] * k * FT), z = s[2] * k * FT }
 	plan.finals = finals
 	plan.handler, plan.shooter, plan.passer = handler, shooter, (passer and passer ~= shooter) and passer or nil
 	return plan
@@ -109,13 +112,13 @@ function Possession.frame(plan, t)
 		end
 		out.players[i] = p
 	end
-	-- Defenders: between their man and the rim, about 3 ft off, sliding when the man moves.
+	-- Defenders: between their man and the rim, about 5 ft off, sliding when the man moves.
 	for i = 1, 5 do
 		local o = out.players[i]
 		local rim = { x = dir * RIM_X, z = 0 }
 		local dx, dz = rim.x - o.x, rim.z - o.z
 		local len = math.sqrt(dx * dx + dz * dz)
-		local d = 3 * FT
+		local d = 5 * FT
 		local p = { x = o.x + dx / len * d, z = o.z + dz / len * d, face = dir > 0 and -90 or 90 }
 		p.clip = (o.clip == "Jog" or o.clip == "DribbleLive" or o.clip == plan.moveClip) and "DefSlide" or "Idle"
 		p.t = p.clip == "DefSlide" and (t % 0.9) or ((t + i * 0.37) % 2)

@@ -859,7 +859,7 @@ test("a possession plan puts the shooter at the spot and plays real clips", func
 		sets[i] = AnimSets.clips({ shot = "Fade", dunk = "Windmill", moves = { "Spin" } })
 	end
 	for _, kind in ipairs({ "jumper", "three", "dunk" }) do
-		local plan = Possession.plan({ offense = sets, dir = 1, result = { kind = kind, shooter = 2, assist = 1, made = true } })
+		local plan = Possession.plan({ offense = sets, dir = 1, result = { kind = kind, shooter = 3, assist = 1, made = true } })
 		assert(plan.passer == 1 and plan.length > plan.tShot, "beats")
 		for t = 0, plan.length, 0.1 do
 			local f = Possession.frame(plan, t)
@@ -869,9 +869,9 @@ test("a possession plan puts the shooter at the spot and plays real clips", func
 				assert(math.abs(p.x) < 47 * 0.9 and math.abs(p.z) < 25 * 0.9, "on the court")
 			end
 		end
-		local last = Possession.frame(plan, plan.tShot + 0.5).players[2]
+		local last = Possession.frame(plan, plan.tShot + 0.5).players[3]
 		assert(last.clip == (kind == "dunk" and "DunkWindmill" or "ShootFade"), "signature clip")
-		local rimDist = 37.575 - last.x
+		local rimDist = math.sqrt((37.575 - last.x) ^ 2 + last.z ^ 2)
 		assert(kind ~= "three" or rimDist > 23.75 * 0.9, "three is behind the line")
 	end
 end)
