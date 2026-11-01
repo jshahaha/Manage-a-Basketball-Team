@@ -4,6 +4,18 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.3 (2026-11-01): Badges
+### Added
+- Badges (`Badges.lua`): 20 badges in 5 tiers (Bronze, Silver, Gold, Diamond, Hall of Fame). Equipping needs the stat bar for the tier and coins. Badge slots go by rarity (Common 1 up to Hall of Fame 5)
+- Badge Pack (4 badges)
+- Bundles stay one inventory item (`kind = "bundle"`) when kept
+- Walkout silhouette does a move that fits the archetype (shot, dunk, dribble or block)
+### Changed
+- Player packs give 1 or 2 players plus 2 or 3 badges instead of 3 to 5 players
+- Archetypes show with spaces ("Rim Protector")
+- Shop is back to the original look. 1×, 5× or 20× is picked in a popup after pressing Buy
+- Sounds: each group (menus, coins, crowd, cards, reveals) now comes from one recording family at one loudness
+
 ## v0.1.2 (2026-11-01): Pack ladder, card list, playbook
 ### Added
 - Fixed card list (`Catalog.lua`): 216 players and 28 coaches. Packs draw from it, and each pack has a Contents view

@@ -107,4 +107,20 @@ function Ratings.archetype(r: { [string]: number }): string
 	return "AllAround"
 end
 
+-- Display names with spaces, for cards and lists.
+Ratings.ArchetypeNames = {
+	FloorGeneral = "Floor General",
+	Sniper = "Sniper",
+	RimProtector = "Rim Protector",
+	Slasher = "Slasher",
+	GlassCleaner = "Glass Cleaner",
+	Lockdown = "Lockdown",
+	PostScorer = "Post Scorer",
+	AllAround = "All-Around",
+}
+
+function Ratings.archetypeName(id: string): string
+	return Ratings.ArchetypeNames[id] or (id:gsub("(%l)(%u)", "%1 %2"))
+end
+
 return Ratings

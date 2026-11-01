@@ -184,13 +184,17 @@ function PlayerFactory.rollPack(rng, packId: string)
 	return rarities
 end
 
-function PlayerFactory.openPack(rng, packId: string, Catalog)
+-- Returns cards (players or a coach, best last) and badge items.
+function PlayerFactory.openPack(rng, packId: string, Catalog, Badges)
 	local pack = Config.Packs[packId]
-	local cards = {}
+	local cards, badges = {}, {}
 	for i, r in ipairs(PlayerFactory.rollPack(rng, packId)) do
 		cards[i] = Catalog.draw(rng, pack.kind == "coach" and "coach" or "player", r)
 	end
-	return cards
+	for i = 1, pack.badges or 0 do
+		badges[i] = Badges.roll(rng, pack.badgeOdds)
+	end
+	return cards, badges
 end
 
 -- Price of a bundle of `size` packs, in coins or robux ("coins" | "robux").

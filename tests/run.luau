@@ -6,6 +6,9 @@ local Config = require("../src/shared/Config")
 local Rng = require("../src/shared/Rng")
 local Ratings = require("../src/shared/Ratings")
 local PlayerFactory = require("../src/shared/PlayerFactory")
+local Badges = require("../src/shared/Badges")
+local Inventory = require("../src/shared/Inventory")
+local Ratings2 = require("../src/shared/Ratings")
 local Elo = require("../src/shared/Elo")
 local CodeRules = require("../src/shared/CodeRules")
 local Quests = require("../src/shared/Quests")
@@ -95,11 +98,13 @@ end)
 
 test("pack odds add up to 1", function()
 	for id, pack in pairs(Config.Packs) do
-		local s = 0
-		for _, p in pairs(pack.odds) do
-			s += p
+		for _, odds in ipairs({ pack.kind ~= "badges" and pack.odds or nil, pack.badgeOdds }) do
+			local s = 0
+			for _, p in pairs(odds) do
+				s += p
+			end
+			ok(math.abs(s - 1) < 1e-9, id .. " odds sum " .. s)
 		end
-		ok(math.abs(s - 1) < 1e-9, id .. " odds sum " .. s)
 	end
 end)
 
@@ -134,8 +139,12 @@ test("catalog: fixed card list, packs draw from it", function()
 	eq(Catalog.get(ps[1].id), ps[1])
 	local rng = Rng.new(4)
 	for _ = 1, 200 do
-		local cards = PlayerFactory.openPack(rng, "AllStar", Catalog)
-		eq(#cards, 4)
+		local cards, badges = PlayerFactory.openPack(rng, "AllStar", Catalog, Badges)
+		eq(#cards, 2)
+		eq(#badges, 2)
+		for _, b in ipairs(badges) do
+			ok(Config.Packs.AllStar.badgeOdds[b.tier] ~= nil, "badge tier not in pack")
+		end
 		for i, c in ipairs(cards) do
 			ok(Config.Packs.AllStar.odds[c.rarity] ~= nil, "rarity not in pack")
 			eq(Catalog.get(c.id), c)
@@ -143,7 +152,7 @@ test("catalog: fixed card list, packs draw from it", function()
 				ok(Config.RarityById[c.rarity].order >= Config.RarityById[cards[i - 1].rarity].order, "best last")
 			end
 		end
-		local coach = PlayerFactory.openPack(rng, "EliteCoach", Catalog)[1]
+		local coach = PlayerFactory.openPack(rng, "EliteCoach", Catalog, Badges)[1]
 		eq(coach.kind, "coach")
 	end
 	-- contents add up to 1 per card slot
@@ -152,6 +161,42 @@ test("catalog: fixed card list, packs draw from it", function()
 		total += e.chance
 	end
 	ok(math.abs(total - 1) < 1e-9, "contents sum " .. total)
+end)
+
+test("badges: tiers, slots, stat bars, coins, boosts", function()
+	eq(#Badges.Tiers, 5)
+	eq(Badges.slots({ rarity = "Common" }), 1)
+	eq(Badges.slots({ rarity = "HallOfFame" }), 5)
+	local p = { rarity = "Rare", ratings = { three = 80, strength = 70, stamina = 50, ft = 90 } }
+	local ok1, why = Badges.check(p, "Laser", "Gold", 1e9)
+	ok(ok1, why)
+	local ok2, why2 = Badges.check(p, "Laser", "Diamond", 1e9)
+	ok(not ok2 and why2:find("84"), "Diamond needs 84")
+	local ok3 = Badges.check(p, "Laser", "Gold", 100)
+	ok(not ok3, "not enough coins")
+	ok(Badges.equip(p, "Laser", "Gold", 1e9))
+	ok(Badges.equip(p, "IceWater", "Silver", 1e9))
+	local ok4, why4 = Badges.check(p, "Motor", "Bronze", 1e9)
+	ok(not ok4 and why4:find("slots"), "Rare has 2 slots")
+	ok(Badges.equip(p, "IceWater", "Diamond", 1e9), "upgrade uses the same slot")
+	eq(Badges.boost(p, "three"), 6)
+	eq(Badges.boost(p, "ft"), 8)
+	-- second stat needs 8 less
+	local r = Badges.requirements("DeepRange", "Gold")
+	eq(r[2][2], 68)
+	-- every pack's badge tiers sit in at most 3 neighbouring packs
+	local where = {}
+	for _, pack in pairs(Config.Packs) do
+		if pack.kind == "players" then
+			for t in pairs(pack.badgeOdds) do
+				where[t] = (where[t] or 0) + 1
+			end
+		end
+	end
+	for t, n in pairs(where) do
+		ok(n <= 3, t .. " badges in " .. n .. " packs")
+	end
+	eq(where.HallOfFame, 2)
 end)
 
 test("bundles are cheaper per pack", function()
@@ -529,6 +574,30 @@ test("every commentator event has lines with text", function()
 		end
 	end
 	ok(Sounds.Lines.PackHallOfFame.priority > Sounds.Lines.Miss.priority, "big moments outrank small ones")
+end)
+
+test("bundles stay one inventory item", function()
+	local prof = { packs = { Pro = 1 } }
+	eq(Inventory.add(prof, "Pro", 5), "Pro x5")
+	Inventory.add(prof, "Pro", 1)
+	eq(prof.packs.Pro, 2)
+	eq(prof.packs["Pro x5"], 1)
+	local id, size = Inventory.take(prof, "Pro x5")
+	eq(id, "Pro")
+	eq(size, 5)
+	eq(prof.packs["Pro x5"], nil)
+	eq(Inventory.list(prof)[1].kind, "pack")
+	Inventory.addBadge(prof, "Laser", "Gold")
+	ok(Inventory.takeBadge(prof, "Laser", "Gold"), "badge taken")
+	ok(not Inventory.takeBadge(prof, "Laser", "Gold"), "only once")
+end)
+
+test("archetype names have spaces", function()
+	eq(Ratings2.archetypeName("RimProtector"), "Rim Protector")
+	eq(Ratings2.archetypeName("FloorGeneral"), "Floor General")
+	for id in pairs(Ratings2.ArchetypeNames) do
+		ok(Ratings2.ArchetypeNames[id] ~= id or not id:find("%l%u"), id)
+	end
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))

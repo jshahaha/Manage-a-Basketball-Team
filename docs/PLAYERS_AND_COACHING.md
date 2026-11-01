@@ -171,6 +171,49 @@ Defensive styles each get a diagram that shows where the five stand and who cove
   - You can sell coaches on the market.
 - **Free coaches:** every new club starts with a free Common coach for each side, one running Motion and one running Man-to-Man.
 
+## 4c. Badges
+
+Badges are perks that sit in a player's **badge slots**. They come from packs (every player pack has 2 or 3, and the Badge Pack has 4), so packs give fewer players and the roster doesn't fill with junk. Code: `src/shared/Badges.lua`.
+
+**Tiers.** A badge card has one tier. To equip it, the player needs the stat bar for that tier **and** you pay coins. The badge adds rating points to its stats, but only in the situations it covers (for example Laser only on catch-and-shoot threes).
+
+| Tier | Main stat needs | Second stat needs | Equip cost | Boost |
+|---|---|---|---|---|
+| Bronze | 60 | 52 | 2,500 coins | +2 |
+| Silver | 68 | 60 | 10,000 coins | +4 |
+| Gold | 76 | 68 | 35,000 coins | +6 |
+| Diamond | 84 | 76 | 100,000 coins | +8 |
+| Hall of Fame | 90 | 82 | 300,000 coins | +10 |
+
+**Slots by rarity:** Common 1, Rare 2, Epic 3, Legendary 4, Hall of Fame 5. A player can't hold the same badge twice. Equipping a higher tier of a badge they already have replaces it in the same slot. Unequipping returns the badge card but not the coins.
+
+**The 20 badges** (main stat first):
+
+| Group | Badge | Stats | What it does |
+|---|---|---|---|
+| Shooting | Laser | Three-Point | Catch-and-shoot threes go in more |
+| Shooting | Deep Range | Three-Point, Strength | No penalty on threes from way past the line |
+| Shooting | Pull-Up Pro | Mid-Range, Ball Handling | Better pull-up jumpers off the dribble |
+| Shooting | Ice Water | Free Throw | Free throws and clutch shots ignore crowd noise and pressure |
+| Finishing | Rim Rattler | Driving Dunk, Vertical | More dunks in traffic and more and-ones |
+| Finishing | Soft Touch | Layup, Close Shot | Better layups and floaters |
+| Finishing | Bully Ball | Post Moves, Strength | Wins post-ups against smaller defenders |
+| Finishing | Glide | Layup, Speed | Finishes through contact on drives |
+| Playmaking | Dime Dropper | Passing | Passes lead to better shots |
+| Playmaking | Tight Handles | Ball Handling | Fewer turnovers against pressure |
+| Playmaking | Lob Thrower | Passing, Vertical | Lob plays succeed more often |
+| Defense | Lockdown | Perimeter Defense | The player you guard shoots worse |
+| Defense | Paint Wall | Interior Defense, Strength | Shots at the rim get harder |
+| Defense | Ball Hawk | Steal | More steals in passing lanes |
+| Defense | Swat | Block, Vertical | More blocks, and blocks stay in play |
+| Rebounding | Glass Eater | Defensive Rebound, Strength | Wins more defensive rebounds |
+| Rebounding | Putback | Offensive Rebound, Vertical | More offensive rebounds and putbacks |
+| Athleticism | Motor | Stamina | Energy drains slower |
+| Athleticism | Jets | Speed | More fast-break points |
+| Athleticism | Anchor | Strength | Holds position on screens and box-outs |
+
+So a Hall of Fame badge needs a player who is truly elite at that skill, and a Common player (1 slot) picks their one best badge.
+
 ## 6. What this means for the sim code
 
 The existing `MatchSim` already handles possessions, fatigue, fouls and rotation. To support this design it needs these changes:

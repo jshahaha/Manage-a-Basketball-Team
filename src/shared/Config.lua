@@ -108,41 +108,53 @@ Config.Finishes = {
 
 -- Packs -------------------------------------------------------------------
 -- A ladder: each rarity drops from at most 3 neighbouring packs, and Hall of Famers
--- only from the top 2. odds are per card and add up to 1. count = cards per pack.
+-- only from the top 2. Badge tiers climb the same way. odds are per player card and
+-- add up to 1. count = players per pack, badges = badge items per pack.
 -- Cards come from the fixed card list in Catalog.lua, so players can see every card
 -- a pack can give. order = position in the shop.
 Config.Packs = {
 	Rookie = {
-		name = "Rookie Pack", kind = "players", order = 1, count = 3, coins = 2500, robux = 19,
+		name = "Rookie Pack", kind = "players", order = 1, count = 1, badges = 2, coins = 2500, robux = 19,
 		odds = { Common = 0.85, Rare = 0.15 },
+		badgeOdds = { Bronze = 0.80, Silver = 0.20 },
 	},
 	Blacktop = {
-		name = "Blacktop Pack", kind = "players", order = 2, count = 3, coins = 10000, robux = 49,
+		name = "Blacktop Pack", kind = "players", order = 2, count = 1, badges = 2, coins = 10000, robux = 49,
 		odds = { Common = 0.60, Rare = 0.33, Epic = 0.07 },
+		badgeOdds = { Bronze = 0.55, Silver = 0.38, Gold = 0.07 },
 	},
 	Pro = {
-		name = "Pro Pack", kind = "players", order = 3, count = 4, coins = 40000, robux = 99,
+		name = "Pro Pack", kind = "players", order = 3, count = 2, badges = 2, coins = 40000, robux = 99,
 		odds = { Rare = 0.60, Epic = 0.33, Legendary = 0.07 },
+		badgeOdds = { Silver = 0.55, Gold = 0.38, Diamond = 0.07 },
 	},
 	AllStar = {
-		name = "All-Star Pack", kind = "players", order = 4, count = 4, coins = 150000, robux = 249,
+		name = "All-Star Pack", kind = "players", order = 4, count = 2, badges = 2, coins = 150000, robux = 249,
 		odds = { Epic = 0.70, Legendary = 0.27, HallOfFame = 0.03 },
+		badgeOdds = { Gold = 0.70, Diamond = 0.27, HallOfFame = 0.03 },
 	},
 	HallOfFame = {
-		name = "Hall of Fame Pack", kind = "players", order = 5, count = 5, coins = 500000, robux = 599,
+		name = "Hall of Fame Pack", kind = "players", order = 5, count = 2, badges = 3, coins = 500000, robux = 599,
 		odds = { Legendary = 0.88, HallOfFame = 0.12 },
+		badgeOdds = { Diamond = 0.88, HallOfFame = 0.12 },
+	},
+	Badge = {
+		name = "Badge Pack", kind = "badges", order = 6, count = 0, badges = 4, coins = 20000, robux = 59,
+		odds = {},
+		badgeOdds = { Bronze = 0.50, Silver = 0.35, Gold = 0.13, Diamond = 0.02 },
 	},
 	Coach = {
-		name = "Coach Pack", kind = "coach", order = 6, count = 1, coins = 60000, robux = 149,
+		name = "Coach Pack", kind = "coach", order = 7, count = 1, coins = 60000, robux = 149,
 		odds = { Common = 0.60, Rare = 0.30, Epic = 0.09, Legendary = 0.01 },
 	},
 	EliteCoach = {
-		name = "Elite Coach Pack", kind = "coach", order = 7, count = 1, coins = 250000, robux = 399,
+		name = "Elite Coach Pack", kind = "coach", order = 8, count = 1, coins = 250000, robux = 399,
 		odds = { Rare = 0.45, Epic = 0.40, Legendary = 0.13, HallOfFame = 0.02 },
 	},
 }
 
--- Bundles: buy several of the same pack at once for less per pack.
+-- Bundles: buy several of the same pack at once for less per pack. A bundle is its own
+-- item in your inventory (one "5x Pro Bundle" box), not 5 loose packs.
 Config.Bundles = {
 	{ size = 1, discount = 0 },
 	{ size = 5, discount = 0.10 },

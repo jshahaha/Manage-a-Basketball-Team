@@ -58,7 +58,8 @@ function DataService.newProfile(userId: number)
 		matchday = matchday, -- 10 player ids, first 5 start
 		minutes = {}, -- [playerId] = minutes
 		coaches = {},
-		packs = {}, -- unopened: [packId] = count
+		packs = {}, -- unopened: [packId] or ["packId xN"] (a bundle) = count, see Inventory.lua
+		badgeCards = {}, -- loose badges: ["BadgeId/Tier"] = count
 		boosts = {}, -- [kind] = expires (epoch)
 		redeemedCodes = {}, -- [CODE] = epoch
 		quests = nil, -- see Quests.lua

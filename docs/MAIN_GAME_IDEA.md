@@ -143,30 +143,32 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 Packs climb a ladder. Each rarity only drops from at most three packs next to each other, and **Hall of Famers only drop from the top two**. The shop shows rarity odds per card. It doesn't show odds by OVR.
 
-| Pack | Coins · Robux | Cards | Common / Rare / Epic / Legendary / Hall of Fame % (per card) |
-|---|---|---|---|
-| Rookie Pack | 2,500 · R$ 19 | 3 | 85 / 15 / — / — / — |
-| Blacktop Pack | 10,000 · R$ 49 | 3 | 60 / 33 / 7 / — / — |
-| Pro Pack | 40,000 · R$ 99 | 4 | — / 60 / 33 / 7 / — |
-| All-Star Pack | 150,000 · R$ 249 | 4 | — / — / 70 / 27 / 3 |
-| Hall of Fame Pack | 500,000 · R$ 599 | 5 | — / — / — / 88 / 12 |
-| Coach Pack | 60,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — |
-| Elite Coach Pack | 250,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 |
+| Pack | Coins · Robux | Contents | Player Common / Rare / Epic / Legendary / Hall of Fame % | Badge Bronze / Silver / Gold / Diamond / Hall of Fame % |
+|---|---|---|---|---|
+| Rookie Pack | 2,500 · R$ 19 | 1 player + 2 badges | 85 / 15 / — / — / — | 80 / 20 / — / — / — |
+| Blacktop Pack | 10,000 · R$ 49 | 1 player + 2 badges | 60 / 33 / 7 / — / — | 55 / 38 / 7 / — / — |
+| Pro Pack | 40,000 · R$ 99 | 2 players + 2 badges | — / 60 / 33 / 7 / — | — / 55 / 38 / 7 / — |
+| All-Star Pack | 150,000 · R$ 249 | 2 players + 2 badges | — / — / 70 / 27 / 3 | — / — / 70 / 27 / 3 |
+| Hall of Fame Pack | 500,000 · R$ 599 | 2 players + 3 badges | — / — / — / 88 / 12 | — / — / — / 88 / 12 |
+| Badge Pack | 20,000 · R$ 59 | 4 badges | — | 50 / 35 / 13 / 2 / — |
+| Coach Pack | 60,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — | — |
+| Elite Coach Pack | 250,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 | — |
 
 **OVR ranges for now:** Common 50–64, Rare 65–72, Epic 73–79, Legendary 80–86 and Hall of Fame 87–91. **No card goes above 93**, including Finishes and training. Stronger cards come in a later update, when we raise the cap.
 
 - **A fixed card list.** Every player and coach in the game is on one list (`src/shared/Catalog.lua`): 216 players (80 Common, 60 Rare, 40 Epic, 24 Legendary, 12 Hall of Fame) and 28 coaches. Each card has a set name, position and ratings, so everyone pulls the same "Deuce Reyes". Duplicates raise the card's star level.
 - **See what's inside:** every pack has a **Contents** button (the list icon next to it). It opens a grid of every card that pack can give, best first, with rarity, OVR, position, face, and the chance of each card. A filter switches between rarities, and cards you already own are ticked. A **Collection book** in the menu shows all 216 players and 28 coaches, with the ones you haven't found shown as silhouettes.
-- **Bundles:** buy 1, 5 or 20 of the same pack. 5 packs cost 10% less and 20 cost 20% less (for example 5 Pro Packs for 180,000 coins instead of 200,000). A bundle arrives as one big box. Opening it plays the first pack in full, then offers **Open all**, which flips the rest fast and ends on a summary of the best pulls.
+- **Bundles:** the shop keeps one card per pack. Pressing **Buy** opens a small popup to pick **1×, 5× or 20×**. 5 packs cost 10% less and 20 cost 20% less (for example 5 Pro Packs for 180,000 coins instead of 200,000). The popup then offers **Open now** or **Keep**.
+- **A bundle is its own item.** A kept 5× or 20× bundle sits in the inventory as one box ("Pro Pack Bundle ×5"), not as 5 loose packs. Opening it plays the first pack in full, then offers **Open all**, which flips the rest fast and ends on a summary of the best pulls. In code, an inventory entry is `{ kind = "pack", pack = "Pro" }` or `{ kind = "bundle", pack = "Pro", size = 5 }`.
 - **Robux:** every pack and bundle can also be bought with Robux. Game passes come later.
-- Packs give **3, 4 or 5 players** depending on the pack. The best card is always revealed last.
+- **Fewer players, plus badges.** Packs give **1 or 2 players** and **2 or 3 badges** (see Badges in `PLAYERS_AND_COACHING.md`), so the bench doesn't fill with junk cards. The best card is always revealed last. Badges flip first, then players.
 - Odds are always shown in-game, and Robux packs follow Roblox's rules on paid random items.
 - **Reveal:** the pack slams on the floor and shakes, glowing in the best card's rarity color, then rips open. The cards fly out face-down, and you tap each one to flip it. Each flip plays its rarity color, sound and an announcer line. On a Legendary or better, the whole server gets an alert.
 - **Hover on good cards:** hovering (or holding on mobile) over an Epic or better card tilts it toward the cursor with a moving holo shine in its rarity color. Legendary and Hall of Fame cards also give off sparks, and Finish cards show their Finish pattern.
 - **Walkout cutscene (Legendary and Hall of Fame):** instead of flipping, the card plays a short cutscene on your Home Court. You can tap to skip it after the first time.
   1. The arena lights go out, and a spotlight hits the tunnel with smoke.
-  2. **Clues** appear one at a time: the flag of the player's nation, then their position, then the archetype (for example Sniper).
-  3. A silhouette walks out of the tunnel. The **OVR** slams onto the screen in the rarity color.
+  2. **Clues** appear one at a time, each in a different spot on the screen: the flag of the player's nation (top left), then their position (right), then the archetype (bottom, for example "Rim Protector").
+  3. A **silhouette** walks out of the tunnel and does a move that fits the archetype: a jump shot (Sniper), a dunk (Slasher, Post Scorer), a dribble combo (Floor General, All-Around) or a block (Rim Protector, Lockdown, Glass Cleaner). The **OVR** slams onto the screen in the rarity color.
   4. The lights come up on the 3D player doing a signature celebration, with the name, the card and confetti.
   5. A Hall of Fame walkout adds a drumroll, an air horn and a gold spotlight, and the whole server sees a "HALL OF FAMER PULLED" alert.
 

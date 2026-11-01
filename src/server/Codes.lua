@@ -8,7 +8,7 @@
   What a code can give (use one or more):
     coins = 5000
     fans = 100
-    packs = { Pro = 1 }                  -- pack ids: Blacktop, Pro, AllStar, Coach
+    packs = { Pro = 1 }                  -- pack ids: Rookie, Blacktop, Pro, AllStar, HallOfFame, Badge, Coach, EliteCoach
     boost = { kind = "DoubleCoins", minutes = 30 }   -- or "DoubleFans"
 
   Options:

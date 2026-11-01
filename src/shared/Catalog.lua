@@ -110,6 +110,9 @@ end
 function Catalog.packContents(packId: string)
 	local pack = Config.Packs[packId]
 	assert(pack, "unknown pack " .. tostring(packId))
+	if pack.kind == "badges" then
+		return {}
+	end
 	local list = pack.kind == "coach" and Catalog.coaches() or Catalog.players()
 	local count = {}
 	for _, c in ipairs(list) do
