@@ -61,6 +61,13 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 - **Highlight moments:** big banners appear (AND-ONE!, FROM DOWNTOWN!, BIG BLOCK!, BUZZER BEATER!), dunks play as a letterboxed **slow-motion HIGHLIGHT**, and the game ends with a **VICTORY!** celebration in front of the bench. You can tap to skip.
 - **Coach controls during the game:**
   - Switch **play style** between quarters, choosing only from the styles your Offensive Coach and Defensive Coach know (for example 5-Out, Pick & Roll, Motion, 2-3 Zone, Switch Everything or Full-Court Press). Each style counters some styles and is weak to others.
+  - **Timeouts** (4 per game): the game pauses, and you have 15 seconds to:
+    - make subs
+    - switch play style
+    - call the next play (Pick & Roll, Isolation, Kick-Out Three, Post Up or Lob)
+    - give a team talk: Fire Up, Calm Down or Lock In, which lasts 2 minutes
+
+    The five players on the floor get +15% energy, and the opponent's run resets. If you don't pick in time, your coaches decide.
   - **Clutch Timeout** (our signature feature): in the last minute of a close game, you pick the final play yourself: Isolation, Pick & Roll or Kick-Out Three.
 - Afterward you see the score, an MVP card, coins, fans and rating change, and progress on your quests.
 
@@ -86,9 +93,13 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 | Pack | Price | Common / Rare / Epic / Legendary / HoF |
 |---|---|---|
-| Blacktop Pack | 5,000 coins | 70 / 24 / 5 / 0.9 / 0.1 % |
-| Pro Pack | 40,000 coins | 35 / 40 / 19 / 5.5 / 0.5 % |
-| All-Star Pack | 250,000 coins | — / 40 / 42 / 16 / 2 % |
+| Blacktop Pack | 5,000 coins · R$ 29 | 70 / 24 / 5 / 0.9 / 0.1 % |
+| Pro Pack | 40,000 coins · R$ 99 | 35 / 40 / 19 / 5.5 / 0.5 % |
+| All-Star Pack | 250,000 coins · R$ 399 | — / 40 / 42 / 16 / 2 % |
+| Coach Pack (1 coach) | 60,000 coins · R$ 149 | 55 / 30 / 12 / 2.7 / 0.3 % |
+| Event pack (e.g. Holiday Hoops, limited) | R$ 499 | Epic+ only: — / — / 78 / 19 / 3 % |
+
+Every player pack gives **3 players**. The shop shows odds both by rarity and by OVR range.
 
 - Odds are always shown in-game, and Robux packs follow Roblox's rules on paid random items.
 - **Reveal:** the pack slams on the floor, the jerseys flip one by one, and the rarity color and an announcer line ("FROM DOWNTOWN!") play. On a Legendary or better, the whole server gets an alert.

@@ -4,6 +4,16 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.0.5 (2026-11-01): Timeouts & Pack Shop
+### Added
+- Timeout system: 4 per game, a 15-second timer, subs, a style switch, a next-play call, a team talk, +15% energy, and a momentum reset
+- Pack Shop with Coach Pack and limited event packs, prices in coins and Robux, and odds by rarity and by OVR range
+- UI page with all 13 screens: https://claude.ai/artifact/RvesrYaenTjTgAxmMeYxBA
+### Fixed
+- Button text that wrapped onto two lines on the Match Found and Pack opening screens
+
+---
+
 ## v0.0.4 (2026-11-01): Players & coaching
 ### Added
 - [Players & Coaching](PLAYERS_AND_COACHING.md): 20 basketball ratings in 6 groups, in-game stamina and energy, a 10-player matchday roster, minutes allocation (240 player-minutes) and coaches
