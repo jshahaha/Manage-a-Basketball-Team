@@ -4,6 +4,12 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.0.7 (2026-11-01): Elo
+### Added
+- Elo rating: start at 1000, K = 40 for placement and 24 after, half K for the owner of a saved team, an Elo-based matchmaking range, tiers from Elo with coin multipliers, a demotion shield, a 2-week season with soft reset, and leaderboards
+
+---
+
 ## v0.0.6 (2026-11-01): Player icons
 ### Added
 - Generated player icons on every screen, and a rule: fictional names, with play styles based on real player types

@@ -48,7 +48,30 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
   - Otherwise you're matched against a **snapshot of a real player's club** (their lineup, tactics and name), taken from any server. It always feels like PvP, and the queue never stalls.
 - **VS screen:** both managers' avatars, club badges, team OVR, chemistry and rating.
 - **Friendly:** challenge someone in your server. It doesn't affect rating.
-- **Rating ladder:** you gain rating for wins and lose some for losses. The tiers are **Blacktop → Varsity → College → Pro → All-League → Hall of Fame**, and higher tiers pay more per win. Each season lasts 2 weeks and ends with rewards based on your tier.
+- **Elo rating:** every club has an Elo number, shown on its badge, on the Match Found screen and on leaderboards.
+  - You **start at 1000**.
+  - After each ranked game: `new = old + K × (result − expected)`, where `expected = 1 / (1 + 10^((opp − you)/400))` and the result is 1 for a win and 0 for a loss.
+    - Beating a stronger club gains a lot.
+    - Losing to a weaker one costs a lot.
+    - Two equal clubs trade about ±16.
+  - **K-factor:** 40 for your first 10 placement games, then 24.
+  - **Saved-team matches** count fully for you. The saved club's owner isn't online, so their Elo moves at half K, which stops anyone farming offline players.
+  - **Matchmaking** looks for an opponent within ±100 Elo. The range widens by 50 every 3 seconds, up to ±400.
+  - **Leaving a game counts as a loss.** Friendlies are unranked.
+- **Tiers (from Elo):**
+
+  | Tier | Elo | Coins per win |
+  |---|---|---|
+  | Blacktop | under 1100 | ×1.0 |
+  | Varsity | 1100–1299 | ×1.2 |
+  | College | 1300–1499 | ×1.4 |
+  | Pro | 1500–1699 | ×1.7 |
+  | All-League | 1700–1899 | ×2.0 |
+  | Hall of Fame | 1900+ | ×2.5 |
+
+  - **Demotion shield:** right after you reach a new tier, you get 3 games of protection before you can drop out of it.
+- **Seasons:** each lasts 2 weeks. You earn rewards for the highest tier you reached, and the top 100 get a badge for their club card. Then Elo **soft-resets**: `new = 1000 + (old − 1000) × 0.75`.
+- **Leaderboards:** global top 100, your server, and your friends.
 
 ## 3. Matches (3D, about 2 to 3 minutes)
 
