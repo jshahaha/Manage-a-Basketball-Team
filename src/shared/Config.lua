@@ -161,8 +161,8 @@ Config.Packs = {
 Config.PackItems = {
 	{ id = "Cosmetic", name = "Cosmetic", weight = 40, text = "A jersey, court floor, ball or celebration." },
 	{ id = "CoinPouch", name = "Coin Pouch", weight = 35, text = "Gives back 10 to 30% of the pack's coin price." },
-	{ id = "BadgeUpgrade", name = "Badge Upgrade", weight = 25, maxTier = "Diamond",
-		text = "Moves one badge you own up a tier (up to Diamond). The player still needs the stats for it." },
+	{ id = "BadgeShard", name = "Badge Shard", weight = 25, shardsPerUpgrade = 5, maxTier = "Gold",
+		text = "Collect 5 to move one badge up a tier (up to Gold). The player still needs the stats for it." },
 }
 
 Config.Bundles = {

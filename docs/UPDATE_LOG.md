@@ -12,7 +12,7 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 ### Changed
 - Jump shot: the ball now leaves on the way up, before the top of the jump. The arm finishes at a shooter's angle instead of straight up, and the follow-through is held until the ball drops. The ball takes about 1 s to reach the rim
 - Dunk: takeoff off the left foot with the right knee driving, after a longer and lower last step
-- Pack items are now Cosmetic (40%), Coin Pouch (35%) and Badge Upgrade (25%, one badge up a tier, up to Diamond). Energy Drink and Training Pass were removed because stamina only exists inside a match
+- Pack items are now Cosmetic (40%), Coin Pouch (35%) and Badge Shard (25%; 5 shards move one badge up a tier, up to Gold). Energy Drink and Training Pass were removed because stamina only exists inside a match
 - Shot, dunk, block and layup now fire ShotRelease, Swish, Dunk, Block and LayupKiss cues, which will play once those sounds are uploaded
 ### Fixed
 - Crossover: the ball bounced on the floor twice with no hand in between
