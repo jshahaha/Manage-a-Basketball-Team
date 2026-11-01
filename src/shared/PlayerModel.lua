@@ -49,6 +49,36 @@ function PlayerModel.skin(player): Color3
 	return Color3.fromRGB(c[1], c[2], c[3])
 end
 
+-- Palm, four fingers and a thumb, welded to the R15 hand (which is hidden). Sizes are the
+-- walkout3d.js hand scaled to this body. side = 1 for the right hand, -1 for the left.
+-- Rest pose: arm down, palm facing the body, fingers slightly curled.
+local FINGERS = { { z = 0.15, len = 0.25 }, { z = 0.05, len = 0.29 }, { z = -0.05, len = 0.28 }, { z = -0.15, len = 0.23 } }
+local function addHand(hand: BasePart, side: number, skin: Color3)
+	local k = hand.Size.Y * 4.05
+	local wristY = 0.137 * k / 1.33
+	local function piece(name, size, pos, rot)
+		local p = Instance.new("Part")
+		p.Name = name
+		p.Size = size * k
+		p.Color = skin
+		p.Material = Enum.Material.SmoothPlastic
+		p.CanCollide, p.CanQuery, p.CanTouch, p.Massless = false, false, false, true
+		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		local w = Instance.new("Weld")
+		w.Part0, w.Part1 = hand, p
+		w.C0 = CFrame.new(pos.X * k, wristY + pos.Y * k, pos.Z * k) * (rot or CFrame.identity)
+		w.Parent = p
+		p.CFrame = hand.CFrame * w.C0
+		p.Parent = hand
+	end
+	piece("Palm", Vector3.new(0.2, 0.32, 0.42), Vector3.new(0, -0.17, 0))
+	for i, f in ipairs(FINGERS) do
+		piece("Finger" .. i, Vector3.new(0.12, f.len, 0.09), Vector3.new(-side * 0.02, -0.31 - f.len / 2, f.z), CFrame.Angles(0, 0, math.rad(-side * 12)))
+	end
+	piece("Thumb", Vector3.new(0.12, 0.24, 0.11), Vector3.new(-side * 0.06, -0.2, -0.25), CFrame.Angles(math.rad(28), 0, math.rad(-side * 18)))
+	hand.Transparency = 1
+end
+
 function PlayerModel.build(player, kit)
 	local Players = game:GetService("Players")
 	local s = PlayerModel.scales(player)
@@ -77,6 +107,8 @@ function PlayerModel.build(player, kit)
 			end
 		end
 	end
+	addHand(model:FindFirstChild("RightHand"), 1, skin)
+	addHand(model:FindFirstChild("LeftHand"), -1, skin)
 	if kit.number then
 		for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Back }) do
 			local gui = Instance.new("SurfaceGui")

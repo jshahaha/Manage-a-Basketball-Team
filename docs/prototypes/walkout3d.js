@@ -8,6 +8,7 @@ const BALL_R = .64; // a real ball is a little wider than a head
 const RIG = {
   hipH: 2.45,
   // Slim athletic build (narrow torso, long thin limbs), so the ball reads at its real size.
+  // Hands have a palm, four fingers and a thumb (js: blocky hands look wrong for wrist flicks).
   parts: [
     // name, parent joint, box size [w,h,d], center offset from joint, material slot
     ['LowerTorso','Root',[1.4,0.55,0.72],[0,0.27,0],'shorts'],
@@ -15,10 +16,20 @@ const RIG = {
     ['Head','Neck',[0.95,1.0,0.95],[0,0.55,0],'skin'],
     ['RUpperArm','RShoulder',[0.48,1.1,0.48],[0,-0.45,0],'skin'],
     ['RLowerArm','RElbow',[0.44,0.95,0.44],[0,-0.42,0],'skin'],
-    ['RHand','RWrist',[0.44,0.38,0.44],[0,-0.17,0],'skin'],
+    ['RHand','RWrist',[0.2,0.32,0.42],[0,-0.17,0],'skin'],  // palm (faces the body at rest)
+    ['RHandF1','RWrist',[0.12,0.25,0.09],[0.02,-0.435,-0.15],'skin',[0,0,12]],
+    ['RHandF2','RWrist',[0.12,0.29,0.09],[0.02,-0.455,-0.05],'skin',[0,0,12]],
+    ['RHandF3','RWrist',[0.12,0.28,0.09],[0.02,-0.450,0.05],'skin',[0,0,12]],
+    ['RHandF4','RWrist',[0.12,0.23,0.09],[0.02,-0.425,0.15],'skin',[0,0,12]],
+    ['RHandThumb','RWrist',[0.12,0.24,0.11],[0.06,-0.2,0.25],'skin',[-28,0,18]],
     ['LUpperArm','LShoulder',[0.48,1.1,0.48],[0,-0.45,0],'skin'],
     ['LLowerArm','LElbow',[0.44,0.95,0.44],[0,-0.42,0],'skin'],
-    ['LHand','LWrist',[0.44,0.38,0.44],[0,-0.17,0],'skin'],
+    ['LHand','LWrist',[0.2,0.32,0.42],[0,-0.17,0],'skin'],  // palm (faces the body at rest)
+    ['LHandF1','LWrist',[0.12,0.25,0.09],[-0.02,-0.435,-0.15],'skin',[0,0,-12]],
+    ['LHandF2','LWrist',[0.12,0.29,0.09],[-0.02,-0.455,-0.05],'skin',[0,0,-12]],
+    ['LHandF3','LWrist',[0.12,0.28,0.09],[-0.02,-0.450,0.05],'skin',[0,0,-12]],
+    ['LHandF4','LWrist',[0.12,0.23,0.09],[-0.02,-0.425,0.15],'skin',[0,0,-12]],
+    ['LHandThumb','LWrist',[0.12,0.24,0.11],[-0.06,-0.2,0.25],'skin',[-28,0,-18]],
     ['RUpperLeg','RHip',[0.6,1.15,0.6],[0,-0.55,0],'shorts'],
     ['RLowerLeg','RKnee',[0.52,1.0,0.52],[0,-0.5,0],'skin'],
     ['RFoot','RAnkle',[0.56,0.3,1.1],[0,-0.17,0.18],'shoe'],
@@ -365,6 +376,102 @@ CLIPS.BouncePass = { len: 1.2, face: 90, view: -30, cam: [[3,4.4,17],[2.6,3.0,0]
   events: [[.45,'PassBounce'],[.45,'ShoeSqueak'],[.7,'Dribble']],
 };
 
+// ---------- Signature packages: shot styles, dunk packages, extra dribble moves ----------
+// Each player gets one shot style, one dunk package and a set of dribble moves
+// (src/shared/AnimSets.lua). Variants are built from the base clips so they share timing rules.
+const clone = c => JSON.parse(JSON.stringify(c));
+function retime(c, fn){
+  for (const j in c.keys) c.keys[j].forEach(k => k[0] = +fn(k[0]).toFixed(3));
+  ['root','ball','events'].forEach(f => (c[f] || []).forEach(k => k[0] = +fn(k[0]).toFixed(3)));
+  if (c.hoopAt) c.hoopAt[0] = +fn(c.hoopAt[0]).toFixed(3);
+  c.len = +fn(c.len).toFixed(3); return c;
+}
+function nudge(c, j, from, to, d){ (c.keys[j] || []).forEach(k => { if (k[0] >= from && k[0] <= to){ k[1] += d[0]; k[2] += d[1] || 0; k[3] += d[2] || 0; } }); }
+function rootNudge(c, from, to, fn){ c.root.forEach(k => { if (k[0] >= from && k[0] <= to){ const d = fn(k[0]); for (let i = 0; i < d.length; i++) k[i+1] += d[i]; } }); }
+
+// Quick release: the dip and set happen 30% faster and the set point is lower (in front of the face).
+CLIPS.ShootQuick = retime(clone(CLIPS.Shoot), t => t <= .72 ? t * .7 : t - .216);
+nudge(CLIPS.ShootQuick, 'RShoulder', .2, .4, [22]); nudge(CLIPS.ShootQuick, 'LShoulder', .2, .4, [20]);
+nudge(CLIPS.ShootQuick, 'RElbow', .2, .4, [10]);
+// High release: set point high above the head and a bigger jump.
+CLIPS.ShootHigh = clone(CLIPS.Shoot);
+nudge(CLIPS.ShootHigh, 'RShoulder', .45, 1.7, [-14]); nudge(CLIPS.ShootHigh, 'LShoulder', .45, 1.4, [-12]);
+rootNudge(CLIPS.ShootHigh, .6, .96, t => [0, .3]);
+// Fadeaway: drift away from the rim and lean back, front knee kicks up.
+CLIPS.ShootFade = clone(CLIPS.Shoot);
+rootNudge(CLIPS.ShootFade, .55, 2.6, t => [-Math.min(1, (t - .55) / .5) * .9, 0, 0, 0, t < 1.1 ? -14 : 0]);
+nudge(CLIPS.ShootFade, 'LHip', .6, 1.0, [-30]); nudge(CLIPS.ShootFade, 'LKnee', .6, 1.0, [30]);
+nudge(CLIPS.ShootFade, 'RShoulder', .5, 1.7, [-8]);
+// Set shot: barely leaves the floor, quick push from the forehead.
+CLIPS.ShootSet = clone(CLIPS.Shoot);
+rootNudge(CLIPS.ShootSet, .55, 1.0, t => [0, -.6]);
+nudge(CLIPS.ShootSet, 'LKnee', .25, .35, [-20]); nudge(CLIPS.ShootSet, 'RKnee', .25, .35, [-20]);
+rootNudge(CLIPS.ShootSet, .25, .35, t => [0, .2]);
+
+// Two-hand dunk: the left arm mirrors the right and both hands hold the ball to the rim.
+CLIPS.DunkTwoHand = clone(CLIPS.Dunk);
+CLIPS.DunkTwoHand.keys.LShoulder = CLIPS.Dunk.keys.RShoulder.map(k => [k[0], k[1], -k[2], -k[3]]);
+CLIPS.DunkTwoHand.keys.LElbow = CLIPS.Dunk.keys.RElbow.map(k => [...k]);
+CLIPS.DunkTwoHand.ball = [[0,'R'],[.6,'R'],[.62,'both'],[1.12,'both'],[1.2,'net',0,0],[1.5,'floorUnderRim',2,0],[1.8,'bounceUnderRim',1,0],[2.1,'floorUnderRim2',2,0],[2.6,'gone']];
+// Tomahawk: the ball is cocked far behind the head at the top, then hammered down.
+CLIPS.DunkTomahawk = clone(CLIPS.Dunk);
+CLIPS.DunkTomahawk.keys.RShoulder = [[0,-30,0,-10],[.4,-40,0,-10],[.62,-70,0,-8],[.82,-160,0,-4],[.98,-205,0,-2],[1.04,-208,0,0],[1.12,-140,0,0],[1.35,-172,0,0],[1.6,-170,0,0],[1.78,-60,0,-10],[2.2,-80,0,-60],[2.6,-82,0,-62]];
+CLIPS.DunkTomahawk.keys.RElbow = [[0,-40,0,0],[.62,-70,0,0],[.82,-60,0,0],[1.02,-110,0,0],[1.12,-10,0,0],[1.35,-5,0,0],[1.78,-40,0,0],[2.2,-120,0,0],[2.6,-125,0,0]];
+CLIPS.DunkTomahawk.keys.Waist = [[0,0,0,0],[.98,-14,0,0],[1.12,16,0,0],[1.6,0,0,0]];
+// Windmill: the ball swings down past the hip, back and all the way over before the slam.
+CLIPS.DunkWindmill = clone(CLIPS.Dunk);
+CLIPS.DunkWindmill.keys.RShoulder = [[0,-30,0,-10],[.4,-40,0,-10],[.62,-70,0,-8],[.8,-40,0,-12],[.88,20,0,-14],[.95,80,0,-10],[1.03,160,0,-4],[1.12,215,0,0],[1.35,188,0,0],[1.6,190,0,0],[1.78,300,0,-10],[2.2,280,0,-60],[2.6,278,0,-62]];
+CLIPS.DunkWindmill.keys.RElbow = [[0,-40,0,0],[.62,-70,0,0],[.8,-10,0,0],[1.12,-8,0,0],[1.35,-5,0,0],[1.78,-40,0,0],[2.2,-120,0,0],[2.6,-125,0,0]];
+// 360: a full turn in the air before the slam.
+CLIPS.Dunk360 = clone(CLIPS.Dunk);
+CLIPS.Dunk360.root = CLIPS.Dunk360.root.map(k => { const r = [...k]; if (k[0] >= 1.02) r[4] += 360; return r; });
+CLIPS.Dunk360.root.splice(CLIPS.Dunk360.root.findIndex(k => k[0] === 1.02), 0, [.92,1.05,1.6,0,250,2]);
+CLIPS.Dunk360.keys.RShoulder = [[0,-30,0,-10],[.4,-40,0,-10],[.62,-70,0,-8],[.82,-100,0,-10],[.95,-120,0,-14],[1.05,-175,0,-2],[1.12,-130,0,0],[1.35,-172,0,0],[1.6,-170,0,0],[1.78,-60,0,-10],[2.2,-80,0,-60],[2.6,-82,0,-62]];
+CLIPS.Dunk360.ball = [[0,'R'],[.6,'R'],[.62,'both'],[.95,'both'],[.97,'R'],[1.12,'R'],[1.2,'net',0,0],[1.5,'floorUnderRim',2,0],[1.8,'bounceUnderRim',1,0],[2.1,'floorUnderRim2',2,0],[2.6,'gone']];
+
+// In-and-out: fake the crossover with the hand rolling over the ball, then push it back out.
+CLIPS.InAndOut = withBase(Object.assign({ len: .8,
+  keys: {
+    RShoulder:[[0,-34,0,-20],[.15,-26,0,2],[.28,-30,0,-4],[.45,-22,0,-24],[.6,-24,0,-22],[.8,-34,0,-20]],
+    RElbow:[[0,-75,0,0],[.15,-50,0,0],[.28,-55,0,0],[.45,-38,0,0],[.6,-42,0,0],[.8,-75,0,0]],
+    RWrist:[[0,-25,0,0],[.15,10,-40,0],[.28,30,-50,0],[.45,40,10,0],[.6,5,0,0],[.8,-25,0,0]],
+    Waist:[[0,20,-6,0],[.2,22,10,0],[.45,24,-12,0],[.8,20,-6,0]],
+    Neck:[[0,-24,0,0],[.2,-24,14,0],[.45,-24,-6,0],[.8,-24,0,0]],
+  },
+  root: [[0,0,-.9,0,0,6],[.2,.25,-.98,0,8,8],[.45,-.2,-1.0,.15,-6,10],[.8,0,-.9,0,0,6]],
+  ball: [[0,'R'],[.2,'floorR',2,0],[.32,'R',1,0],[.55,'floorRFar',2,0],[.8,'R',1,0]],
+  events: [[.2,'Dribble'],[.45,'ShoeSqueak'],[.55,'Dribble']],
+}, DRIBBLE_CAM));
+// Spin move: plant the left foot, pull the ball tight and turn all the way round.
+CLIPS.Spin = withBase(Object.assign({ len: 1.0,
+  keys: {
+    RShoulder:[[0,-34,0,-20],[.15,-50,0,-10],[.3,-60,0,-6],[.65,-60,0,-6],[.85,-40,0,-20],[1.0,-34,0,-20]],
+    RElbow:[[0,-75,0,0],[.15,-100,0,0],[.65,-100,0,0],[.85,-60,0,0],[1.0,-75,0,0]],
+    LShoulder:[[0,-62,0,24],[.3,-40,0,50],[.65,-40,0,50],[1.0,-62,0,24]],
+    LHip:[[0,-40,0,14],[.2,-50,0,10],[.65,-30,0,20],[1.0,-40,0,14]],
+    RHip:[[0,-36,0,-14],[.3,-10,0,-30],[.65,-50,0,-20],[1.0,-36,0,-14]],
+    Waist:[[0,20,-6,0],[.2,24,-20,0],[.6,20,10,0],[1.0,20,-6,0]],
+  },
+  root: [[0,0,-.9,0,0,6],[.2,.2,-1.0,.1,-30,8],[.45,.5,-.95,.2,-200,6],[.7,.8,-.95,.1,-330,8],[1.0,.9,-.9,0,-360,6]],
+  ball: [[0,'R'],[.15,'floorR',2,0],[.3,'R',1,0],[.75,'R'],[.9,'floorR',2,0],[1.0,'R',1,0]],
+  events: [[.15,'Dribble'],[.2,'ShoeSqueak'],[.7,'ShoeSqueak'],[.9,'Dribble']],
+}, DRIBBLE_CAM));
+// Step-back: hard dribble forward, then hop back into space and gather.
+CLIPS.Stepback = withBase(Object.assign({ len: 1.0,
+  keys: {
+    RShoulder:[[0,-34,0,-20],[.15,-20,0,-17],[.3,-24,0,-17],[.55,-40,0,-18],[.75,-36,0,-20],[1.0,-34,0,-20]],
+    RElbow:[[0,-75,0,0],[.15,-38,0,0],[.3,-45,0,0],[.55,-80,0,0],[1.0,-75,0,0]],
+    RWrist:[[0,-25,0,0],[.13,42,0,0],[.3,5,0,0],[.55,-25,0,0],[1.0,-25,0,0]],
+    LHip:[[0,-40,0,14],[.3,-60,0,14],[.5,-20,0,14],[.75,-46,0,14],[1.0,-40,0,14]],
+    RHip:[[0,-36,0,-14],[.3,-20,0,-14],[.5,-10,0,-14],[.75,-44,0,-14],[1.0,-36,0,-14]],
+    LKnee:[[0,62,0,0],[.3,75,0,0],[.5,40,0,0],[.75,72,0,0],[1.0,62,0,0]],
+    RKnee:[[0,60,0,0],[.3,50,0,0],[.5,50,0,0],[.75,70,0,0],[1.0,60,0,0]],
+  },
+  root: [[0,0,-.9,0,0,6],[.3,0,-1.0,.5,0,14],[.5,0,-.55,-.2,0,-6],[.75,0,-1.0,-.7,0,6],[1.0,0,-.9,-.7,0,6]],
+  ball: [[0,'R'],[.15,'floorR',2,0],[.3,'R',1,0],[.55,'R'],[.62,'both'],[1.0,'both']],
+  events: [[.15,'Dribble'],[.3,'ShoeSqueak'],[.75,'ShoeSqueak']],
+}, DRIBBLE_CAM));
+
 window.WALKOUT_CLIPS = CLIPS;
 const ACTIONS = { shoot:'Shoot', dunk:'Dunk', dribble:'Dribble', block:'Block' };
 
@@ -405,10 +512,11 @@ function makeModel(){
   }
   joints.Root.position.y = RIG.hipH;
   const geoCache = {};
-  for (const [name, joint, size, c, slot] of RIG.parts){
+  for (const [name, joint, size, c, slot, rot] of RIG.parts){
     const key = size.join(','); const g = geoCache[key] || (geoCache[key] = roundedBox(size[0], size[1], size[2], Math.min(size[0],size[1],size[2])*0.18));
     const m = new T.Mesh(g, new T.MeshBasicMaterial({ color: 0x000000 })); m.renderOrder = 10; m.material.transparent = true;
     m.position.set(c[0], c[1], c[2]); m.userData.slot = slot; m.name = name;
+    if (rot) m.rotation.set(rot[0]*Math.PI/180, rot[1]*Math.PI/180, rot[2]*Math.PI/180);
     // glow shell for the silhouette rim light
     const shell = new T.Mesh(g, new T.MeshBasicMaterial({ color: 0xffffff, side: T.BackSide, transparent: true, opacity: .95 }));
     shell.scale.setScalar(1.09); shell.userData.shell = true; m.add(shell);

@@ -6,6 +6,7 @@ local function load(name)
 end
 local Config = load("Config")
 local Ratings = load("Ratings")
+local AnimSets = load("AnimSets")
 local Names = load("Names")
 local Rng = load("Rng")
 local Stats = load("Stats")
@@ -97,7 +98,7 @@ function PlayerFactory.generate(rng, opts)
 	for _, n in ipairs(Config.Nations) do
 		table.insert(nations, { n[1], n[2] })
 	end
-	return {
+	local player = {
 		id = id,
 		name = opts.name or Names.player(rng, rarity.id),
 		pos = pos,
@@ -116,6 +117,9 @@ function PlayerFactory.generate(rng, opts)
 		faceSeed = id, -- the icon generator draws the face from this
 		career = Stats.newCareer(),
 	}
+	-- Signature shot, dunk package and dribble moves (rolled last so older seeds keep their players).
+	player.anims = AnimSets.roll(rng, rarity.id, Ratings.archetype(ratings))
+	return player
 end
 
 local POS_INDEX = { PG = 1, SG = 2, SF = 3, PF = 4, C = 5 }

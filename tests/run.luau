@@ -11,6 +11,7 @@ local Inventory = require("../src/shared/Inventory")
 local Ratings2 = require("../src/shared/Ratings")
 local AnimClips = require("../src/shared/AnimClips")
 local PlayerModel = require("../src/shared/PlayerModel")
+local AnimSets = require("../src/shared/AnimSets")
 local Scouting = require("../src/shared/Scouting")
 local Cosmetics = require("../src/shared/Cosmetics")
 local Facilities = require("../src/shared/Facilities")
@@ -825,6 +826,30 @@ test("player bodies scale with height and weight", function()
 	assert(math.abs(guard.height - 0.9) < 1e-6 and math.abs(center.height - 1.2) < 1e-6, "height range")
 	assert(center.width > guard.width, "heavier is wider")
 	assert(center.proportion > guard.proportion, "long wingspan, longer limbs")
+end)
+
+test("every player gets a shot, dunk and dribble moves that exist as clips", function()
+	local rng = Rng.new(77)
+	local seen = {}
+	for _, r in ipairs({ "Common", "Rare", "Epic", "Legendary", "HallOfFame" }) do
+		for _ = 1, 40 do
+			local p = PlayerFactory.generate(rng, { rarity = r })
+			local a = p.anims
+			assert(a and a.shot and a.dunk and #a.moves == AnimSets.MoveCount[r], "anims for " .. r)
+			local c = AnimSets.clips(a)
+			assert(AnimClips.Clips[c.shot] and AnimClips.Clips[c.dunk], "clip missing")
+			for _, m in ipairs(c.moves) do
+				assert(AnimClips.Clips[m], "move clip missing " .. m)
+			end
+			if r == "Common" then
+				assert(a.dunk ~= "Windmill" and a.dunk ~= "Spin360", "commons can't windmill")
+			end
+			seen[a.dunk] = true
+		end
+	end
+	assert(seen.Spin360 and seen.TwoHand, "all dunks show up")
+	local old = AnimSets.clips(nil)
+	assert(old.shot == "Shoot" and old.dunk == "Dunk", "old saves get defaults")
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))
