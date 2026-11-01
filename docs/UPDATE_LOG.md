@@ -4,6 +4,13 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.8 (2026-11-01): Scouting, gems and cosmetics in code
+### Added
+- `Scouting.lua`: roll a 5-player report, what each scout level reveals (never OVR), refresh by timer, coins or Scout Ticket, flat 25,000-coin sign price, gem upgrade costs (50/100/200/400/800)
+- Gems on the profile (start with 25), paid by achievements (5 per tier), sweeping the daily quests (5) and first time reaching each Elo tier (20 to 300)
+- `Cosmetics.lua`: 15 slots and 73 cosmetics with rarities; the Cosmetic pack item now rolls a real cosmetic
+- UI page: Scouting Report screen and the cosmetics list
+
 ## v0.1.7 (2026-11-01): Scouting Report and gems (design)
 ### Added
 - Scouting Report: 5 players with hidden OVR, signed for coins. Scout levels 0–5 reveal best stat, position, 2nd stat, archetype and nationality, 3rd stat, then rarity

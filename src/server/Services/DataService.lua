@@ -11,6 +11,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared.Config)
 local PlayerFactory = require(Shared.PlayerFactory)
 local Stats = require(Shared.Stats)
+local Scouting = require(Shared.Scouting)
 
 local DataService = {}
 DataService.profiles = {} -- [Player] = profile
@@ -52,6 +53,11 @@ function DataService.newProfile(userId: number)
 		createdAt = os.time(),
 		club = nil, -- set by club creation: { name, badge, colors }
 		coins = Config.StartingCoins,
+		gems = Config.StartingGems,
+		scouting = Scouting.newState(), -- see Scouting.lua
+		scoutTickets = 0,
+		cosmetics = {}, -- owned cosmetic ids = true, see Cosmetics.lua
+		equipped = {}, -- [slot] = cosmetic id
 		fans = Config.StartingFans,
 		elo = { elo = Config.Elo.start, games = 0, tier = 1, shield = 0 },
 		players = roster,
@@ -163,10 +169,13 @@ function DataService.get(player: Player)
 end
 
 -- Give rewards (from codes, quests, achievements). Never takes away.
--- rewards: { coins, fans, packs = { Pro = 1 }, pack = "Pro", boost = { kind, minutes } }
+-- rewards: { coins, gems, fans, packs = { Pro = 1 }, pack = "Pro", boost = { kind, minutes } }
 function DataService.grant(profile, rewards)
 	if rewards.coins then
 		profile.coins = math.min(Config.MaxCoins, profile.coins + rewards.coins)
+	end
+	if rewards.gems then
+		profile.gems = (profile.gems or 0) + rewards.gems
 	end
 	if rewards.fans then
 		profile.fans += rewards.fans

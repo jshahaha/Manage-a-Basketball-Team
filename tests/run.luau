@@ -10,6 +10,9 @@ local Badges = require("../src/shared/Badges")
 local Inventory = require("../src/shared/Inventory")
 local Ratings2 = require("../src/shared/Ratings")
 local AnimClips = require("../src/shared/AnimClips")
+local Scouting = require("../src/shared/Scouting")
+local Cosmetics = require("../src/shared/Cosmetics")
+local Catalog2 = require("../src/shared/Catalog")
 local Elo = require("../src/shared/Elo")
 local CodeRules = require("../src/shared/CodeRules")
 local Quests = require("../src/shared/Quests")
@@ -642,6 +645,62 @@ test("animation clips: sorted keys, sounds exist, walkout move for every archety
 	eq(math.floor(AnimClips.sample(k, k[3][1], 3)[1] + 0.5), k[3][2])
 	local evs = AnimClips.eventsBetween(AnimClips.Clips.Dribble, 0, 0.25)
 	eq(evs[1], "Dribble")
+end)
+
+test("scouting: reveal ladder, never OVR, flat price, refresh rules", function()
+	local rng = Rng.new(7)
+	local st = Scouting.newState()
+	local report = Scouting.roll(rng, st, 1000, function(r, rarity)
+		return Catalog2.draw(r, "player", rarity)
+	end)
+	eq(#report.players, 5)
+	eq(report.expires, 1000 + 6 * 3600)
+	local p = Catalog2.get(report.players[1])
+	local v0 = Scouting.view(p, 0)
+	eq(#v0.stats, 1)
+	ok(v0.position == nil and v0.rarity == nil and v0.archetype == nil, "level 0 hides everything else")
+	ok(v0.ovr == nil, "never OVR")
+	eq(Scouting.view(p, 1).position, p.pos)
+	eq(#Scouting.view(p, 2).stats, 2)
+	ok(Scouting.view(p, 3).archetype ~= nil and Scouting.view(p, 3).nation ~= nil, "level 3")
+	eq(#Scouting.view(p, 4).stats, 3)
+	ok(Scouting.view(p, 4).rarity == nil, "rarity only at 5")
+	eq(Scouting.view(p, 5).rarity, p.rarity)
+	local top = Scouting.view(p, 5).stats
+	ok(top[1][3] >= top[2][3] and top[2][3] >= top[3][3], "best first")
+	ok(not Scouting.canRefresh(st, 2000, "free", 0, 0), "timer")
+	ok(Scouting.canRefresh(st, 1000 + 6 * 3600, "free", 0, 0), "timer done")
+	local okT, _, cost = Scouting.canRefresh(st, 2000, "ticket", 0, 1)
+	ok(okT and cost.tickets == 1, "ticket")
+	ok(not Scouting.canRefresh(st, 2000, "ticket", 0, 0), "no ticket")
+	ok(Scouting.canSign(st, 1, Scouting.SignCost), "sign")
+	ok(not Scouting.canSign(st, 1, Scouting.SignCost - 1), "too poor")
+	eq(Scouting.upgradeCost(0), 50)
+	eq(Scouting.upgradeCost(5), nil)
+end)
+
+test("cosmetics: slots, roll, equip, pack item", function()
+	for _, c in ipairs(Cosmetics.List) do
+		ok(Cosmetics.RarityById[c.rarity] ~= nil, c.id .. " rarity")
+		local found = false
+		for _, s in ipairs(Cosmetics.Slots) do
+			found = found or s.id == c.slot
+		end
+		ok(found, c.id .. " slot")
+	end
+	local rng = Rng.new(3)
+	local owned, equipped = {}, {}
+	local c = Cosmetics.roll(rng)
+	ok(not Cosmetics.equip(owned, equipped, c.id), "must own")
+	owned[c.id] = true
+	ok(Cosmetics.equip(owned, equipped, c.id), "equip")
+	eq(equipped[c.slot], c.id)
+	for _ = 1, 300 do
+		local _, _, items = PlayerFactory.openPack(rng, "Pro", Catalog2, Badges)
+		if items[1].id == "Cosmetic" then
+			ok(Cosmetics.ById[items[1].cosmetic] ~= nil, "cosmetic id")
+		end
+	end
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))

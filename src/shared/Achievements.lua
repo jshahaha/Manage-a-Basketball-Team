@@ -2,6 +2,11 @@
 -- Achievements: lifetime goals with tiers (bronze, silver, gold...).
 -- Each tier pays once. Progress comes from the profile's lifetime stats.
 
+local function load(name)
+	return require(script and script.Parent:FindFirstChild(name) or "./" .. name)
+end
+local Config = load("Config")
+
 local Achievements = {}
 
 -- stat: key in profile.stats. "max" stats keep the best value instead of adding.
@@ -87,7 +92,7 @@ function Achievements.claim(stats, claimed, id: string)
 		return nil, "Not reached yet."
 	end
 	claimed[id] = got + 1
-	return { coins = nextTier[2], pack = nextTier[3] }
+	return { coins = nextTier[2], pack = nextTier[3], gems = Config.Gems.achievementTier }
 end
 
 return Achievements

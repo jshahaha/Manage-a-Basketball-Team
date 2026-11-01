@@ -209,6 +209,8 @@ function PlayerFactory.openPack(rng, packId: string, Catalog, Badges)
 		items[i] = { kind = "item", id = it.id }
 		if it.id == "CoinPouch" then
 			items[i].coins = math.floor(pack.coins * rng:range(0.10, 0.30) / 100 + 0.5) * 100
+		elseif it.id == "Cosmetic" then
+			items[i].cosmetic = load("Cosmetics").roll(rng).id
 		elseif it.rarities then
 			local r = {}
 			for _, x in ipairs(it.rarities) do

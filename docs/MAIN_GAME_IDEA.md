@@ -195,6 +195,17 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
   - players fit their positions
   - the same five play games together
 
+## 6b. Cosmetics
+
+Looks only, never stats. They come from the Cosmetic pack item, the gem shop, achievements and events. Each goes in one of **15 slots** and a club equips one per slot (`src/shared/Cosmetics.lua`, 73 items):
+
+- **Team look:** Jersey, Shoes, Accessory (headband, sleeves, goggles, face paint), Coach Outfit
+- **Home court (visitors see it):** Court floor (Park Blacktop, Rooftop, Boardwalk, Neon Night, Zero-G Arena...), Net (Chain Net jingles on a swish), Ball, Mascot, Walk-in Music
+- **Moments:** Shot Trail on made threes, Dunk Effect on the rim, Celebration after big plays, Walkout Effect for Legendary and Hall of Fame pulls
+- **Profile:** Card Frame, Club Banner
+
+Rarity inside the Cosmetic pack item: Common 60%, Rare 28%, Epic 10%, Legendary 2%. Gem shop prices: 30 / 80 / 200 / 500 gems.
+
 ## 7. Market (Trade Board)
 
 - **Listings:** list a player at your own price. A sale takes a **15% fee**, which removes coins from the economy. VIP lowers it to 10%.

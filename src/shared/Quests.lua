@@ -90,4 +90,14 @@ function Quests.claim(state, index: number): (number?, string?)
 	return q.coins
 end
 
+-- True once all of today's quests are claimed: the server then pays Config.Gems.dailySweep once.
+function Quests.swept(state): boolean
+	for _, q in ipairs(state.list) do
+		if not q.claimed then
+			return false
+		end
+	end
+	return #state.list > 0
+end
+
 return Quests

@@ -12,6 +12,17 @@ Config.StartingCoins = 2500
 Config.StartingFans = 0
 Config.MaxCoins = 1e12
 
+-- Gems: the premium currency. Earned slowly by playing, or bought with Robux.
+-- They buy scout team upgrades, cosmetics, the Gem Pack and skipping training timers.
+-- They never buy players or badges directly, so the market stays coin-based.
+Config.StartingGems = 25
+Config.Gems = {
+	dailySweep = 5, -- claim all 3 daily quests
+	achievementTier = 5, -- every achievement tier
+	eloTier = { [2] = 20, [3] = 40, [4] = 80, [5] = 150, [6] = 300 }, -- first time reaching each Elo tier
+	skipTrainingPerHour = 10, -- finish a training session early (rounded up to the hour)
+}
+
 -- Collection --------------------------------------------------------------
 Config.ClubCapacity = 50
 Config.MatchdaySize = 10 -- 5 starters + 5 bench
