@@ -137,3 +137,13 @@ What we changed from it: DefSlide arms go wider, and player bodies use slim limb
 - Import the remaining clips into Studio (Shoot, Idle and 11 more are in; BetweenLegs, BehindBack, Hesitation, Dribble, BouncePass and ForPlay are not yet).
 - A rig in Blender for the walkout poses if we want hand-tuned curves.
 - Upload the missing sounds (swish, dunk, block slap) from the Creator Store so the cues above have their sounds.
+
+## Rebound and block reference (stepped frame by frame, timings ±0.15–0.2 s)
+
+Sources: slow-motion rebound (youtube.com/watch?v=PNnHNhOoKsU, about 20x), Steven Adams playoff offensive boards (wH_EDYN6TMU), Sport Science on LeBron's 2016 chase-down (kExlzEaOCYU), Ja Morant two-hand block (tbqtVPHBsIw).
+
+- **Two-hand rebound:** gather ~0.35 s (arms swing back, quarter-to-half squat, eyes on the ball), explode ~0.18 s (both arms straight up, two-foot takeoff), catch at the peak ~0.25 s after takeoff with arms fully extended, land ~0.55 s after takeoff on the same spot. Arms stay overhead until the feet touch; the chin pull happens in ~0.12 s after landing, then a ~0.15 s settle into a deep, wide crouch with elbows flared. The Rebound clip follows this.
+- **Box-out scrum:** 3–4 bodies on the low block ~0.5 s before the miss arrives; box-out is a wide stance, butt into the opponent, arms out at shoulder height. The rebounder leaves the floor ~0.5 s after the shot goes up and is up for ~0.5 s. Ball out of the paint 1–1.5 s after the grab. Outlet (typical, not measured): 0.5–0.8 s from landing to release.
+- **Chase-down block:** trailer closes at ~1.2–1.4x the shooter's speed, takes off one foot about a step behind on the shooter's off-arm side, contact ~0.25–0.3 s after takeoff at the top of the reach, arm straight and hand open, pinning the ball to the glass. Momentum carries them past the rim; they land 1–2 steps beyond it.
+- **Two-hand block on a dunk:** blocker trails one body length on the help side, takes off one foot from farther out than the dunker, contact ~0.4 s after takeoff with both hands on the ball at or above the rim, arms vertical (not a side swipe). Blocker drifts past the backboard and lands out of bounds (~1 s airtime). Dunker lands under the rim and stumbles back a step; ball pops back out toward the free-throw line or off to the side.
+- **To do in the game:** the current block uses the single-hand Block clip from a standing rotation. A one-foot chase-down/two-hand block clip with forward carry, and the dunker's stumble, would match the reference better.
