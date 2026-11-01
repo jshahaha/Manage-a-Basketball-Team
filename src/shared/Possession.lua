@@ -135,6 +135,15 @@ function Possession.frame(plan, t)
 			end
 		else
 			p.clip, p.t = moving and "Jog" or "Idle", moving and (t % 0.7) or (t % 2)
+			if plan.driveTo and t >= plan.tCatch and SPOTS[i][1] < 10 then
+				-- Bigs clear the lane for the driver: slide out to the short corner.
+				local u2 = smooth((t - plan.tCatch) / 0.6)
+				local cz = (fin.z >= 0 and 1 or -1) * 17 * FT
+				p.x, p.z = lerp(fin.x, dir * (RIM_X - 4 * FT), u2), lerp(fin.z, cz, u2)
+				if u2 < 1 then
+					p.clip, p.t = "Jog", t % 0.7
+				end
+			end
 		end
 		out.players[i] = p
 	end
