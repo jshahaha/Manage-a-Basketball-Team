@@ -2,6 +2,9 @@
 
 This is every sound the game needs, which event plays it, and where each sound comes from. The code side lives in `src/shared/Sounds.lua`, a registry where every sound has a name and an asset ID. `src/client/Audio.lua` plays sounds by name. To fill in a sound, upload or pick it, then paste its asset ID next to its name in `Sounds.lua`. Until then the game plays nothing for it and doesn't error.
 
+## Status (2026-11-01)
+A first pass of 150 sounds is in `assets/audio/` (94 effects and 56 commentator lines), with sources in `assets/audio/CREDITS.md`. You can listen to them all on the UI page's Sound board. Next, upload them and paste the IDs into `Sounds.lua`. Still missing: music and a few crowd reactions.
+
 ## Where sounds come from
 1. **Roblox Creator Store audio** (Toolbox → Audio). It's free and already licensed for use on Roblox. The search terms below are a good place to start. This covers most effects, the crowd and music.
 2. **Our own uploads** for anything the store doesn't have or that we want unique: the pack opening stingers and the UI sounds. These can be made in any audio editor. Roblox has a monthly upload limit and checks every upload, so do these in batches.

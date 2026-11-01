@@ -8,6 +8,7 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 ### Added
 - `docs/AUDIO.md`: every sound the game needs (ball and court, crowd, in-game moments, menus, pack opening, music), where to get each one, and the full commentator script
 - `Sounds.lua` registry and `Audio.lua` player: volume groups, random variants and pitch, cooldowns, and a commentator queue that never talks over itself. Sounds stay silent until their asset IDs are filled in
+- First 150 sound files in `assets/audio/`: CC0 recordings (ball, squeaks, whistles, buzzer, crowd), synthesized effects, and commentator lines from an open-source AI voice
 - The CODES panel plays open, close, success and error sounds
 - Design: pack opening animation (drop, shake, rip, cards fly out, tap to flip, special reveals for Legendary and Hall of Fame)
 - Packs now have 3, 4 or 5 cards, a guaranteed best card in the bigger packs, and `PlayerFactory.openPack`. Hall of Famers only drop from the All-Star Pack and event packs
