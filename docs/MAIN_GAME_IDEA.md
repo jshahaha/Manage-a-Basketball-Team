@@ -44,6 +44,23 @@ A new club starts with **250 coins, 10 gems and 10 free Common players**. Then *
 | 9 | Daily quests | open the quest board | |
 | | **Finish** | | **250 coins, 20 gems and a Blacktop Pack** |
 
+**In-game lessons (the warm-up game in step 6).** The warm-up is scripted, so each mechanic happens on cue. When it does, the game **freezes** (clock and play), the rest of the screen **fades out**, a pulsing **box** and a bobbing **arrow** point at the one thing to use, and Coach Dee says what it does. Play only continues once you do it (`src/client/TutorialOverlay.lua`, lessons in `Tutorial.MatchLessons`):
+
+| # | Moment | Spotlight on | You do |
+|---|---|---|---|
+| 1 | Tip-off | the ball-handler tag | read, Got it (you coach, you don't control players) |
+| 2 | They double your star | the Coach's Call | pick Kick it out or Force it |
+| 3 | Your star makes 3 in a row | Feed him | tap it |
+| 4 | Their guard gets hot | the Matchups panel | move your best defender onto him |
+| 5 | They go on an 8–0 run | TIMEOUT | tap it |
+| 6 | The timeout screen | the whole panel | read: subs, play style, next play, team talk |
+| 7 | Quarter break, a tired starter | his red energy bar and the bench | sub him out |
+| 8 | Down 1, last shot | the clutch meter | stop it in the green |
+
+Things that don't come up in the warm-up get a **one-time tip** the first time they happen in a real game (`Tutorial.Tips`): a box and arrow with one line, no freeze, gone after a few seconds. They cover play-style counters, a cold player, the coach's challenge, the Clutch Timeout, the home crowd on away free throws, your first badge card and your first new player (who starts on the bench). A **How to play** button replays the lessons in the next warm-up.
+
+Why: the genre reference game has almost no tutorial, and its fan guides warn about the same things (new players don't join the lineup on their own, and you can't always tell what happened in a match). We teach one idea at a time, by doing, at the moment it matters.
+
 The 20 gems plus the 10 you start with are exactly enough for one Common cosmetic, so the gem shop makes sense from day one. You can **skip** the tutorial at any time from the guide button. You keep what you already got, but you give up the finish reward.
 
 ## 1. The lobby (hangout world)

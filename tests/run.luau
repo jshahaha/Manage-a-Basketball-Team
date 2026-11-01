@@ -786,6 +786,27 @@ test("tutorial: steps in order, gifts once, finish reward, skip", function()
 	eq(Tutorial.record(sk, "clubCreated"), nil)
 end)
 
+test("tutorial: match lessons and first-time tips show once", function()
+	local st = Tutorial.newState()
+	local seenFocus = {}
+	for _, l in ipairs(Tutorial.MatchLessons) do
+		ok(l.text and l.focus and l.cue and l.action, l.id .. " complete")
+		ok(l.action ~= "drag" or l.dropOn, l.id .. " drag has a drop target")
+		ok(#l.text <= 160, l.id .. " text fits the bubble")
+		seenFocus[l.focus] = true
+	end
+	eq(Tutorial.lessonFor(st, "coachCall").id, "coachCall")
+	eq(Tutorial.lessonFor(st, "coachCall"), nil, "once")
+	eq(Tutorial.lessonFor(st, "timeoutPrompt").id, "timeout")
+	eq(Tutorial.tipFor(st, "coldPlayer").id, "cold")
+	eq(Tutorial.tipFor(st, "coldPlayer"), nil, "tip once")
+	Tutorial.resetLessons(st)
+	eq(Tutorial.lessonFor(st, "coachCall").id, "coachCall", "How to play replays lessons")
+	for _, t in ipairs(Tutorial.Tips) do
+		ok(#t.text <= 110, t.id .. " tip fits")
+	end
+end)
+
 test("badges: equipping is free, taking off costs the tier's coins", function()
 	local p = { rarity = "Epic", ratings = { three = 99, ft = 99 }, badges = {} }
 	ok(Badges.equip(p, "Laser", "Gold"))

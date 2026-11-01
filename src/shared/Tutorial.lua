@@ -4,7 +4,7 @@
 -- the player learns by doing it for real. It can be skipped at any time; skipping keeps what
 -- was already earned but gives up the finish reward.
 --
--- State saved on the profile: profile.tutorial = { step, gifted = { [stepId] = true }, done, skipped }
+-- State saved on the profile: profile.tutorial = { step, gifted, done, skipped, lessons = { [id] = true }, tips = { [id] = true } }
 
 local Tutorial = {}
 
@@ -52,7 +52,7 @@ Tutorial.Steps = {
 		event = "tutorialGame",
 		target = "Play",
 		title = "Play your first game",
-		text = "Time for tip-off! This warm-up game doesn't count for Elo. When I say so, call a timeout and pick a Coach's Call.",
+		text = "Time for tip-off! This warm-up game doesn't count for Elo. I'll pause it whenever there's something new to learn.",
 		reward = { coins = 250 },
 	},
 	{
@@ -77,6 +77,140 @@ Tutorial.Steps = {
 		text = "Three new quests every day. They pay coins, and clearing all three pays gems too. That's it, coach. Go win some games!",
 	},
 }
+
+-- Match lessons: taught inside the warm-up game (step "game"). The warm-up is scripted so each
+-- moment happens on cue, and the game FREEZES (clock and sim) until the player does the thing.
+-- Each lesson dims the screen except `focus` (a box around it), points an arrow at it, shows
+-- Coach Dee's line, and waits for `action` on `focus`:
+--   "tap"  tap the focus
+--   "drag" drag from focus to dropOn
+--   "time" stop a meter inside its green zone (any stop is accepted, the result is explained)
+--   "ok"   just read and tap Got it
+-- cue = when the scripted warm-up triggers it. Order matters: one new idea at a time.
+Tutorial.MatchLessons = {
+	{
+		id = "watch",
+		cue = "tipoff",
+		focus = "BallTag",
+		arrow = "down",
+		action = "ok",
+		text = "You're the coach, so you don't control players. The tag shows who has the ball. Your job is the calls.",
+	},
+	{
+		id = "coachCall",
+		cue = "coachCall",
+		focus = "CoachCall",
+		arrow = "up",
+		action = "tap",
+		text = "A Coach's Call! They're doubling your star. Kicking it out finds the open shooter. Normally you get 3 seconds, so be quick.",
+		script = { call = "double", answer = "Kick it out" },
+	},
+	{
+		id = "heatCheck",
+		cue = "heatCheck",
+		focus = "FeedButton",
+		arrow = "left",
+		action = "tap",
+		text = "Three makes in a row: he's on fire! Tap Feed him so he shoots more for a minute.",
+		script = { makes = 3 },
+	},
+	{
+		id = "lockHimUp",
+		cue = "oppHot",
+		focus = "Matchups",
+		dropOn = "HotOpponent",
+		arrow = "right",
+		action = "drag",
+		text = "Now THEIR guard is hot. Drag your best defender onto him. The switch happens at the next dead ball.",
+		script = { oppMakes = 3 },
+	},
+	{
+		id = "timeout",
+		cue = "timeoutPrompt",
+		focus = "TimeoutButton",
+		arrow = "down",
+		action = "tap",
+		text = "They're on a run. Call a timeout to stop it! You have 4 a game.",
+		script = { oppRun = 8 },
+	},
+	{
+		id = "timeoutScreen",
+		cue = "timeoutOpen",
+		focus = "TimeoutPanel",
+		arrow = "left",
+		action = "ok",
+		text = "In a timeout you can sub, change your play style, call the next play and give a team talk. Your five also get energy back.",
+	},
+	{
+		id = "tired",
+		cue = "quarterBreak",
+		focus = "TiredPlayer",
+		dropOn = "BenchPlayer",
+		arrow = "up",
+		action = "drag",
+		text = "Quarter break! See the red energy bar? Tired players miss more. Drag a bench player onto him to sub.",
+		script = { tiredEnergy = 0.3 },
+	},
+	{
+		id = "clutch",
+		cue = "clutchShot",
+		focus = "ClutchMeter",
+		arrow = "up",
+		action = "time",
+		text = "Down 1, last shot! Tap when the marker hits the green. Ratings matter most, but good timing helps.",
+		script = { margin = -1, secondsLeft = 6 },
+	},
+}
+
+-- First-time tips in real games: a smaller box and arrow, shown once each, the first time the
+-- moment happens. The game doesn't freeze; the tip fades after `seconds` or on tap.
+Tutorial.Tips = {
+	{ id = "playStyle", cue = "quarterBreak", focus = "PlayStyle", seconds = 5, text = "Styles counter each other. If theirs is beating yours, switch here." },
+	{ id = "cold", cue = "coldPlayer", focus = "SitButton", seconds = 5, text = "Missed 4 in a row: he's cold. Tap Sit him to rest him." },
+	{ id = "challenge", cue = "badCall", focus = "ChallengeButton", seconds = 6, text = "Think the ref got it wrong? Challenge once a game. If you lose, it costs a timeout." },
+	{ id = "clutchTimeout", cue = "clutchTimeout", focus = "FinalPlay", seconds = 6, text = "Clutch Timeout: you pick the last play yourself." },
+	{ id = "homeCourt", cue = "awayFreeThrow", focus = "Crowd", seconds = 4, text = "Your home crowd makes away free throws harder." },
+	{ id = "badgeApplier", cue = "firstBadgeCard", focus = "BadgesButton", seconds = 6, text = "You got a badge card! Put it on a player in the Badge Applier." },
+	{ id = "newPlayer", cue = "firstNewPlayer", focus = "TeamButton", seconds = 6, text = "New players start on the bench. Add them to your lineup in Team." },
+}
+
+Tutorial.LessonById, Tutorial.TipById = {}, {}
+for _, l in ipairs(Tutorial.MatchLessons) do
+	Tutorial.LessonById[l.id] = l
+end
+for _, t in ipairs(Tutorial.Tips) do
+	Tutorial.TipById[t.id] = t
+end
+
+-- The lesson to show for a warm-up cue (nil if none or already seen). Marks it seen.
+function Tutorial.lessonFor(state, cue: string)
+	state.lessons = state.lessons or {}
+	for _, l in ipairs(Tutorial.MatchLessons) do
+		if l.cue == cue and not state.lessons[l.id] then
+			state.lessons[l.id] = true
+			return l
+		end
+	end
+	return nil
+end
+
+-- The first-time tip for a real-game cue (nil if seen). Marks it seen. Works after the
+-- tutorial is done or skipped, since that's when these moments first come up.
+function Tutorial.tipFor(state, cue: string)
+	state.tips = state.tips or {}
+	for _, t in ipairs(Tutorial.Tips) do
+		if t.cue == cue and not state.tips[t.id] then
+			state.tips[t.id] = true
+			return t
+		end
+	end
+	return nil
+end
+
+-- "How to play" button: replay the lessons in the next warm-up.
+function Tutorial.resetLessons(state)
+	state.lessons = {}
+end
 
 -- Paid once when the last step is done (not when skipped). 20 gems + the 10 you start with
 -- is exactly one Common cosmetic, so the gem shop makes sense from day one.

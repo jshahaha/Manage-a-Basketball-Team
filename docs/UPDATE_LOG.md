@@ -11,6 +11,7 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 - Badges: equipping is now free and taking a badge off costs the tier's coins (Bronze 250, Silver 1,000, Gold 2,500, Diamond 6,000, Hall of Fame 15,000; the top three were 3,500 / 10,000 / 30,000). Equipped badges can't be upgraded in place: take off, then equip the better one
 ### Added
 - `Tutorial.lua`: 9-step first-time tutorial with Coach Dee (club, first pack, starting five, badge, minutes, warm-up game, training, scouting, quests). Free Rookie Pack, 250 coins for the warm-up game, and 250 coins + 20 gems + a Blacktop Pack for finishing. Skippable.
+- In-game lessons: the warm-up game freezes for 8 lessons (ball tag, Coach's Call, heat check, Lock him up, timeout, timeout screen, tired player sub, clutch meter), each with a spotlight, box and arrow, and waits until you do it (`Tutorial.MatchLessons`, `src/client/TutorialOverlay.lua`). Plus 7 one-time tips in real games (`Tutorial.Tips`)
 - `Badges.unequip`: takes a badge off for the tier's coins and returns the badge card
 
 ## v0.1.9 (2026-11-01): Facilities, scouting prices, score effects
