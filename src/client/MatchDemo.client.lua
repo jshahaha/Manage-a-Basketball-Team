@@ -149,6 +149,7 @@ local camX = ORIGIN.X
 RunService:BindToRenderStep("MatchDemoCamera", Enum.RenderPriority.Camera.Value + 1, function(dt)
 	local target = ORIGIN.X + math.clamp(ball.Position.X - ORIGIN.X, -24, 24) * 0.8
 	camX += (target - camX) * math.min(1, dt * 2.5)
+	camera.CameraType = Enum.CameraType.Scriptable -- the default camera script resets it on spawn
 	camera.CFrame = CFrame.lookAt(Vector3.new(camX, 15, ORIGIN.Z + 46), Vector3.new(camX, 4, ORIGIN.Z))
 end)
 
