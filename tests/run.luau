@@ -907,6 +907,34 @@ test("shot feedback agrees with the result and rewards good shooters", function(
 	assert(plan.result.made == false and plan.handler == 4, "miss plan")
 end)
 
+test("a miss ends in a rebound grabbed at the top of the jump", function()
+	local sets = {}
+	for i = 1, 5 do
+		sets[i] = AnimSets.clips({ shot = "High", dunk = "OneHand", moves = { "Crossover" } })
+	end
+	for _, who in ipairs({ 10, 4 }) do
+		local plan = Possession.plan({ offense = sets, dir = 1, result = { kind = "three", shooter = 2, assist = 1, made = false, rebounder = who } })
+		local reb = plan.rebound
+		assert(reb and reb.who == who and reb.tCatch > reb.tRim and reb.tRim > plan.tShot, "rebound beats")
+		assert(plan.length > reb.tCatch, "plays past the catch")
+		assert(Possession.frame(plan, reb.tRim - 0.05).ball.owner == 2, "shooter's ball until the rim")
+		local mid = Possession.frame(plan, (reb.tRim + reb.tCatch) / 2)
+		assert(mid.ball.free and mid.ball.rebound and mid.ball.y > 6, "ball in the air off the rim")
+		local after = Possession.frame(plan, reb.tCatch + 0.2)
+		assert(after.ball.owner == who and after.players[who].clip == "Rebound", "rebounder has it")
+		local p = after.players[who]
+		local d = math.sqrt((p.x - reb.spot.x) ^ 2 + (p.z - reb.spot.z) ^ 2)
+		assert(d < 0.01, "rebounder at the spot")
+		for t = 0, plan.length, 0.1 do
+			for _, q in ipairs(Possession.frame(plan, t).players) do
+				assert(AnimClips.Clips[q.clip], "clip " .. tostring(q.clip))
+			end
+		end
+	end
+	local made = Possession.plan({ offense = sets, dir = 1, result = { kind = "jumper", shooter = 2, made = true } })
+	assert(made.rebound == nil, "makes have no rebound")
+end)
+
 print(string.format("%d passed, %d failed", passed, failed))
 if failed > 0 then
 	error("tests failed")

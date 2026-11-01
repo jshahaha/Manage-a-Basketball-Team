@@ -170,7 +170,15 @@ local function play(homeBall: boolean)
 	local rating = ShotFeel.rating(team[shooter], kind)
 	local base = ({ jumper = 0.45, three = 0.37, dunk = 0.93 })[kind]
 	local made = rng:chance(math.clamp(base + (rating - 70) * 0.006, 0.05, 0.98))
-	local plan = Possession.plan({ offense = offense, dir = homeBall and 1 or -1, result = { kind = kind, shooter = shooter, assist = assist, made = made } })
+	-- Misses get a rebound: about one in four is an offensive board by a big.
+	local rebounder = nil
+	if not made and kind ~= "dunk" then
+		rebounder = rng:chance(0.25) and rng:int(4, 5) or rng:int(9, 10)
+		if rebounder == shooter or rebounder == shooter + 5 then
+			rebounder = rebounder == 10 and 9 or (rebounder == 5 and 4 or rebounder)
+		end
+	end
+	local plan = Possession.plan({ offense = offense, dir = homeBall and 1 or -1, result = { kind = kind, shooter = shooter, assist = assist, made = made, rebounder = rebounder } })
 	local clip = AnimClips.Clips[plan.shotClip]
 	if kind == "dunk" then
 		made = true -- the view has no blocked dunk yet
@@ -193,15 +201,23 @@ local function play(homeBall: boolean)
 			end)
 		end
 	end
+	if plan.rebound then
+		task.delay(plan.rebound.tCatch, function()
+			pop(plan.rebound.who <= 5 and "OFFENSIVE BOARD" or "REBOUND", Color3.fromRGB(150, 200, 255))
+		end)
+	end
 	view:play(plan, homeBall, function(ev)
 		Audio.play(ev, ball)
 	end)
+	return plan.rebound ~= nil and plan.rebound.who <= 5
 end
 
 task.wait(1)
 local homeBall = true
 while folder.Parent do
-	play(homeBall)
-	homeBall = not homeBall
+	local keep = play(homeBall)
+	if not keep then
+		homeBall = not homeBall
+	end
 	task.wait(0.6)
 end

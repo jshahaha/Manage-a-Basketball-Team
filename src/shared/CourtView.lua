@@ -91,24 +91,23 @@ function CourtView:missBall(plan, S, clip, ct, place, rim)
 	if not tr or ct <= tr then
 		return PoseSolver.ball(S, clip, ct, place, front)
 	end
-	-- Off the rim: long bounce out to one side, then a short one, then it rolls to a stop.
-	local side = Vector3.new(-back.Z, 0, back.X) * ((plan.shooter % 2 == 0) and 1 or -1)
-	local r = PoseSolver.BallRadius
-	local p0 = front + Vector3.yAxis * 0.6
-	local p1 = rim + back * 5 + side * 3
-	p1 = Vector3.new(p1.X, self.floorY + r, p1.Z)
-	local p2 = p1 + (back * 2.5 + side * 1.5)
-	local p3 = p2 + (back * 1.5 + side)
-	local u = ct - tr
-	local function hop(a, b, v, h)
-		return a:Lerp(b, v) + Vector3.yAxis * (h * 4 * v * (1 - v))
+	return front + Vector3.yAxis * 0.6 -- after the rim the plan's rebound takes over
+end
+
+-- Where the rebounder's hands are at the top of their jump, so the ball lands right in them.
+function CourtView:reboundHands(plan, homeHasBall)
+	local fit = self.dunks[plan.rebound]
+	if fit then
+		return fit
 	end
-	if u < 0.75 then
-		return hop(p0, p1, u / 0.75, 2.6)
-	elseif u < 1.2 then
-		return hop(p1, p2, (u - 0.75) / 0.45, 1.1)
-	end
-	return p2:Lerp(p3, smooth((u - 1.2) / 0.8))
+	local reb = plan.rebound
+	local p = Possession.frame(plan, reb.tCatch).players[reb.who]
+	local S = self.S[bodyFor(reb.who, homeHasBall)]
+	local clip = AnimClips.Clips.Rebound
+	local place = PoseSolver.place(S, clip, self.center.X + p.x, self.center.Z + p.z, self.floorY, p.face)
+	fit = PoseSolver.ball(S, clip, p.t, place)
+	self.dunks[plan.rebound] = fit
+	return fit
 end
 
 -- Pose everyone and place the ball for time t. Returns the ball position (or nil).
@@ -137,7 +136,13 @@ function CourtView:render(plan, t: number, homeHasBall: boolean)
 			end
 		end
 	end
-	if f.ball.free then
+	if f.ball.free and f.ball.rebound then
+		local reb = plan.rebound
+		local a = Vector3.new(self.center.X + reb.front.x, rim.Y + 0.6, self.center.Z + reb.front.z)
+		local b = self:reboundHands(plan, homeHasBall)
+		local u = f.ball.rebound
+		ballPos = a:Lerp(b, u) + Vector3.yAxis * (1.6 * 4 * u * (1 - u))
+	elseif f.ball.free then
 		ballPos = Vector3.new(self.center.X + f.ball.x, self.floorY + f.ball.y, self.center.Z + f.ball.z)
 	end
 	if self.ball then

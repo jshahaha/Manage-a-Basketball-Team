@@ -13,6 +13,8 @@
 --
 -- Positions are in court studs (1 ft = 0.9), rim at x = dir * 37.575.
 
+local AnimClips = require(script and script.Parent:FindFirstChild("AnimClips") or "./AnimClips")
+
 local Possession = {}
 
 local FT = 0.9
@@ -73,7 +75,7 @@ function Possession.plan(opts)
 		tShot = tShot + DRIVE
 	end
 	plan.shotClip, plan.moveClip, plan.tMove, plan.tPass, plan.tShot, plan.tCatch = shotClip, moveClip, tMove, tPass, tShot, tCatch
-	plan.length = tShot + (r.made == false and r.kind ~= "dunk" and 3.8 or 2.6) -- a miss bounces away
+	plan.length = tShot + 2.6
 	-- Where everyone ends up: the shooter at their shot spot, the rest at their spots.
 	local finals = {}
 	for i = 1, 5 do
@@ -94,7 +96,46 @@ function Possession.plan(opts)
 		finals[shooter] = plan.driveFrom -- catch at their own spot, then attack
 	end
 	plan.handler, plan.shooter, plan.passer = handler, shooter, (passer and passer ~= shooter) and passer or nil
+	if r.made == false and r.kind ~= "dunk" then
+		Possession.addRebound(plan, r.rebounder or (shooter == 5 and 9 or 10))
+	end
 	return plan
+end
+
+-- When the shot clip's ball reaches the rim.
+local function rimTime(clipName)
+	local clip = AnimClips.Clips[clipName]
+	for _, k in ipairs(clip and clip.ball or {}) do
+		if k[2] == "rim" then
+			return k[1]
+		end
+	end
+	return 1.75
+end
+
+-- A miss: the ball comes off the front of the rim and slot `who` (1-5 offense, 6-10 defense)
+-- goes up and grabs it at the top of their jump, then chins it.
+local REB_LEAD = 0.75 -- the Rebound clip's hands meet the ball this far in
+function Possession.addRebound(plan, who: number)
+	local dir = plan.dir
+	local rim = { x = dir * RIM_X, z = 0 }
+	local sp = plan.finals[plan.shooter]
+	local bx, bz = sp.x - rim.x, sp.z - rim.z
+	local len = math.sqrt(bx * bx + bz * bz)
+	bx, bz = bx / len, bz / len
+	local side = (plan.shooter % 2 == 0) and 1 or -1
+	local sx, sz = -bz * side, bx * side
+	local reb = {
+		who = who,
+		tRim = plan.tShot + rimTime(plan.shotClip),
+		front = { x = rim.x + bx * 0.55, z = rim.z + bz * 0.55, y = 9.6 },
+		spot = { x = rim.x + bx * 4 + sx * 2.5, z = rim.z + bz * 4 + sz * 2.5 },
+	}
+	reb.tCatch = reb.tRim + 0.55
+	reb.tJump = reb.tCatch - REB_LEAD
+	reb.from = Possession.frame(plan, plan.tShot).players[who]
+	plan.rebound = reb
+	plan.length = reb.tCatch + 1.3
 end
 
 -- Where player i (offense 1-5, defense 6-10) is at time t, and what they're doing.
@@ -168,8 +209,32 @@ function Possession.frame(plan, t)
 		end
 		out.players[5 + i] = p
 	end
+	local reb = plan.rebound
+	if reb and t >= plan.tShot + 0.2 then
+		-- The rebounder reads the miss, gets to the spot, and goes up for it.
+		local p = out.players[reb.who]
+		local u = smooth((t - plan.tShot - 0.2) / math.max(0.1, reb.tJump - plan.tShot - 0.2))
+		p.x, p.z = lerp(reb.from.x, reb.spot.x, u), lerp(reb.from.z, reb.spot.z, u)
+		p.face = math.deg(math.atan2(dir * RIM_X - p.x, -p.z))
+		if t < reb.tJump then
+			p.clip, p.t = "Jog", t % 0.7
+		else
+			p.clip, p.t = "Rebound", t - reb.tJump
+		end
+	end
 	-- Ball: with the handler until the pass, in the air during the pass, then the shot clip owns it.
-	if plan.passer and t >= plan.tPass and t < plan.tCatch then
+	if reb and t >= reb.tCatch then
+		out.ball = { owner = reb.who }
+	elseif reb and t >= reb.tRim then
+		local u = clamp01((t - reb.tRim) / (reb.tCatch - reb.tRim))
+		out.ball = {
+			free = true,
+			rebound = u, -- CourtView aims this at the rebounder's hands
+			x = lerp(reb.front.x, reb.spot.x, u),
+			z = lerp(reb.front.z, reb.spot.z, u),
+			y = lerp(reb.front.y, 8, u) + 1.6 * 4 * u * (1 - u),
+		}
+	elseif plan.passer and t >= plan.tPass and t < plan.tCatch then
 		local a, b = out.players[plan.passer], out.players[plan.shooter]
 		local u = clamp01((t - plan.tPass - 0.15) / 0.4)
 		out.ball = { x = lerp(a.x, b.x, u), z = lerp(a.z, b.z, u), y = 4.2 + math.sin(u * math.pi) * 0.6, free = true }
