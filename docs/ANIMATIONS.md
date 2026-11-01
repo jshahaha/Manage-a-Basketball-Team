@@ -100,6 +100,20 @@ Signature moves: a few dunks and celebrations are locked to Legendary and Hall o
 - Shop: buy popup scales in. Bundle box shows a stacked box with ×5 or ×20.
 - Badge applier: eligible players glow green, and the slot fills with a pop when equipped.
 
+## Signature moves (src/shared/AnimSets.lua)
+
+Every player rolls these once when generated and keeps them (saved as `player.anims`).
+
+| Set | Options (rarest last) |
+|---|---|
+| Shot style | Textbook, Quick Release, High Release, Set Shot, Fadeaway (Rare+) |
+| Dunk package | One-Hand, Two-Hand, Tomahawk (Rare+), Windmill (Epic+), 360 (Legendary+) |
+| Dribble moves | Crossover, In-and-Out, Hesitation, Between the Legs (Rare+), Behind the Back (Rare+), Spin (Epic+), Step-Back (Epic+) |
+
+Commons know 1 dribble move, Rares 2, Epics and Legendaries 3, Hall of Famers 4. Snipers lean toward
+quick and high releases; Slashers and Post Scorers toward flashier dunks. Hands have a palm, four
+fingers and a thumb so wrist flicks read on court.
+
 ## Practical Basketball reference (watched on js's Mac, 2026-11-01)
 
 Watched two videos in Chrome through screenshots (about one frame a second, so this is
