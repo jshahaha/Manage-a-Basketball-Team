@@ -154,7 +154,7 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 | Coach Pack | 60,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — | — |
 | Elite Coach Pack | 250,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 | — |
 
-**The item.** Every player pack ends its reveal with one useful item instead of a filler player: a **Cosmetic** (40%, a jersey, court floor, ball or celebration), a **Coin Pouch** (35%, 10–30% of the pack's coin price back) or a **Badge Shard** (25%; 5 shards move one badge up a tier, up to Gold, and the player still needs the stats). Stamina only exists inside a match, so there are no energy items.
+**The item.** Every player pack ends its reveal with one useful item instead of a filler player: a **Cosmetic** (40%, a jersey, court floor, ball or celebration), a **Coin Pouch** (35%, 10–30% of the pack's coin price back) or a **Badge Upgrade** (25%). Badge Upgrades have their own rarity, and the rarity decides which tier they work on: **Bronze → Silver** (60% of upgrades), **Silver → Gold** (28%), **Gold → Diamond** (10%) and **Diamond → Hall of Fame** (2%). The player still needs the stats for the new tier. Stamina only exists inside a match, so there are no energy items.
 
 **OVR ranges for now:** Common 50–64, Rare 65–72, Epic 73–79, Legendary 80–86 and Hall of Fame 87–91. **No card goes above 93**, including Finishes and training. Stronger cards come in a later update, when we raise the cap.
 

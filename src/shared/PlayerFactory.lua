@@ -209,6 +209,13 @@ function PlayerFactory.openPack(rng, packId: string, Catalog, Badges)
 		items[i] = { kind = "item", id = it.id }
 		if it.id == "CoinPouch" then
 			items[i].coins = math.floor(pack.coins * rng:range(0.10, 0.30) / 100 + 0.5) * 100
+		elseif it.rarities then
+			local r = {}
+			for _, x in ipairs(it.rarities) do
+				table.insert(r, { x.from, x.weight })
+			end
+			items[i].from = rng:weighted(r)
+			items[i].to = Badges.nextTier(items[i].from, "HallOfFame")
 		end
 	end
 	return cards, badges, items

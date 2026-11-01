@@ -161,8 +161,16 @@ Config.Packs = {
 Config.PackItems = {
 	{ id = "Cosmetic", name = "Cosmetic", weight = 40, text = "A jersey, court floor, ball or celebration." },
 	{ id = "CoinPouch", name = "Coin Pouch", weight = 35, text = "Gives back 10 to 30% of the pack's coin price." },
-	{ id = "BadgeShard", name = "Badge Shard", weight = 25, shardsPerUpgrade = 5, maxTier = "Gold",
-		text = "Collect 5 to move one badge up a tier (up to Gold). The player still needs the stats for it." },
+	-- Badge Upgrades have their own rarity: the rarer the upgrade, the higher the tier it works on.
+	-- A Bronze Upgrade turns a Bronze badge into Silver, and so on. The player still needs the stats.
+	{ id = "BadgeUpgrade", name = "Badge Upgrade", weight = 25,
+		text = "Moves one badge up a tier. Its rarity decides which tier it works on.",
+		rarities = {
+			{ from = "Bronze", weight = 60 },
+			{ from = "Silver", weight = 28 },
+			{ from = "Gold", weight = 10 },
+			{ from = "Diamond", weight = 2 }, -- Diamond -> Hall of Fame
+		} },
 }
 
 Config.Bundles = {

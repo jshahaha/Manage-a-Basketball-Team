@@ -144,6 +144,9 @@ test("catalog: fixed card list, packs draw from it", function()
 		ok(#cards >= 1 and #cards <= 2, "1-2 players")
 		ok(#badges >= 2 and #badges <= 3, "2-3 badges")
 		eq(#items, 1)
+		if items[1].id == "BadgeUpgrade" then
+			ok(Badges.nextTier(items[1].from, "HallOfFame") == items[1].to and items[1].to ~= nil, "upgrade tiers")
+		end
 		local _, _, coachItems = PlayerFactory.openPack(rng, "Coach", Catalog, Badges)
 		eq(#coachItems, 0)
 		for _, b in ipairs(badges) do
