@@ -100,9 +100,26 @@ Signature moves: a few dunks and celebrations are locked to Legendary and Hall o
 - Shop: buy popup scales in. Bundle box shows a stacked box with ×5 or ×20.
 - Badge applier: eligible players glow green, and the slot fills with a pop when equipped.
 
+## Practical Basketball reference (watched on js's Mac, 2026-11-01)
+
+Watched two videos in Chrome through screenshots (about one frame a second, so this is
+pose and style, not timing). Their camera sits behind the player, not side-on like ours.
+
+- Bodies: plain blocky R15 with hair and chunky sneakers. Narrow body type, long legs. The
+  ball is about the size of the head and sits low at the hip when dribbling.
+- Defense: deep knee bend, chest up, both arms spread wide to the sides with palms out.
+  Slides leave a short dashed trail on the floor.
+- Running: about 15° forward lean, big arm pumps, ball pushed out in front on a drive.
+- Dunks: the player glides high and the rim and net flex; a white light burst plays at the rim.
+- Feedback ideas that fit our sim: a ring under the ball handler's feet, and shot text like
+  "Perfect Release" or "0% Contested" next to the shooter.
+
+What we changed from it: DefSlide arms go wider, and player bodies use slim limbs
+(src/shared/PlayerModel.lua).
+
 ## Still needs js's computer
 
 - Upload ShotRelease, Swish, LayupKiss, Dunk, Block and PassChest sounds. The cues already fire, and the lab shows them as "to upload".
-- Import the clips into Studio and check them on the real R15 rig at game speed.
+- Import the remaining clips into Studio (Shoot, Idle and 11 more are in; BetweenLegs, BehindBack, Hesitation, Dribble, BouncePass and ForPlay are not yet).
 - A rig in Blender for the walkout poses if we want hand-tuned curves.
 - Upload the missing sounds (swish, dunk, block slap) from the Creator Store so the cues above have their sounds.
