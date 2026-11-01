@@ -26,7 +26,11 @@ Every rating runs from 1 to 99. There are 20 ratings in 6 groups.
 - **PF:** Close Shot, Post Moves, Interior Defense, Rebounding and Strength count most.
 - **C:** Standing Dunk, Block, Interior Defense, Rebounding and Strength count most.
 
-**Physicals:** height and wingspan are shown on the card, such as 6'9" with a 7'1" wingspan. Players have no rating for them, but they nudge blocks, rebounds and contested shots.
+**Player info** on the card and detail panel:
+- **Nationality**, shown as a flag. Nations are picked with weights, so most players are from the US with plenty from around the world.
+- **Height, wingspan and weight**, such as 6'9", 7'1" wingspan, 228 lb. Players have no rating for these, but they nudge blocks, rebounds, contested shots and post-ups.
+- **Positions:** a main position and up to two others the player can also play (for example SG with PG, SF). Playing a player at another of their listed positions has no penalty. Any other position gives a small penalty.
+- **Club:** the card shows the club that owns it, with your club's name and badge. When the player is traded or sold, the badge changes to the new owner's club. A new pull shows "Free Agent" until you keep it. **No real NBA or college teams appear anywhere.**
 
 **Archetypes** come from the ratings. For example, high 3PT gives Sniper, high Driving Dunk plus Speed gives Slasher, high Block plus Interior Defense gives Rim Protector, and high Passing plus Ball Handling gives Floor General. Chemistry uses archetypes.
 

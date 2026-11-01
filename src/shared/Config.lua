@@ -20,6 +20,37 @@ Config.GameMinutes = 48
 Config.TeamMinutes = 240 -- 5 players x 48 minutes
 
 Config.Positions = { "PG", "SG", "SF", "PF", "C" }
+-- Positions a player can also play (besides their main one), by main position.
+Config.SecondaryPositions = {
+	PG = { "SG" },
+	SG = { "PG", "SF" },
+	SF = { "SG", "PF" },
+	PF = { "SF", "C" },
+	C = { "PF" },
+}
+-- Weight range in lb by position.
+Config.Weight = { PG = { 170, 205 }, SG = { 180, 215 }, SF = { 200, 235 }, PF = { 220, 255 }, C = { 235, 280 } }
+-- Nationalities for generated players: ISO code and how common it is.
+Config.Nations = {
+	{ "US", 50 }, { "CA", 6 }, { "FR", 5 }, { "AU", 4 }, { "DE", 3 }, { "ES", 3 }, { "RS", 3 },
+	{ "NG", 3 }, { "GR", 2 }, { "SI", 2 }, { "LT", 2 }, { "BR", 2 }, { "AR", 2 }, { "JP", 2 },
+	{ "PH", 2 }, { "CN", 2 }, { "TR", 2 }, { "SN", 2 }, { "GB", 2 }, { "IT", 1 }, { "CM", 1 },
+}
+
+-- Game length (real seconds per quarter; the game clock always shows 12:00).
+Config.QuarterSeconds = { queued = 45, challenge = 75 }
+Config.TimeoutsPerGame = 4
+Config.TimeoutSeconds = 15
+Config.QuarterBreakSeconds = 12
+
+-- Home court edge. Small on purpose: home teams should win about 54% of even games.
+Config.HomeCourt = {
+	pointsEdge = 1, -- projection bonus
+	awayFreeThrowPenalty = 0.03, -- crowd noise: away FT% minus 3 points
+	awayClutchFreeThrowPenalty = 0.06, -- in the last 2 game-minutes of a close game
+	homeEnergyRecovery = 1.05, -- home players recover energy on the bench 5% faster
+	homeCoachsCallSeconds = 1, -- home coach gets 1 extra second on Coach's Calls
+}
 
 -- Highest OVR any card can have right now, Finishes and training included.
 -- Raise this (and the ranges below) in a future update to add stronger cards.
@@ -47,37 +78,49 @@ Config.Finishes = {
 }
 
 -- Packs -------------------------------------------------------------------
--- odds are per player and must add up to 1.
+-- odds are per card and must add up to 1. count = cards in the pack.
+-- guarantee = the best card is at least this rarity (that card is re-rolled with
+-- only the rarities at or above it, keeping their relative odds).
+-- Hall of Famers only drop from the All-Star Pack and event packs.
 Config.Packs = {
 	Blacktop = {
 		name = "Blacktop Pack",
 		kind = "players",
 		count = 3,
 		coins = 5000,
-		odds = { Common = 0.70, Rare = 0.24, Epic = 0.05, Legendary = 0.009, HallOfFame = 0.001 },
+		robux = 29,
+		odds = { Common = 0.74, Rare = 0.22, Epic = 0.04 },
 	},
 	Pro = {
 		name = "Pro Pack",
 		kind = "players",
-		count = 3,
+		count = 4,
 		coins = 40000,
-		odds = { Common = 0.35, Rare = 0.40, Epic = 0.19, Legendary = 0.055, HallOfFame = 0.005 },
+		robux = 99,
+		guarantee = "Rare",
+		odds = { Common = 0.36, Rare = 0.41, Epic = 0.19, Legendary = 0.04 },
 	},
 	AllStar = {
 		name = "All-Star Pack",
 		kind = "players",
-		count = 3,
+		count = 5,
 		coins = 250000,
-		odds = { Common = 0, Rare = 0.40, Epic = 0.42, Legendary = 0.16, HallOfFame = 0.02 },
+		robux = 399,
+		guarantee = "Epic",
+		odds = { Rare = 0.42, Epic = 0.42, Legendary = 0.145, HallOfFame = 0.015 },
 	},
 	Coach = {
 		name = "Coach Pack",
 		kind = "coach",
 		count = 1,
 		coins = 60000,
-		odds = { Common = 0.55, Rare = 0.30, Epic = 0.12, Legendary = 0.027, HallOfFame = 0.003 },
+		robux = 149,
+		odds = { Common = 0.55, Rare = 0.30, Epic = 0.12, Legendary = 0.03 },
 	},
 }
+
+-- Walkout cutscene plays for cards of this rarity or better.
+Config.WalkoutRarity = "Legendary"
 
 -- Play styles (known by coaches) -------------------------------------------
 Config.OffenseStyles = { "FiveOut", "PaceAndSpace", "InsideOut", "PickAndRoll", "Motion", "IsoStar" }

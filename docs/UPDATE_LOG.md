@@ -10,6 +10,12 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 - `Sounds.lua` registry and `Audio.lua` player: volume groups, random variants and pitch, cooldowns, and a commentator queue that never talks over itself. Sounds stay silent until their asset IDs are filled in
 - The CODES panel plays open, close, success and error sounds
 - Design: pack opening animation (drop, shake, rip, cards fly out, tap to flip, special reveals for Legendary and Hall of Fame)
+- Packs now have 3, 4 or 5 cards, a guaranteed best card in the bigger packs, and `PlayerFactory.openPack`. Hall of Famers only drop from the All-Star Pack and event packs
+- Hover effect on Epic or better cards, and a walkout cutscene for Legendary and Hall of Fame pulls
+- Player info: nationality, weight, extra positions, and the owning club (never a real team)
+- Home court edge: shaky away free throws, crowd energy, faster bench recovery
+### Changed
+- Queued games: quarters go from about 35 s to about 45 s (about 4 to 4.5 min in total with stops). Server challenges take about 6 to 7 min
 
 ## v0.1.0 (2026-11-01): First code
 ### Added

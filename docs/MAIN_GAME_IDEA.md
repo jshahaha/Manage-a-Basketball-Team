@@ -50,7 +50,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 - **Live games happen only through server challenges** (below).
 - **VS screen:** both managers' avatars, club badges, team OVR, chemistry and Elo, plus a **projected scoreline** like "104 – 99 · 62% to win". The projection comes from both teams' minutes-weighted ratings and both play styles. Even teams project around 105–110 points each, fast styles push the totals up, and slow styles bring them down.
 - **Server challenge:** walk up to any manager in your server, or tap their name, and challenge them. If they accept, it's a **live game** played on the challenger's Home Court, so the rest of the server can come and watch.
-  - It's **longer** than a queued game: 4 quarters of about 75 seconds each, so **about 5 to 6 minutes** in total.
+  - It's **longer** than a queued game: 4 quarters of about 75 seconds each, so **about 6 to 7 minutes** in total with stops.
   - **Both coaches call their own timeouts** (4 each), make subs and switch styles in real time. The game only pauses while a timeout is running.
   - It's unranked by default, so it doesn't change Elo.
 - **Elo rating:** every club has an Elo number, shown on its badge, on the Match Found screen and on leaderboards.
@@ -84,12 +84,19 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
   | Mode | Quarters | Real time |
   |---|---|---|
-  | Queued (PLAY) | 4 × about 35 s, plus breaks | **about 2.5 to 3 min** |
-  | Server challenge (live) | 4 × about 75 s, plus breaks | **about 5 to 6 min** |
+  | Queued (PLAY) | 4 × about 45 s, plus breaks | **about 4 to 4.5 min** |
+  | Server challenge (live) | 4 × about 75 s, plus breaks | **about 6 to 7 min** |
 
-  The game clock always shows 12-minute quarters (48 minutes in all), and it runs fast. A timeout pauses the game for up to 15 seconds.
+  The game clock always shows 12-minute quarters (48 minutes in all), and it runs fast. A timeout pauses the game for up to 15 seconds, and each team has 4. Quarter breaks last about 12 seconds. Quarters were lengthened from 35 s because the interactive moments (timeouts, quarter breaks, Coach's Calls) add about a minute of stops.
 - **The court is watched from the side.** The camera sits on the sideline and the court runs left to right across the screen, like a TV broadcast. Your coach avatar stands at the bench in the foreground under a HEAD COACH tag and can use emotes. The camera pans left and right to follow the ball.
 - The game is played **on the home team's Home Court in the lobby world**, so other managers can walk over and watch.
+- **Who is home:** in a queued game you are always home, since it's your Home Court and your crowd, and the saved team visits. In a server challenge the challenger is home.
+- **Home court edge** is small on purpose. Home teams should win about 54% of even games.
+  - **Shaky free throws:** when the away team shoots a free throw, the home crowd waves and yells, and the camera wobbles slightly. Away free throws drop by 3 percentage points, and by 6 in the last 2 game-minutes of a close game.
+  - **Crowd energy:** the crowd gets louder on home runs, and home makes get bigger cheers. The away team's makes get a quieter reaction.
+  - Home players recover energy on the bench 5% faster.
+  - The home coach gets 1 extra second to answer Coach's Calls.
+  - About +1 point in the projected scoreline.
 - **Ball-handler tag:** a floating name tag marks whoever has the ball. Jerseys show names and numbers.
 - After big plays a **REPLAY** shows a close-up from a new angle with a name lower third, and you can tap to skip.
 - **Highlight moments:** big banners appear (AND-ONE!, FROM DOWNTOWN!, BIG BLOCK!, BUZZER BEATER!), dunks play as a letterboxed **slow-motion HIGHLIGHT**, and the game ends with a **VICTORY!** celebration in front of the bench. You can tap to skip.
@@ -134,20 +141,29 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 ## 5. Packs
 
-| Pack | Price | Common / Rare / Epic / Legendary / Hall of Fame % |
-|---|---|---|
-| Blacktop Pack | 5,000 coins · R$ 29 | 70 / 24 / 5 / 0.9 / 0.1 |
-| Pro Pack | 40,000 coins · R$ 99 | 35 / 40 / 19 / 5.5 / 0.5 |
-| All-Star Pack | 250,000 coins · R$ 399 | — / 40 / 42 / 16 / 2 |
-| Coach Pack (1 coach) | 60,000 coins · R$ 149 | 55 / 30 / 12 / 2.7 / 0.3 |
-| Event pack (e.g. Holiday Hoops, limited) | R$ 499 | Epic+ only: — / — / 78 / 19 / 3 |
+| Pack | Price | Cards | Common / Rare / Epic / Legendary / Hall of Fame % (per card) | Guaranteed |
+|---|---|---|---|---|
+| Blacktop Pack | 5,000 coins · R$ 29 | 3 | 74 / 22 / 4 / — / — | — |
+| Pro Pack | 40,000 coins · R$ 99 | 4 | 36 / 41 / 19 / 4 / — | 1 Rare or better |
+| All-Star Pack | 250,000 coins · R$ 399 | 5 | — / 42 / 42 / 14.5 / 1.5 | 1 Epic or better |
+| Coach Pack | 60,000 coins · R$ 149 | 1 coach | 55 / 30 / 12 / 3 / — | — |
+| Event pack (e.g. Holiday Hoops, limited) | R$ 499 | 5 | — / — / 77 / 20 / 3 | 1 Legendary or better |
+
+**Hall of Famers only drop from the All-Star Pack and event packs.** The Blacktop Pack tops out at Epic, and the Pro Pack tops out at Legendary.
 
 **OVR ranges for now:** Common 50–64, Rare 65–72, Epic 73–79, Legendary 80–86 and Hall of Fame 87–91. **No card goes above 93**, including Finishes and training. Stronger cards come in a later update, when we raise the cap.
 
-Every player pack gives **3 players**. The shop shows odds both by rarity and by OVR range.
+Packs give **3, 4 or 5 players** depending on the pack. The best card is always revealed last. The shop shows odds both by rarity and by OVR range.
 
 - Odds are always shown in-game, and Robux packs follow Roblox's rules on paid random items.
-- **Reveal:** the pack slams on the floor, the jerseys flip one by one, and the rarity color and an announcer line ("FROM DOWNTOWN!") play. On a Legendary or better, the whole server gets an alert.
+- **Reveal:** the pack slams on the floor and shakes, glowing in the best card's rarity color, then rips open. The cards fly out face-down, and you tap each one to flip it. Each flip plays its rarity color, sound and an announcer line. On a Legendary or better, the whole server gets an alert.
+- **Hover on good cards:** hovering (or holding on mobile) over an Epic or better card tilts it toward the cursor with a moving holo shine in its rarity color. Legendary and Hall of Fame cards also give off sparks, and Finish cards show their Finish pattern.
+- **Walkout cutscene (Legendary and Hall of Fame):** instead of flipping, the card plays a short cutscene on your Home Court. You can tap to skip it after the first time.
+  1. The arena lights go out, and a spotlight hits the tunnel with smoke.
+  2. **Clues** appear one at a time: the flag of the player's nation, then their position, then the archetype (for example Sniper).
+  3. A silhouette walks out of the tunnel. The **OVR** slams onto the screen in the rarity color.
+  4. The lights come up on the 3D player doing a signature celebration, with the name, the card and confetti.
+  5. A Hall of Fame walkout adds a drumroll, an air horn and a gold spotlight, and the whole server sees a "HALL OF FAMER PULLED" alert.
 
 ## 6. Training, scouting & chemistry
 

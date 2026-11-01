@@ -103,6 +103,42 @@ test("pack odds add up to 1", function()
 	end
 end)
 
+test("packs: card counts, guarantees, Hall of Famers only in top packs", function()
+	local rng = Rng.new(21)
+	eq(Config.Packs.Blacktop.count, 3)
+	eq(Config.Packs.Pro.count, 4)
+	eq(Config.Packs.AllStar.count, 5)
+	ok(not Config.Packs.Blacktop.odds.HallOfFame and not Config.Packs.Pro.odds.HallOfFame, "HoF only in top packs")
+	for _ = 1, 300 do
+		local cards = PlayerFactory.openPack(rng, "AllStar")
+		eq(#cards, 5)
+		local best = Config.RarityById[cards[#cards].rarity].order
+		ok(best >= Config.RarityById.Epic.order, "All-Star guarantees Epic+")
+		for i = 2, #cards do
+			ok(Config.RarityById[cards[i].rarity].order >= Config.RarityById[cards[i - 1].rarity].order, "best card last")
+		end
+		local pro = PlayerFactory.openPack(rng, "Pro")
+		ok(Config.RarityById[pro[4].rarity].order >= Config.RarityById.Rare.order, "Pro guarantees Rare+")
+		for _, c in ipairs(PlayerFactory.openPack(rng, "Blacktop")) do
+			ok(c.rarity ~= "HallOfFame" and c.rarity ~= "Legendary", "Blacktop tops out at Epic")
+		end
+	end
+end)
+
+test("player info: nationality, weight, positions, no club yet", function()
+	local rng = Rng.new(5)
+	for _ = 1, 100 do
+		local p = PlayerFactory.generate(rng, { rarity = "Rare" })
+		ok(type(p.nation) == "string" and #p.nation == 2, "nation code")
+		local w = Config.Weight[p.pos]
+		ok(p.weight >= w[1] and p.weight <= w[2], "weight in range")
+		for _, a in ipairs(p.altPos) do
+			ok(table.find(Config.SecondaryPositions[p.pos], a) ~= nil, "alt position allowed")
+		end
+		eq(p.club, nil)
+	end
+end)
+
 test("nobody goes above the OVR cap", function()
 	ok(Config.MaxOvr <= 93, "cap is 93 for now")
 	for _, r in ipairs(Config.Rarities) do
@@ -124,8 +160,8 @@ test("rollRarity follows the odds", function()
 		local r = PlayerFactory.rollRarity(rng, Config.Packs.Pro.odds)
 		counts[r] = (counts[r] or 0) + 1
 	end
-	ok(math.abs(counts.Rare / N - 0.40) < 0.02, "Rare ~40%")
-	ok(math.abs(counts.Common / N - 0.35) < 0.02, "Common ~35%")
+	ok(math.abs(counts.Rare / N - 0.41) < 0.02, "Rare ~41%")
+	ok(math.abs(counts.Common / N - 0.36) < 0.02, "Common ~36%")
 	eq(PlayerFactory.rollRarity(rng, { Epic = 1 }), "Epic")
 end)
 

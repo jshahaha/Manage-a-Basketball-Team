@@ -86,10 +86,25 @@ function PlayerFactory.generate(rng, opts)
 	end
 	local id = opts.id or newId(rng)
 	local base = Ratings.ovr(ratings, pos)
+	local w = Config.Weight[pos]
+	local alt = {}
+	for _, other in ipairs(Config.SecondaryPositions[pos]) do
+		if rng:next() < 0.45 then
+			table.insert(alt, other)
+		end
+	end
+	local nations = {}
+	for _, n in ipairs(Config.Nations) do
+		table.insert(nations, { n[1], n[2] })
+	end
 	return {
 		id = id,
 		name = opts.name or Names.player(rng, rarity.id),
 		pos = pos,
+		altPos = alt, -- other positions they can play, e.g. { "SG" }
+		nation = opts.nation or rng:weighted(nations),
+		weight = rng:int(w[1], w[2]),
+		club = nil, -- set to the owning club's id when kept; nil shows "Free Agent"
 		rarity = rarity.id,
 		finish = finish or nil,
 		ratings = ratings,
@@ -133,6 +148,35 @@ function PlayerFactory.rollRarity(rng, odds): string
 		end
 	end
 	return rng:weighted(entries)
+end
+
+-- Open a player pack: returns a list of new players, best card last (so the
+-- reveal builds up). Applies the pack's guarantee to the best card.
+function PlayerFactory.openPack(rng, packId: string)
+	local pack = Config.Packs[packId]
+	assert(pack and pack.kind == "players", "not a player pack: " .. tostring(packId))
+	local rarities = {}
+	for i = 1, pack.count do
+		rarities[i] = PlayerFactory.rollRarity(rng, pack.odds)
+	end
+	table.sort(rarities, function(a, b)
+		return Config.RarityById[a].order < Config.RarityById[b].order
+	end)
+	local g = pack.guarantee and Config.RarityById[pack.guarantee]
+	if g and Config.RarityById[rarities[#rarities]].order < g.order then
+		local better = {}
+		for id, p in pairs(pack.odds) do
+			if Config.RarityById[id].order >= g.order then
+				better[id] = p
+			end
+		end
+		rarities[#rarities] = PlayerFactory.rollRarity(rng, better)
+	end
+	local players = {}
+	for i, r in ipairs(rarities) do
+		players[i] = PlayerFactory.generate(rng, { rarity = r })
+	end
+	return players
 end
 
 -- The free starting roster for a new club: a full matchday ten, one starter
