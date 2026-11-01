@@ -26,8 +26,8 @@ Achievements.List = {
 		{ 10, 2000 }, { 100, 10000 }, { 1000, 40000 } } },
 	{ id = "Challenger", name = "Challenger", text = "Play %s server challenges", stat = "challengesPlayed", tiers = {
 		{ 1, 1000 }, { 10, 6000 }, { 50, 25000 } } },
-	-- Future update, with Hall of Fame players:
-	-- { id = "Legend", name = "Legend Hunter", text = "Pull %s Hall of Fame players", stat = "hofPulled", tiers = { { 1, 25000 }, { 5, 100000, "AllStar" } } },
+	{ id = "Legend", name = "Legend Hunter", text = "Pull %s Hall of Fame players", stat = "hofPulled", tiers = {
+		{ 1, 25000 }, { 5, 100000, "AllStar" } } },
 }
 
 Achievements.ById = {}

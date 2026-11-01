@@ -10,7 +10,7 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 - Shared logic: 20 player ratings, the fictional player generator, Elo, projected scoreline, box scores and team stats, daily quests and achievements
 - Saving: profiles with autosave and a session lock
 - **Codes:** `src/server/Codes.lua`, plus live `!makecode`, `!delcode`, `!codes` and `!codehelp` chat commands for admins, and a CODES button with a redeem panel in game
-- OVR capped at 92 for launch. Hall of Fame players are saved for a future update and removed from every pack (their odds moved to Legendary)
+- No card goes above 93 OVR for now. New ranges are Legendary 80–86 and Hall of Fame 87–91
 - Design: a free sub and strategy break after every quarter, box scores, and a team stats page. Player badges added to the Ideas Queue
 
 ---

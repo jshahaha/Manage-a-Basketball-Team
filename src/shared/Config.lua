@@ -21,17 +21,17 @@ Config.TeamMinutes = 240 -- 5 players x 48 minutes
 
 Config.Positions = { "PG", "SG", "SF", "PF", "C" }
 
--- Highest OVR any player can have right now, Finishes and training included.
--- Hall of Fame players (89+) are saved for a future update; raise this then.
-Config.MaxOvr = 92
+-- Highest OVR any card can have right now, Finishes and training included.
+-- Raise this (and the ranges below) in a future update to add stronger cards.
+Config.MaxOvr = 93
 
 -- Rarity: OVR range each rarity generates in, and its UI color.
 Config.Rarities = {
 	{ id = "Common", min = 50, max = 64, color = "#9AA3AE" },
 	{ id = "Rare", min = 65, max = 72, color = "#3B8BFF" },
 	{ id = "Epic", min = 73, max = 79, color = "#A24BFF" },
-	{ id = "Legendary", min = 80, max = 88, color = "#FF8A1F" },
-	{ id = "HallOfFame", min = 89, max = 95, color = "#E0A800", locked = true }, -- future update, not in packs yet
+	{ id = "Legendary", min = 80, max = 86, color = "#FF8A1F" },
+	{ id = "HallOfFame", min = 87, max = 91, color = "#E0A800" },
 }
 Config.RarityById = {}
 for i, r in ipairs(Config.Rarities) do
@@ -54,28 +54,28 @@ Config.Packs = {
 		kind = "players",
 		count = 3,
 		coins = 5000,
-		odds = { Common = 0.70, Rare = 0.24, Epic = 0.05, Legendary = 0.01 },
+		odds = { Common = 0.70, Rare = 0.24, Epic = 0.05, Legendary = 0.009, HallOfFame = 0.001 },
 	},
 	Pro = {
 		name = "Pro Pack",
 		kind = "players",
 		count = 3,
 		coins = 40000,
-		odds = { Common = 0.35, Rare = 0.40, Epic = 0.19, Legendary = 0.06 },
+		odds = { Common = 0.35, Rare = 0.40, Epic = 0.19, Legendary = 0.055, HallOfFame = 0.005 },
 	},
 	AllStar = {
 		name = "All-Star Pack",
 		kind = "players",
 		count = 3,
 		coins = 250000,
-		odds = { Common = 0, Rare = 0.40, Epic = 0.42, Legendary = 0.18 },
+		odds = { Common = 0, Rare = 0.40, Epic = 0.42, Legendary = 0.16, HallOfFame = 0.02 },
 	},
 	Coach = {
 		name = "Coach Pack",
 		kind = "coach",
 		count = 1,
 		coins = 60000,
-		odds = { Common = 0.55, Rare = 0.30, Epic = 0.12, Legendary = 0.03 },
+		odds = { Common = 0.55, Rare = 0.30, Epic = 0.12, Legendary = 0.027, HallOfFame = 0.003 },
 	},
 }
 

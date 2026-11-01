@@ -37,7 +37,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
   - **Scout Office:** send scouts out on timed trips.
   - **Quest Board:** daily and weekly quests.
   - **Hall of Fame:** leaderboards for rating, fans and collection value.
-- **The Traveling Scout:** a van parks somewhere in the plaza for 5 minutes, roughly every 40 minutes, and sells one high-end Legendary player (85+ OVR, and Hall of Fame players once they're released). A server-wide alert announces it and everyone runs to it. (This is our take on the "roaming merchant" convention.)
+- **The Traveling Scout:** a van parks somewhere in the plaza for 5 minutes, roughly every 40 minutes, and sells one Hall of Fame player. A server-wide alert announces it and everyone runs to it. (This is our take on the "roaming merchant" convention.)
 - **First session:** create your club by picking a badge shape, two colors and a name. Your colors paint your Home Court, kits and bench.
 - You start with a free player package. You walk your avatar around, emote, and stand courtside at your own games.
 
@@ -115,7 +115,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 - **Stamina:** players lose energy on the floor and get it back on the bench. Tired players play worse.
 - **Minutes:** you split 240 player-minutes across a 10-player matchday roster (5 starters + 5 bench), or press Auto Minutes.
 - **Coaches:** your avatar is the Head Coach. You hire an **Offensive Coach** and a **Defensive Coach**, and the play styles they know decide how your team plays (for example 5-Out, Pick & Roll, 2-3 Zone or Full-Court Press).
-- **Rarity:** Common (grey), Rare (blue), Epic (purple), Legendary (orange) and later **Hall of Fame** (gold, above Legendary, saved for a future update). Hall of Fame players will be fictional legends we invent, such as "Big Moe Okonkwo".
+- **Rarity:** Common (grey), Rare (blue), Epic (purple), Legendary (orange) and **Hall of Fame** (gold, above Legendary). Hall of Fame players are fictional legends we invent, such as "Big Moe Okonkwo".
 - **Finishes** are rare cosmetic variants that also give a stat boost, and any player can roll one:
   - **Hot Hand** (flame trail, +3 OVR)
   - **Ice Veins** (frost aura, +5)
@@ -127,15 +127,15 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 ## 5. Packs
 
-| Pack | Price | Common / Rare / Epic / Legendary % |
+| Pack | Price | Common / Rare / Epic / Legendary / Hall of Fame % |
 |---|---|---|
-| Blacktop Pack | 5,000 coins · R$ 29 | 70 / 24 / 5 / 1 |
-| Pro Pack | 40,000 coins · R$ 99 | 35 / 40 / 19 / 6 |
-| All-Star Pack | 250,000 coins · R$ 399 | — / 40 / 42 / 18 |
-| Coach Pack (1 coach) | 60,000 coins · R$ 149 | 55 / 30 / 12 / 3 |
-| Event pack (e.g. Holiday Hoops, limited) | R$ 499 | Epic+ only: — / — / 80 / 20 |
+| Blacktop Pack | 5,000 coins · R$ 29 | 70 / 24 / 5 / 0.9 / 0.1 |
+| Pro Pack | 40,000 coins · R$ 99 | 35 / 40 / 19 / 5.5 / 0.5 |
+| All-Star Pack | 250,000 coins · R$ 399 | — / 40 / 42 / 16 / 2 |
+| Coach Pack (1 coach) | 60,000 coins · R$ 149 | 55 / 30 / 12 / 2.7 / 0.3 |
+| Event pack (e.g. Holiday Hoops, limited) | R$ 499 | Epic+ only: — / — / 78 / 19 / 3 |
 
-**OVR cap for now: 92.** Players' OVR ranges are Common 50–64, Rare 65–72, Epic 73–79 and Legendary 80–88. Finishes and training can push a player up to 92, but no higher. **Hall of Fame players (89–95) are saved for a future update**, so for now they aren't in any pack.
+**OVR ranges for now:** Common 50–64, Rare 65–72, Epic 73–79, Legendary 80–86 and Hall of Fame 87–91. **No card goes above 93**, including Finishes and training. Stronger cards come in a later update, when we raise the cap.
 
 Every player pack gives **3 players**. The shop shows odds both by rarity and by OVR range.
 
@@ -168,7 +168,7 @@ Every player pack gives **3 players**. The shop shows odds both by rarity and by
 - **Coins** are the main currency, with big numbers and fast growth.
 - **Fans** grow with wins and pay passive income every minute you're online. Upgrading your Home Court (seats, scoreboard, lights) raises how much each fan pays.
 - **Daily quests:** 3 a day, drawn from a pool and reset at 00:00 UTC. Each pays coins, from 1,000 to 4,000. Examples: win 2 games, make 15 threes, throw down 8 dunks, open a pack, call 3 timeouts, or play a server challenge.
-- **Achievements:** lifetime goals with tiers that each pay once. The big tiers pay packs. Examples: Winner (1 / 10 / 50 / 250 / 1,000 wins), From Downtown (threes), Posterizer (dunks), Pack Rat, Collector, Climber (reach each Elo tier), Hot Streak, Clipboard Coach (timeouts), and Challenger. Legend Hunter (pull Hall of Fame players) comes with the Hall of Fame update.
+- **Achievements:** lifetime goals with tiers that each pay once. The big tiers pay packs. Examples: Winner (1 / 10 / 50 / 250 / 1,000 wins), From Downtown (threes), Posterizer (dunks), Pack Rat, Collector, Climber (reach each Elo tier), Hot Streak, Clipboard Coach (timeouts), Challenger and Legend Hunter (pull Hall of Fame players).
 - There's also a login streak and **redeem codes**. The owner makes codes in `src/server/Codes.lua`, or live from chat with `!makecode` (see the README).
 - **Robux (later):** VIP (2× coins), an extra scout slot, Robux packs with shown odds, and court cosmetics. Nothing is pay-to-win only.
 

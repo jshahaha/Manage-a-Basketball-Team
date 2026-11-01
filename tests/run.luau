@@ -102,14 +102,14 @@ test("pack odds add up to 1", function()
 	end
 end)
 
-test("no Hall of Famers in packs, and nobody above the OVR cap", function()
-	for id, pack in pairs(Config.Packs) do
-		eq(pack.odds.HallOfFame, nil, id .. " has Hall of Fame odds")
+test("nobody goes above the OVR cap", function()
+	ok(Config.MaxOvr <= 93, "cap is 93 for now")
+	for _, r in ipairs(Config.Rarities) do
+		ok(r.max <= Config.MaxOvr, r.id .. " range above cap")
 	end
-	eq(PlayerFactory.rollRarity(Rng.new(3), { HallOfFame = 0.5, Rare = 0.5 }), "Rare", "locked rarity never rolls")
 	local rng = Rng.new(11)
 	for _ = 1, 200 do
-		local p = PlayerFactory.generate(rng, { rarity = "Legendary", ovr = 88, finish = "Prism" })
+		local p = PlayerFactory.generate(rng, { rarity = "HallOfFame", ovr = 91, finish = "Prism" })
 		ok(PlayerFactory.overall(p) <= Config.MaxOvr, "over cap " .. PlayerFactory.overall(p))
 		ok(p.potential <= Config.MaxOvr, "potential over cap")
 	end
