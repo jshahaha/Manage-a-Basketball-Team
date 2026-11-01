@@ -4,7 +4,7 @@
 **Platform:** Roblox (Luau + Rojo)
 **Genre:** Social sports-manager collector. You hang out in a lobby, collect and trade players, and play quick PvP matches that you watch in 3D.
 
-> v2 replaces the first draft. That draft was a slow single-player menu sim, which missed what makes this genre fun on Roblox: a hangout world, matches against **real players**, players on the court as **3D characters**, the hype of pack openings, and trading. See [What changed from v1](#what-changed-from-v1).
+> v2 replaces the first draft. The research behind it is in [REFERENCE_STUDY.md](REFERENCE_STUDY.md). That draft was a slow single-player menu sim, which missed what makes this genre fun on Roblox: a hangout world, matches against **real players**, players on the court as **3D characters**, the hype of pack openings, and trading. See [What changed from v1](#what-changed-from-v1).
 
 ## One-line pitch
 
@@ -53,8 +53,9 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 - The game is played at the **home team's court**. Ten R15 characters wear their team's kits and numbers. A server-authoritative sim decides each possession (see the existing `MatchSim`), and the client **acts it out**: dribbling, passing, jump shots, layups, dunks, blocks and rebounds, with animations.
 - There are 4 quarters of about 30 to 40 seconds each, run on a fast game clock.
-- The camera is a broadcast-style three-quarter view that follows the ball, and you can switch to a sideline view where your avatar is coaching.
-- **Highlight moments:** dunks, blocks and buzzer-beaters play in **slow motion** and then show an **instant replay**.
+- **The court is watched from the side.** The camera sits on the sideline and the court runs left to right across the screen, like a TV broadcast. Your coach avatar stands at the bench in the foreground under a HEAD COACH tag and can use emotes. The camera pans left and right to follow the ball.
+- The game is played **on the home team's Home Court in the lobby world**, so other managers can walk over and watch.
+- **Highlight moments:** big banners appear (AND-ONE!, FROM DOWNTOWN!, BIG BLOCK!, BUZZER BEATER!), dunks play as a letterboxed **slow-motion HIGHLIGHT**, and the game ends with a **VICTORY!** celebration in front of the bench. You can tap to skip.
 - **Coach controls during the game:**
   - Switch **tactics** between quarters: Pace & Space, Inside Out or Motion on offense, and Man, Zone or Press on defense. Each counters another.
   - **Clutch Timeout** (our signature feature): in the last minute of a close game, you pick the final play yourself: Isolation, Pick & Roll or Kick-Out Three.
@@ -84,7 +85,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 ## 6. Training, scouting & chemistry
 
-- **Training:** spend coins to raise one stat. It has a short cooldown for each player, and training up to a player's cap needs star levels.
+- **Training:** **timed sessions in slots.** You pick a player and a drill, and the session finishes after a real-time timer (for example 2 to 20 minutes). You start with 2 slots and can unlock more. Training up to a player's cap needs star levels.
 - **Scout Office:** send a scout on a 5-minute, 30-minute or 2-hour trip, and they come back with a player card. Longer trips find better odds. You start with 1 scout slot and can get more through progression or a game pass. This gives players a reason to come back.
 - **Chemistry (0–100%)** boosts your whole team in matches. It goes up when:
   - your lineup's archetypes complement each other (a Floor General plus two Snipers, a Slasher plus a Glass Cleaner)
