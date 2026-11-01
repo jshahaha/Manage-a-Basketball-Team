@@ -11,6 +11,7 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 - Saving: profiles with autosave and a session lock
 - **Codes:** `src/server/Codes.lua`, plus live `!makecode`, `!delcode`, `!codes` and `!codehelp` chat commands for admins, and a CODES button with a redeem panel in game
 - No card goes above 93 OVR for now. New ranges are Legendary 80–86 and Hall of Fame 87–91
+- Design: a Go-To Player (star) and Second Option, and a team shot tendency bar from Inside to Outside
 - Design: a free sub and strategy break after every quarter, box scores, and a team stats page. Player badges added to the Ideas Queue
 
 ---

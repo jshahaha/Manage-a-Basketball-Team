@@ -77,6 +77,23 @@ Every rating runs from 1 to 99. There are 20 ratings in 6 groups.
   - High-Stamina players can carry 38 or more minutes well.
 - **Minutes presets** are saved along with each lineup preset.
 
+## 4b. Go-To Player & shot tendencies
+
+These are set on the Rotation screen. You can also change them at a timeout or quarter break.
+
+- **Go-To Player (star):** mark one player with a ⭐.
+  - They get about 25% more touches and shots.
+  - When the Clutch Timeout calls Isolation, they take the last shot.
+  - Their energy drains about 10% faster, because carrying the team is tiring.
+  - You can mark a **Second Option** (☆) for a smaller boost.
+- **Shot tendency bar:** one slider for the whole team, running from **Inside ← → Outside**.
+  - Each player's shot mix starts from their ratings. A Sniper shoots threes and a Post Scorer posts up.
+  - The bar shifts every player's mix together. Outside means more threes and mid-range shots. Inside means more drives, post-ups and dunks.
+  - The game shows the result as a projected mix, such as "38% threes · 22% mid-range · 40% at the rim".
+  - The bar stacks with play style. 5-Out already leans outside, and Inside Out already leans inside.
+- **Per-player tendencies** (optional, later): a small 3-way split (3PT / Mid / Rim) on each player's card for managers who want fine control. The team bar covers most people, so this stays an idea for now.
+- **Box score:** it shows each player's usage (share of team shots), so you can see whether your star actually got the ball.
+
 ## 5. Coaching staff: Offensive Coach + Defensive Coach
 
 Your avatar is the **Head Coach**. You hire **two coaches**, and they decide **how your team plays**. Both stand on your bench during games.
