@@ -86,13 +86,13 @@ These are set on the Rotation screen. You can also change them at a timeout or q
   - When the Clutch Timeout calls Isolation, they take the last shot.
   - Their energy drains about 10% faster, because carrying the team is tiring.
   - You can mark a **Second Option** (☆) for a smaller boost.
-- **Shot tendency bar:** one slider for the whole team, running from **Inside ← → Outside**.
-  - Each player's shot mix starts from their ratings. A Sniper shoots threes and a Post Scorer posts up.
-  - The bar shifts every player's mix together. Outside means more threes and mid-range shots. Inside means more drives, post-ups and dunks.
-  - The game shows the result as a projected mix, such as "38% threes · 22% mid-range · 40% at the rim".
-  - The bar stacks with play style. 5-Out already leans outside, and Inside Out already leans inside.
-- **Per-player tendencies** (optional, later): a small 3-way split (3PT / Mid / Rim) on each player's card for managers who want fine control. The team bar covers most people, so this stays an idea for now.
-- **Box score:** it shows each player's usage (share of team shots), so you can see whether your star actually got the ball.
+- **Shot share bar:** this sets who tries to score the most.
+  - Each of the five on the floor gets a share of the team's shots, shown as one stacked color bar that adds up to 100%. For example: Deuce 30%, Rafael 24%, Moe 18%, Arlo 16%, Nico 12%.
+  - Drag the dividers to move shots from one player to another. **Auto** sets shares from each player's scoring ratings.
+  - When subs come in, each bench player keeps the share you gave them, and the shares are scaled again to add up to 100%.
+  - Giving a weak shooter a big share lowers team efficiency. Starving a star wastes him. The Go-To Player ⭐ starts with the biggest share.
+  - The **box score** shows each player's real share (usage), so you can compare it to your plan.
+- **Shot type** still comes from each player's ratings (a Sniper shoots threes, a big posts up) and from the play style.
 
 ## 5. Coaching staff: Offensive Coach + Defensive Coach
 
