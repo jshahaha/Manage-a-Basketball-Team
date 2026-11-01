@@ -66,13 +66,18 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 ## 4. Players & collection
 
-- **Positions:** PG, SG, SF, PF, C. **Stats:** Shooting, Inside, Passing, Defense, Rebounding, Speed. OVR is weighted by position.
+> Full detail on ratings, stamina, bench, minutes and coaches: [PLAYERS_AND_COACHING.md](PLAYERS_AND_COACHING.md).
+
+- **Positions:** PG, SG, SF, PF, C. **Ratings (20):** Mid-Range, Three-Point, Free Throw · Layup, Driving Dunk, Standing Dunk, Close Shot, Post Moves · Passing, Ball Handling · Interior D, Perimeter D, Steal, Block · Off/Def Rebound · Speed, Strength, Vertical, **Stamina**. Cards show 6 group scores (SHO FIN PLY DEF REB ATH). OVR is weighted by position.
+- **Stamina:** players lose energy on the floor and get it back on the bench. Tired players play worse.
+- **Minutes:** you split 240 player-minutes across a 10-player matchday roster (5 starters + 5 bench), or press Auto Minutes.
+- **Coaching staff:** your avatar is the Head Coach. You hire an Offensive Coordinator, Defensive Coordinator, Player Development coach and Strength & Conditioning coach, and they sit on your bench.
 - **Rarity:** Common (grey), Rare (blue), Epic (purple), Legendary (orange) and **Hall of Fame** (gold, above Legendary). Hall of Fame players are fictional legends we invent, such as "Big Moe Okonkwo".
 - **Finishes** are rare cosmetic variants that also give a stat boost, and any player can roll one:
   - **Hot Hand** (flame trail, +3 OVR)
   - **Ice Veins** (frost aura, +5)
   - **Prism** (rainbow shimmer, +8, about 1 in 500)
-- **Lineup:** a starting five plus 3 bench spots, with saved **lineup presets** (for example Small Ball or Twin Towers). The team shows a single **Team Power** number.
+- **Lineup:** a starting five plus 5 bench spots, with saved **lineup presets** (for example Small Ball or Twin Towers). The team shows a single **Team Power** number.
 - **Career stats** on every card: games, points, rebounds, assists and MVP awards.
 - **Archetypes** are tags that drive chemistry: Sniper, Slasher, Floor General, Lockdown and Glass Cleaner.
 - **Duplicates:** combine copies of the same player to raise their **star level** (1★ to 5★), which raises their stat caps. This means you can upgrade without buying packs.
@@ -90,7 +95,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 ## 6. Training, scouting & chemistry
 
-- **Training:** **3 timed slots.** You pick a player and a focus (Shooting, Inside, Passing, Defense, Rebounding, Speed, or All). A session lasts about 1 hour and keeps running while you're offline. Progress stops at the player's potential, and star levels raise that cap.
+- **Training:** **3 timed slots.** You pick a player and a focus (Shooting, Finishing, Playmaking, Defense, Rebounding, Athleticism, or All). A session lasts about 1 hour and keeps running while you're offline. Progress stops at the player's potential, and star levels raise that cap.
 - **Scout Office:** send a scout on a 5-minute, 30-minute or 2-hour trip, and they come back with a player card. Longer trips find better odds. You start with 1 scout slot and can get more through progression or a game pass. This gives players a reason to come back.
 - **Chemistry (0–100%)** gives a flat bonus to every stat in matches (up to about +10%). It goes up when:
   - your lineup's archetypes complement each other (a Floor General plus two Snipers, a Slasher plus a Glass Cleaner)

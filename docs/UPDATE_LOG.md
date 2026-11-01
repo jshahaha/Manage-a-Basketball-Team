@@ -4,6 +4,12 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.0.4 (2026-11-01): Players & coaching
+### Added
+- [Players & Coaching](PLAYERS_AND_COACHING.md): 20 basketball ratings in 6 groups, in-game stamina and energy, a 10-player matchday roster, minutes allocation (240 player-minutes) and a 4-role coaching staff
+
+---
+
 ## v0.0.3 (2026-11-01): Deep study, round 2
 ### Added
 - [Reference Study](REFERENCE_STUDY.md) round 2: club creation, the exact lobby and match HUD, squads and synergy, training slots, market tax, tournaments and goal replays
