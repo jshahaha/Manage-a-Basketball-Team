@@ -4,6 +4,12 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.0.6 (2026-11-01): Player icons
+### Added
+- Generated player icons on every screen, and a rule: fictional names, with play styles based on real player types
+
+---
+
 ## v0.0.5 (2026-11-01): Timeouts & Pack Shop
 ### Added
 - Timeout system: 4 per game, a 15-second timer, subs, a style switch, a next-play call, a team talk, +15% energy, and a momentum reset

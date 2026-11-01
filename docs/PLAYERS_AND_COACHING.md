@@ -32,6 +32,13 @@ Every rating runs from 1 to 99. There are 20 ratings in 6 groups.
 
 **Training** focuses on one group, and the XP is spread across that group's ratings. The "All" focus gives smaller gains to everything.
 
+## 1b. Names & player icons
+
+- **Names are fictional.** Real NBA or WNBA names and faces are licensed, and near-copies like "LeBron Jamez" count too, so using either risks a copyright takedown.
+- **Play styles can be based on real players.** A card's ratings and archetype can match a type everyone knows, like a deep-range shooter, a dunking point forward or a 7-foot rim protector.
+- **Every player has an icon:** a blocky cartoon head and shoulders built from their ID. The generator picks skin tone, hairstyle, headband, eyebrows, mouth and facial hair. The same icon appears on every screen, and the 3D character matches it. Coaches wear a suit and tie.
+- Hall of Fame legends get hand-made icons and models, which can be built in Blender.
+
 ## 2. Stamina & energy
 
 - Each player has **Energy** from 0 to 100% during a game. Energy drains faster when:
