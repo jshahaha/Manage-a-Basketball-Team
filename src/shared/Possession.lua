@@ -26,7 +26,10 @@ local SPOTS = {
 	{ 8, -9 }, -- 4 left block
 	{ 5, 7 }, -- 5 right block
 }
-local SHOT_SPOT = { jumper = 15, three = 24.5, dunk = 1.5 }
+local SHOT_SPOT = { jumper = 15, three = 24.5, dunk = 5 }
+-- Dunks: the shooter catches at their spot, drives for DRIVE seconds, then the dunk clip's own
+-- root motion carries them the last RUNUP studs to the rim (the clips start 2.6 behind their origin).
+local DRIVE, RUNUP = 0.9, 2.6
 
 local function lerp(a, b, u)
 	return a + (b - a) * u
@@ -55,15 +58,21 @@ function Possession.plan(opts)
 	local passer = r.assist
 	-- Beats: bring it up (0-2.2), signature move (2.2-3.2), optional pass (0.5 s), then the shot.
 	local tMove = 2.2
-	local moveClip = offense[handler].moves[1] or "Crossover"
 	local moveLen = 1.0
 	local tPass = tMove + moveLen
 	if passer and passer ~= shooter then
 		handler = passer
+	else
+		handler = shooter -- unassisted: the shooter brings it up and creates their own shot
 	end
+	local moveClip = offense[handler].moves[1] or "Crossover"
 	local tShot = tPass + ((passer and passer ~= shooter) and 0.6 or 0)
 	local shotClip = r.kind == "dunk" and offense[shooter].dunk or offense[shooter].shot
-	plan.shotClip, plan.moveClip, plan.tMove, plan.tPass, plan.tShot = shotClip, moveClip, tMove, tPass, tShot
+	local tCatch = tShot
+	if r.kind == "dunk" then
+		tShot = tShot + DRIVE
+	end
+	plan.shotClip, plan.moveClip, plan.tMove, plan.tPass, plan.tShot, plan.tCatch = shotClip, moveClip, tMove, tPass, tShot, tCatch
 	plan.length = tShot + 2.6
 	-- Where everyone ends up: the shooter at their shot spot, the rest at their spots.
 	local finals = {}
@@ -74,9 +83,16 @@ function Possession.plan(opts)
 	-- Same angle from the rim as their spot, at the shot's distance.
 	local s = SPOTS[shooter]
 	local k = shotFeet / math.sqrt(s[1] ^ 2 + s[2] ^ 2)
-	finals[shooter] = r.kind == "dunk" and { x = dir * (RIM_X - shotFeet * FT), z = 0 }
-		or { x = dir * (RIM_X - s[1] * k * FT), z = s[2] * k * FT }
+	finals[shooter] = { x = dir * (RIM_X - s[1] * k * FT), z = s[2] * k * FT }
 	plan.finals = finals
+	if r.kind == "dunk" then
+		-- Drive from the spot to where the dunk clip picks up, on the line to the rim.
+		local d = shotFeet * FT + RUNUP
+		local len = math.sqrt(s[1] ^ 2 + s[2] ^ 2)
+		plan.driveFrom = spot(dir, s)
+		plan.driveTo = { x = dir * (RIM_X - s[1] / len * d), z = s[2] / len * d }
+		finals[shooter] = plan.driveFrom -- catch at their own spot, then attack
+	end
 	plan.handler, plan.shooter, plan.passer = handler, shooter, (passer and passer ~= shooter) and passer or nil
 	return plan
 end
@@ -94,19 +110,29 @@ function Possession.frame(plan, t)
 		local u = smooth(t / plan.tMove)
 		local p = { x = lerp(start.x, fin.x, u), z = lerp(start.z, fin.z, u), face = dir > 0 and 90 or -90 }
 		local moving = t < plan.tMove * 0.95
-		if i == plan.handler then
+		if i == plan.shooter and plan.driveTo and t >= plan.tCatch then
+			-- Dunk: drive to the rim, facing it, then the dunk clip.
+			local u = smooth((t - plan.tCatch) / DRIVE)
+			p.x, p.z = lerp(plan.driveFrom.x, plan.driveTo.x, u), lerp(plan.driveFrom.z, plan.driveTo.z, u)
+			p.face = math.deg(math.atan2(dir * RIM_X - p.x, -p.z))
+			if t < plan.tShot then
+				p.clip, p.t = "DribbleLive", (t - plan.tCatch) % 0.9
+			else
+				p.clip, p.t = plan.shotClip, t - plan.tShot
+			end
+		elseif i == plan.shooter and t >= plan.tShot then
+			p.clip, p.t = plan.shotClip, t - plan.tShot
+		elseif i == plan.handler then
 			if t < plan.tMove then
 				p.clip, p.t = "DribbleLive", t % 0.9
 			elseif t < plan.tPass then
 				p.clip, p.t = plan.moveClip, t - plan.tMove
 				p.face = 0 -- show the move to the camera, like a broadcast angle
-			elseif plan.passer and t < plan.tShot then
+			elseif plan.passer and t < plan.tCatch then
 				p.clip, p.t = "ChestPass", (t - plan.tPass) * 2
 			else
 				p.clip, p.t = "Idle", t % 2
 			end
-		elseif i == plan.shooter and t >= plan.tShot then
-			p.clip, p.t = plan.shotClip, t - plan.tShot
 		else
 			p.clip, p.t = moving and "Jog" or "Idle", moving and (t % 0.7) or (t % 2)
 		end
@@ -120,6 +146,12 @@ function Possession.frame(plan, t)
 		local len = math.sqrt(dx * dx + dz * dz)
 		local d = 5 * FT
 		local p = { x = o.x + dx / len * d, z = o.z + dz / len * d, face = dir > 0 and -90 or 90 }
+		if i == plan.shooter and plan.driveTo and t >= plan.tCatch then
+			-- Beaten off the dribble: trailing on the hip, a step behind and to the side.
+			local side = o.z > 0 and -1 or 1
+			p.x, p.z = o.x - dx / len * 1.5 * FT + (-dz / len) * side * 2.5 * FT, o.z - dz / len * 1.5 * FT + (dx / len) * side * 2.5 * FT
+			p.face = o.face
+		end
 		p.clip = (o.clip == "Jog" or o.clip == "DribbleLive" or o.clip == plan.moveClip) and "DefSlide" or "Idle"
 		p.t = p.clip == "DefSlide" and (t % 0.9) or ((t + i * 0.37) % 2)
 		if i == plan.shooter and t >= plan.tShot then
@@ -128,11 +160,11 @@ function Possession.frame(plan, t)
 		out.players[5 + i] = p
 	end
 	-- Ball: with the handler until the pass, in the air during the pass, then the shot clip owns it.
-	if plan.passer and t >= plan.tPass and t < plan.tShot then
+	if plan.passer and t >= plan.tPass and t < plan.tCatch then
 		local a, b = out.players[plan.passer], out.players[plan.shooter]
 		local u = clamp01((t - plan.tPass - 0.15) / 0.4)
 		out.ball = { x = lerp(a.x, b.x, u), z = lerp(a.z, b.z, u), y = 4.2 + math.sin(u * math.pi) * 0.6, free = true }
-	elseif t < plan.tShot then
+	elseif t < plan.tPass or (not plan.passer and t < plan.tShot) then
 		out.ball = { owner = plan.handler }
 	else
 		out.ball = { owner = plan.shooter }

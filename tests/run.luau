@@ -873,7 +873,13 @@ test("a possession plan puts the shooter at the spot and plays real clips", func
 		assert(last.clip == (kind == "dunk" and "DunkWindmill" or "ShootFade"), "signature clip")
 		local rimDist = math.sqrt((37.575 - last.x) ^ 2 + last.z ^ 2)
 		assert(kind ~= "three" or rimDist > 23.75 * 0.9, "three is behind the line")
+		assert(kind ~= "dunk" or rimDist < 8 * 0.9, "dunker drives to the rim")
 	end
+	-- Unassisted: the shooter brings it up, keeps the ball, and shoots.
+	local solo = Possession.plan({ offense = sets, dir = 1, result = { kind = "dunk", shooter = 2, made = true } })
+	assert(solo.handler == 2 and not solo.passer, "solo handler")
+	local f = Possession.frame(solo, solo.tShot + 0.3)
+	assert(f.ball.owner == 2 and f.players[2].clip == "DunkWindmill", "solo dunk")
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))
