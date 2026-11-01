@@ -175,17 +175,17 @@ Defensive styles each get a diagram that shows where the five stand and who cove
 
 Badges are perks that sit in a player's **badge slots**. They come from packs (every player pack has 2 or 3, and the Badge Pack has 4), so packs give fewer players and the roster doesn't fill with junk. Code: `src/shared/Badges.lua`.
 
-**Tiers.** A badge card has one tier. To equip it, the player needs the stat bar for that tier **and** you pay coins. The badge adds rating points to its stats, but only in the situations it covers (for example Laser only on catch-and-shoot threes).
+**Tiers.** A badge card has one tier. To equip it, the player needs the stat bar for that tier. **Equipping is free, but taking a badge off costs coins** (the tier's price below), so where you put a badge is a real choice. The badge adds rating points to its stats, but only in the situations it covers (for example Laser only on catch-and-shoot threes).
 
-| Tier | Main stat needs | Second stat needs | Equip cost | Boost |
+| Tier | Main stat needs | Second stat needs | Take-off cost | Boost |
 |---|---|---|---|---|
 | Bronze | 60 | 52 | 250 coins | +2 |
 | Silver | 68 | 60 | 1,000 coins | +4 |
-| Gold | 76 | 68 | 3,500 coins | +6 |
-| Diamond | 84 | 76 | 10,000 coins | +8 |
-| Hall of Fame | 90 | 82 | 30,000 coins | +10 |
+| Gold | 76 | 68 | 2,500 coins | +6 |
+| Diamond | 84 | 76 | 6,000 coins | +8 |
+| Hall of Fame | 90 | 82 | 15,000 coins | +10 |
 
-**Icons.** Every badge has its own icon in a hexagon frame colored by tier (`assets/icons/badges/<Badge>_<Tier>.png`, 100 images ready to upload). The badge card shows only the icon, the name and the tier. Tap it to flip it over: the back says what it does, the stats it needs, the equip cost and the boost.
+**Icons.** Every badge has its own icon in a hexagon frame colored by tier (`assets/icons/badges/<Badge>_<Tier>.png`, 100 images ready to upload). The badge card shows only the icon, the name and the tier. Tap it to flip it over: the back says what it does, the stats it needs, the take-off cost and the boost.
 
 **Equipping (the Badge Applier).** Badges live in the inventory. Two ways in:
 1. **Badge first:** Inventory → Badges → tap a badge → **Use**. The Badge Applier lists your players. Players who can take it are highlighted green with their stat (for example "Can equip · Three-Point 84"), and the rest are greyed out with the reason ("Needs Three-Point 76 (has 58)", "No free slot", "Already has Diamond Laser").
@@ -193,7 +193,7 @@ Badges are perks that sit in a player's **badge slots**. They come from packs (e
 
 Both end on a confirm popup with the coin cost. Equipping a higher tier of a badge the player already has shows "Upgrade from Silver" and replaces it in the same slot.
 
-**Slots by rarity:** Common 1, Rare 2, Epic 3, Legendary 4, Hall of Fame 5. A player can't hold the same badge twice. Equipping a higher tier of a badge they already have replaces it in the same slot. Unequipping returns the badge card but not the coins.
+**Slots by rarity:** Common 1, Rare 2, Epic 3, Legendary 4, Hall of Fame 5. A player can't hold the same badge twice. A badge that's on **can't be upgraded in place**: take it off (and pay), then put on the higher tier. Taking a badge off returns the card to your inventory.
 
 **The 20 badges** (main stat first):
 

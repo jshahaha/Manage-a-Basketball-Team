@@ -9,6 +9,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Quests = require(Shared.Quests)
 local Achievements = require(Shared.Achievements)
 local Stats = require(Shared.Stats)
+local Tutorial = require(Shared.Tutorial)
 local Net = require(Shared.Net)
 
 local DataService = require(script.Parent.DataService)
@@ -32,6 +33,38 @@ function ProgressService.record(player: Player, event: string, amount: number?)
 	for _, q in ipairs(done) do
 		Net.push():FireClient(player, "questDone", { text = q.text, coins = q.coins })
 	end
+	ProgressService.tutorial(player, profile, event)
+end
+
+-- Advance the tutorial if this event finishes the current step, pay its reward,
+-- hand out the next step's gift and tell the client which step is next.
+function ProgressService.tutorial(player: Player, profile, event: string?)
+	profile.tutorial = profile.tutorial or Tutorial.newState()
+	local finished
+	if event then
+		local rewards, step = Tutorial.record(profile.tutorial, event)
+		if not step then
+			return
+		end
+		finished = step.id
+		if rewards then
+			DataService.grant(profile, rewards)
+		end
+	end
+	local gift = Tutorial.takeGift(profile.tutorial)
+	if gift then
+		DataService.grant(profile, gift)
+	end
+	local nextStep = Tutorial.current(profile.tutorial)
+	local at, total = Tutorial.progress(profile.tutorial)
+	Net.push():FireClient(player, "tutorial", {
+		finished = finished,
+		step = nextStep and { id = nextStep.id, title = nextStep.title, text = nextStep.text, target = nextStep.target },
+		at = at,
+		total = total,
+		done = profile.tutorial.done,
+		finishReward = profile.tutorial.done and finished and Tutorial.FinishReward or nil,
+	})
 end
 
 -- Record a finished game: team and player stats, plus quest and achievement events.
@@ -68,7 +101,19 @@ end
 
 ProgressService.handlers = {}
 
+-- Client asks for the current step (on join, or after reopening the guide).
+function ProgressService.handlers.getTutorial(player, profile)
+	ProgressService.tutorial(player, profile, nil)
+	return true
+end
+
+function ProgressService.handlers.skipTutorial(player, profile)
+	Tutorial.skip(profile.tutorial or Tutorial.newState())
+	return true
+end
+
 function ProgressService.handlers.getQuests(player, profile)
+	ProgressService.record(player, "questsViewed", 0)
 	local q = today(player, profile)
 	return true, { list = q.list, resetsIn = Quests.secondsUntilReset(os.time()) }
 end

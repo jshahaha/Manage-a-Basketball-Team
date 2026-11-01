@@ -13,6 +13,7 @@ local AnimClips = require("../src/shared/AnimClips")
 local Scouting = require("../src/shared/Scouting")
 local Cosmetics = require("../src/shared/Cosmetics")
 local Facilities = require("../src/shared/Facilities")
+local Tutorial = require("../src/shared/Tutorial")
 local Catalog2 = require("../src/shared/Catalog")
 local Elo = require("../src/shared/Elo")
 local CodeRules = require("../src/shared/CodeRules")
@@ -187,13 +188,13 @@ test("badges: tiers, slots, stat bars, coins, boosts", function()
 	ok(ok1, why)
 	local ok2, why2 = Badges.check(p, "Laser", "Diamond", 1e9)
 	ok(not ok2 and why2:find("84"), "Diamond needs 84")
-	local ok3 = Badges.check(p, "Laser", "Gold", 100)
-	ok(not ok3, "not enough coins")
+	ok(Badges.check(p, "Laser", "Gold", 0), "equipping is free")
 	ok(Badges.equip(p, "Laser", "Gold", 1e9))
 	ok(Badges.equip(p, "IceWater", "Silver", 1e9))
 	local ok4, why4 = Badges.check(p, "Motor", "Bronze", 1e9)
 	ok(not ok4 and why4:find("slots"), "Rare has 2 slots")
-	ok(Badges.equip(p, "IceWater", "Diamond", 1e9), "upgrade uses the same slot")
+	ok(not Badges.equip(p, "IceWater", "Diamond"), "no upgrading an equipped badge")
+	ok(Badges.unequip(p, "IceWater", 1e9) and Badges.equip(p, "IceWater", "Diamond"), "take off, then put on the better one")
 	eq(Badges.boost(p, "three"), 6)
 	eq(Badges.boost(p, "ft"), 8)
 	-- second stat needs 8 less
@@ -753,6 +754,47 @@ test("gem slots: scout report 3 to 6, training 3 to 5, rising prices", function(
 	end).players, 4)
 	st.slots = 6
 	ok(not Scouting.buySlot(st, 1e9), "max")
+end)
+
+test("tutorial: steps in order, gifts once, finish reward, skip", function()
+	local st = Tutorial.newState()
+	eq(Tutorial.current(st).id, "club")
+	eq(Tutorial.takeGift(st), nil)
+	eq(Tutorial.record(st, "packsOpened"), nil, "wrong step does nothing")
+	eq(Tutorial.current(st).id, "club")
+	Tutorial.record(st, "clubCreated")
+	local gift = Tutorial.takeGift(st)
+	eq(gift.packs.Rookie, 1)
+	eq(Tutorial.takeGift(st), nil, "gift only once")
+	local last
+	for _, step in ipairs(Tutorial.Steps) do
+		if step.index >= 2 then
+			local r = Tutorial.record(st, step.event)
+			if step.id == "game" then
+				eq(r.coins, 250)
+			end
+			last = r
+		end
+	end
+	ok(st.done and Tutorial.current(st) == nil, "done")
+	eq(last.gems, 20)
+	eq(last.packs.Blacktop, 1)
+	eq(Config.StartingGems + last.gems, Cosmetics.RarityById.Common.gems, "enough for one Common cosmetic")
+	local sk = Tutorial.newState()
+	Tutorial.skip(sk)
+	eq(Tutorial.current(sk), nil)
+	eq(Tutorial.record(sk, "clubCreated"), nil)
+end)
+
+test("badges: equipping is free, taking off costs the tier's coins", function()
+	local p = { rarity = "Epic", ratings = { three = 99, ft = 99 }, badges = {} }
+	ok(Badges.equip(p, "Laser", "Gold"))
+	local t0, why = Badges.unequip(p, "Laser", 100)
+	ok(t0 == nil and why:find("2500"), "too poor to take off")
+	local t1, _, cost = Badges.unequip(p, "Laser", 1e9)
+	ok(t1 == "Gold" and cost == 2500, "took off for 2,500")
+	eq(p.badges.Laser, nil)
+	eq((Badges.unequip(p, "Laser", 1e9)), nil)
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))

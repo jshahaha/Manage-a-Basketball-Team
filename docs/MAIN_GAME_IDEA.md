@@ -27,6 +27,25 @@ We **don't** copy its name, logo, art, models, map, UI layout or wording. We als
 
 Meta goals: climb the **rating ladder**, finish **daily quests**, complete your **collection**, and raise your **fan count**, which pays you passive income.
 
+## 0. First-time tutorial
+
+A new club starts with **250 coins, 10 gems and 10 free Common players**. Then **Coach Dee**, your assistant coach, walks you through the game one step at a time (`src/shared/Tutorial.lua`). Each step highlights one button and finishes when you actually do the thing, using the same events as daily quests, so you learn by playing.
+
+| # | Step | You do | You get |
+|---|---|---|---|
+| 1 | Make your club | name, colors, logo | |
+| 2 | Open your first pack | open the free Rookie Pack | the Rookie Pack (given when the step starts) |
+| 3 | Set your starting five | drag your new player into the five | |
+| 4 | Put on a badge | equip the badge you pulled (equipping is always free; taking off costs coins) | |
+| 5 | Share the minutes | tap Auto Minutes on the Rotation screen | |
+| 6 | Play your first game | a warm-up game vs a bot club, no Elo; call a timeout and a Coach's Call when prompted | 250 coins |
+| 7 | Start training | put a player in a training slot | |
+| 8 | Meet your scouts | open the Scouting Report | |
+| 9 | Daily quests | open the quest board | |
+| | **Finish** | | **250 coins, 20 gems and a Blacktop Pack** |
+
+The 20 gems plus the 10 you start with are exactly enough for one Common cosmetic, so the gem shop makes sense from day one. You can **skip** the tutorial at any time from the guide button. You keep what you already got, but you give up the finish reward.
+
 ## 1. The lobby (hangout world)
 
 - A server holds up to **8 managers**. Each manager claims a **Home Court** plot around a central plaza.
@@ -231,7 +250,7 @@ Rarity inside the Cosmetic pack item: Common 60%, Rare 28%, Epic 10%, Legendary 
 
 ## 9. Economy & progression
 
-- **Coins** are the main currency, with big numbers and fast growth. They buy packs, badges (equip cost), market buys, scouted players and early report refreshes.
+- **Coins** are the main currency, with big numbers and fast growth. They buy packs, taking badges off, market buys, scouted players and early report refreshes.
 - **Gems** are the premium currency. Free players earn them slowly from daily quests, achievements and Elo milestones, and they can also be bought with Robux. Gems buy **scout team upgrades, extra scout and training slots, cosmetics (including arena looks), the Gem Pack, and skipping timers** (training sessions and facility builds). Possible later: a second saved lineup, renaming the club. They never buy players or badges directly, so the market stays coin-based.
 - **Fans** grow with wins and pay passive income every minute you're online. Upgrading your Home Court (seats, scoreboard, lights) raises how much each fan pays.
 - **Daily quests:** 3 a day, drawn from a pool and reset at 00:00 UTC. Each pays coins, from 100 to 400. Examples: win 2 games, make 15 threes, throw down 8 dunks, open a pack, call 3 timeouts, or play a server challenge.

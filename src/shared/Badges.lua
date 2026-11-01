@@ -17,9 +17,9 @@ local Badges = {}
 Badges.Tiers = {
 	{ id = "Bronze", need = 60, cost = 250, boost = 2, color = "#B87333" },
 	{ id = "Silver", need = 68, cost = 1000, boost = 4, color = "#A9B4C2" },
-	{ id = "Gold", need = 76, cost = 3500, boost = 6, color = "#E0A800" },
-	{ id = "Diamond", need = 84, cost = 10000, boost = 8, color = "#5FD3F3" },
-	{ id = "HallOfFame", need = 90, cost = 30000, boost = 10, color = "#B14BFF" },
+	{ id = "Gold", need = 76, cost = 2500, boost = 6, color = "#E0A800" },
+	{ id = "Diamond", need = 84, cost = 6000, boost = 8, color = "#5FD3F3" },
+	{ id = "HallOfFame", need = 90, cost = 15000, boost = 10, color = "#B14BFF" },
 }
 Badges.TierById = {}
 for i, t in ipairs(Badges.Tiers) do
@@ -89,48 +89,62 @@ function Badges.requirements(badgeId: string, tierId: string)
 	return out
 end
 
--- Can this badge item go on the player? Returns ok, reason, cost.
--- coins = how many coins the owner has.
-function Badges.check(player, badgeId: string, tierId: string, coins: number)
+-- Can this badge item go on the player? Returns ok, reason. Equipping is free;
+-- taking a badge off costs the tier's `cost` (see Badges.unequip).
+function Badges.check(player, badgeId: string, tierId: string)
 	local t = Badges.TierById[tierId]
 	if not Badges.ById[badgeId] or not t then
-		return false, "Unknown badge.", 0
+		return false, "Unknown badge."
 	end
 	local equipped = player.badges or {}
 	local current = equipped[badgeId]
-	if current and Badges.TierById[current].order >= t.order then
-		return false, "Already has this badge at " .. current .. " or better.", 0
+	if current then
+		-- No upgrading in place: take the old one off (which costs coins) first.
+		return false, "Already has " .. current .. " " .. Badges.ById[badgeId].name .. ". Take it off first."
 	end
-	if not current then
+	do
 		local used = 0
 		for _ in pairs(equipped) do
 			used += 1
 		end
 		if used >= Badges.slots(player) then
-			return false, "No free badge slots (" .. player.rarity .. " players have " .. Badges.slots(player) .. ").", 0
+			return false, "No free badge slots (" .. player.rarity .. " players have " .. Badges.slots(player) .. ")."
 		end
 	end
 	for _, req in ipairs(Badges.requirements(badgeId, tierId)) do
 		local have = player.ratings[req[1]] or 0
 		if have < req[2] then
-			return false, string.format("Needs %d %s (has %d).", req[2], req[1], have), t.cost
+			return false, string.format("Needs %d %s (has %d).", req[2], req[1], have)
 		end
 	end
-	if coins < t.cost then
-		return false, "Needs " .. t.cost .. " coins.", t.cost
-	end
-	return true, nil, t.cost
+	return true
 end
 
--- Put a badge on (or upgrade it). Returns ok, reason, cost. Caller takes the coins and
--- removes the badge item from the inventory when ok.
-function Badges.equip(player, badgeId: string, tierId: string, coins: number)
-	local ok, reason, cost = Badges.check(player, badgeId, tierId, coins)
+-- Put a badge on. Free. A badge that's on can't be upgraded in place. Returns ok, reason. Caller removes the badge item
+-- from the inventory when ok.
+function Badges.equip(player, badgeId: string, tierId: string)
+	local ok, reason = Badges.check(player, badgeId, tierId)
 	if ok then
 		player.badges = player.badges or {}
 		player.badges[badgeId] = tierId
 	end
-	return ok, reason, cost
+	return ok, reason
+end
+
+-- Take a badge off. Costs the tier's coins (equipping is free, so this is where badges cost
+-- coins). The caller takes the coins and puts the badge card ("BadgeId/Tier") back in the
+-- inventory. Returns tierId, nil, cost, or nil, reason, cost.
+function Badges.unequip(player, badgeId: string, coins: number)
+	local tierId = player.badges and player.badges[badgeId]
+	if not tierId then
+		return nil, "That player doesn't have this badge.", 0
+	end
+	local cost = Badges.TierById[tierId].cost
+	if coins < cost then
+		return nil, "Needs " .. cost .. " coins to take off.", cost
+	end
+	player.badges[badgeId] = nil
+	return tierId, nil, cost
 end
 
 -- Rating points a player's badges add to `stat` (used by the sim in the badge's situations).
