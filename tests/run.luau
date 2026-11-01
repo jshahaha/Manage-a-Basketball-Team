@@ -631,6 +631,9 @@ test("animation clips: sorted keys, sounds exist, walkout move for every archety
 	for play, clip in pairs(AnimClips.ForPlay) do
 		ok(AnimClips.Clips[clip] ~= nil, "play " .. play .. " uses missing clip " .. clip)
 	end
+	-- feet: flat when standing in a crouch, toes pointed in the air (Roblox space is mirrored)
+	eq(AnimClips.footAngle(0, 40, -60, -0.9), -20)
+	eq(AnimClips.footAngle(0, 0, 0, 2), -30)
 	for _, n in ipairs({ "Idle", "Jog", "DefSlide" }) do
 		ok(AnimClips.Clips[n].loop == true, n .. " should loop")
 	end

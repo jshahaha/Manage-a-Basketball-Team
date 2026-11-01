@@ -10,7 +10,10 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AnimClips = require(ReplicatedStorage.Shared.AnimClips)
 
-local MOTORS = { "Root", "Waist", "Neck", "RightShoulder", "RightElbow", "LeftShoulder", "LeftElbow", "RightHip", "RightKnee", "LeftHip", "LeftKnee" }
+local MOTORS = {
+	"Root", "Waist", "Neck", "RightShoulder", "RightElbow", "RightWrist", "LeftShoulder", "LeftElbow", "LeftWrist",
+	"RightHip", "RightKnee", "RightAnkle", "LeftHip", "LeftKnee", "LeftAnkle",
+}
 local rad = math.rad
 
 local AnimPlayer = {}
@@ -42,22 +45,29 @@ local function pauseAnimator(character)
 end
 
 function AnimPlayer:apply(clip, t: number)
+	local root = clip.root and AnimClips.sample(clip.root, t, 5) or { 0, 0, 0, 0, 0 }
 	for name, motor in pairs(self.motors) do
 		local keys = clip.joints[name]
-		if keys then
+		local side = name:match("^(%a+)Ankle$")
+		if side and not keys then
+			-- feet stay flat on the floor and point their toes in the air (same rule as the page)
+			local hip = clip.joints[side .. "Hip"] and AnimClips.sample(clip.joints[side .. "Hip"], t, 1)[1] or 0
+			local knee = clip.joints[side .. "Knee"] and AnimClips.sample(clip.joints[side .. "Knee"], t, 1)[1] or 0
+			motor.Transform = CFrame.fromEulerAnglesYXZ(rad(AnimClips.footAngle(root[5], hip, knee, root[2])), 0, 0)
+		elseif keys then
 			local v = AnimClips.sample(keys, t, 3)
 			motor.Transform = CFrame.fromEulerAnglesYXZ(rad(v[1]), rad(v[2]), rad(v[3]))
 		elseif name ~= "Root" then
 			motor.Transform = CFrame.identity
 		end
 	end
-	local root = self.motors.Root
-	if root then
+	local rootMotor = self.motors.Root
+	if rootMotor then
 		if clip.root then
-			local r = AnimClips.sample(clip.root, t, 5)
-			root.Transform = CFrame.new(r[1], r[2], r[3]) * CFrame.fromEulerAnglesYXZ(rad(r[5]), rad(r[4]), 0)
+			local r = root
+			rootMotor.Transform = CFrame.new(r[1], r[2], r[3]) * CFrame.fromEulerAnglesYXZ(rad(r[5]), rad(r[4]), 0)
 		else
-			root.Transform = CFrame.identity
+			rootMotor.Transform = CFrame.identity
 		end
 	end
 end

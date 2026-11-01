@@ -26,6 +26,14 @@ These numbers are what the clips are tuned to. They come from published motion-c
 | Chest pass | Step toward the target, extend the arms, turn the thumbs down, and follow through. | Release at 0.45 s on the step. |
 | Defensive slide | Wide, low stance. Push off the trail foot and never cross the feet. Hands active. | Feet open and close, and never cross. |
 
+**Skilled-player style** (from studying Practical Basketball on Roblox and real guards; we don't copy its animations, only learn what makes moves look skilled):
+
+- **Ball size:** the ball is about as wide as the head. Ours was too small, which made everyone look like a kid with a toy. The rim is about twice the ball.
+- **Wrists and ankles:** the rig now has wrist and ankle joints (R15 has them). The shot ends in a wrist snap ("goose neck"), every dribble push is a wrist snap, and feet stay flat on the floor in a crouch and point their toes in the air (automatic, so clips don't need ankle keys).
+- **Dribble posture:** low and wide, chest up, eyes up, off arm out as an arm bar, the body bobs on each push, and the hand rides the ball back up instead of slapping it.
+- **Separate moves that chain:** live dribble, crossover, between the legs, behind the back and hesitation all start and end in the same pose, so the game can chain any of them (the walkout combo is four of them chained).
+- **One-motion jumper:** the ball goes from the shot pocket straight up the middle to a set point above the forehead with the wrist cocked, the guide hand stays quiet on the side, and the feet are slightly staggered.
+
 **Game-feel rules we follow** (from game animation practice):
 
 - Keep the wind-up short. Put the "ready" feeling into the idle stance so a move can start right away.

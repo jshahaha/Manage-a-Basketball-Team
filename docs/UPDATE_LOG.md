@@ -4,6 +4,14 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.6 (2026-11-01): Skilled-player animations
+### Added
+- Dribble moves: live dribble, crossover, between the legs, behind the back, hesitation. They chain, and the walkout combo is four of them
+- Bounce pass. Wrist and ankle joints, with automatic foot planting (flat on the floor, toes pointed in the air)
+### Changed
+- The ball is about head-sized and the rim about twice the ball (both were too small)
+- Jump shot reworked as a one-motion shot with a set point, wrist cock and snap, a quiet guide hand and staggered feet
+
 ## v0.1.5 (2026-11-01): Animations tuned to real basketball movement
 ### Added
 - In-game clips: Idle, Jog, Defensive Slide (loops), Layup, Chest Pass, Rebound. `AnimClips.ForPlay` maps match plays to clips

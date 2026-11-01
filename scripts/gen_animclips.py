@@ -11,7 +11,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 js = ROOT / "docs/prototypes/walkout3d.js"
 data = json.loads(subprocess.run(["node", "-e", f"global.window={{THREE:{{}}}};require({json.dumps(str(js))});process.stdout.write(JSON.stringify(window.Walkout3D.CLIPS))"], capture_output=True, text=True, check=True).stdout)
 C = data
-MAP = {'Root':'Root','Waist':'Waist','Neck':'Neck','RShoulder':'RightShoulder','RElbow':'RightElbow','LShoulder':'LeftShoulder','LElbow':'LeftElbow','RHip':'RightHip','RKnee':'RightKnee','LHip':'LeftHip','LKnee':'LeftKnee'}
+MAP = {'Root':'Root','Waist':'Waist','Neck':'Neck','RShoulder':'RightShoulder','RElbow':'RightElbow','LShoulder':'LeftShoulder','LElbow':'LeftElbow','RHip':'RightHip','RKnee':'RightKnee','LHip':'LeftHip','LKnee':'LeftKnee','RWrist':'RightWrist','LWrist':'LeftWrist','RAnkle':'RightAnkle','LAnkle':'LeftAnkle'}
 MOVES = [('Sniper','Shoot'),('PostScorer','Dunk'),('Slasher','Dunk'),('FloorGeneral','Dribble'),('AllAround','Dribble'),('RimProtector','Block'),('Lockdown','Block'),('GlassCleaner','Block')]
 
 def num(x):
