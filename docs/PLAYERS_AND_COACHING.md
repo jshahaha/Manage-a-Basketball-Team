@@ -167,7 +167,7 @@ Defensive styles each get a diagram that shows where the five stand and who cove
 - **Fit:** when your roster's archetypes match the coach's system, your team gets bonus chemistry. For example, four Snipers with a 5-Out coach.
 - **How you get coaches:**
   - Hire them at the **Coaching Office** in the plaza, which shows 3 coaches and refreshes every few hours. You pay with coins.
-  - Or open a **Coach Pack** (60,000 coins) or an **Elite Coach Pack** (250,000 coins, better odds and the only way to get Hall of Fame coaches).
+  - Or open a **Coach Pack** (6,000 coins) or an **Elite Coach Pack** (25,000 coins, better odds and the only way to get Hall of Fame coaches).
   - You can sell coaches on the market.
 - **Free coaches:** every new club starts with a free Common coach for each side, one running Motion and one running Man-to-Man.
 
@@ -179,11 +179,11 @@ Badges are perks that sit in a player's **badge slots**. They come from packs (e
 
 | Tier | Main stat needs | Second stat needs | Equip cost | Boost |
 |---|---|---|---|---|
-| Bronze | 60 | 52 | 2,500 coins | +2 |
-| Silver | 68 | 60 | 10,000 coins | +4 |
-| Gold | 76 | 68 | 35,000 coins | +6 |
-| Diamond | 84 | 76 | 100,000 coins | +8 |
-| Hall of Fame | 90 | 82 | 300,000 coins | +10 |
+| Bronze | 60 | 52 | 250 coins | +2 |
+| Silver | 68 | 60 | 1,000 coins | +4 |
+| Gold | 76 | 68 | 3,500 coins | +6 |
+| Diamond | 84 | 76 | 10,000 coins | +8 |
+| Hall of Fame | 90 | 82 | 30,000 coins | +10 |
 
 **Icons.** Every badge has its own icon in a hexagon frame colored by tier (`assets/icons/badges/<Badge>_<Tier>.png`, 100 images ready to upload). The badge card shows only the icon, the name and the tier. Tap it to flip it over: the back says what it does, the stats it needs, the equip cost and the boost.
 

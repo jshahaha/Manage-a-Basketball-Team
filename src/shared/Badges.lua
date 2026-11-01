@@ -15,11 +15,11 @@ local Badges = {}
 -- if any, needs 8 less). cost = coins to put it on. boost = rating points added to the
 -- badge's stats in the situations the badge covers.
 Badges.Tiers = {
-	{ id = "Bronze", need = 60, cost = 2500, boost = 2, color = "#B87333" },
-	{ id = "Silver", need = 68, cost = 10000, boost = 4, color = "#A9B4C2" },
-	{ id = "Gold", need = 76, cost = 35000, boost = 6, color = "#E0A800" },
-	{ id = "Diamond", need = 84, cost = 100000, boost = 8, color = "#5FD3F3" },
-	{ id = "HallOfFame", need = 90, cost = 300000, boost = 10, color = "#B14BFF" },
+	{ id = "Bronze", need = 60, cost = 250, boost = 2, color = "#B87333" },
+	{ id = "Silver", need = 68, cost = 1000, boost = 4, color = "#A9B4C2" },
+	{ id = "Gold", need = 76, cost = 3500, boost = 6, color = "#E0A800" },
+	{ id = "Diamond", need = 84, cost = 10000, boost = 8, color = "#5FD3F3" },
+	{ id = "HallOfFame", need = 90, cost = 30000, boost = 10, color = "#B14BFF" },
 }
 Badges.TierById = {}
 for i, t in ipairs(Badges.Tiers) do

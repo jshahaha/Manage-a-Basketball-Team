@@ -12,14 +12,14 @@ Facilities.MaxLevel = 10
 Facilities.List = {
 	Arena = {
 		name = "Arena",
-		baseCost = 20000, -- coins for level 1; each level costs 1.8x the one before
+		baseCost = 2000, -- coins for level 1; each level costs 1.8x the one before
 		costGrowth = 1.8,
 		hoursPerLevel = 2, -- build time for level n is n * 2 hours
 		perLevel = { coinBonus = 0.04, homeOvr = 0.2 }, -- level 10: +40% game coins, +2 OVR at home
 	},
 	Training = {
 		name = "Training Facility",
-		baseCost = 15000,
+		baseCost = 1500,
 		costGrowth = 1.8,
 		hoursPerLevel = 1.5,
 		perLevel = { sessionTime = -0.05, gain = 0.03 }, -- level 10: sessions 50% shorter, +30% gains
@@ -37,7 +37,7 @@ function Facilities.nextCost(id: string, level: number)
 		return nil
 	end
 	local n = level + 1
-	local coins = math.floor(f.baseCost * f.costGrowth ^ level / 1000 + 0.5) * 1000
+	local coins = math.floor(f.baseCost * f.costGrowth ^ level / 100 + 0.5) * 100
 	return { coins = coins, hours = n * f.hoursPerLevel }
 end
 

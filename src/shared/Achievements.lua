@@ -13,26 +13,26 @@ local Achievements = {}
 -- tiers: { target, coins, pack? }
 Achievements.List = {
 	{ id = "Winner", name = "Winner", text = "Win %s games", stat = "gamesWon", tiers = {
-		{ 1, 1000 }, { 10, 5000 }, { 50, 15000 }, { 250, 50000, "Pro" }, { 1000, 150000, "AllStar" } } },
+		{ 1, 100 }, { 10, 500 }, { 50, 1500 }, { 250, 5000, "Pro" }, { 1000, 15000, "AllStar" } } },
 	{ id = "Downtown", name = "From Downtown", text = "Make %s threes", stat = "threesMade", tiers = {
-		{ 100, 3000 }, { 1000, 15000 }, { 10000, 60000, "Pro" } } },
+		{ 100, 300 }, { 1000, 1500 }, { 10000, 6000, "Pro" } } },
 	{ id = "Posterizer", name = "Posterizer", text = "Throw down %s dunks", stat = "dunks", tiers = {
-		{ 50, 3000 }, { 500, 15000 }, { 5000, 60000, "Pro" } } },
+		{ 50, 300 }, { 500, 1500 }, { 5000, 6000, "Pro" } } },
 	{ id = "PackRat", name = "Pack Rat", text = "Open %s packs", stat = "packsOpened", tiers = {
-		{ 1, 500 }, { 25, 5000 }, { 100, 20000 }, { 500, 75000, "AllStar" } } },
+		{ 1, 50 }, { 25, 500 }, { 100, 2000 }, { 500, 7500, "AllStar" } } },
 	{ id = "Collector", name = "Collector", text = "Own %s different players", stat = "collection", max = true, tiers = {
-		{ 15, 3000 }, { 40, 12000 }, { 100, 40000, "Pro" } } },
+		{ 15, 300 }, { 40, 1200 }, { 100, 4000, "Pro" } } },
 	{ id = "Climber", name = "Climber", text = "Reach tier %s", stat = "bestTier", max = true, tierNames = {
 		[2] = "Varsity", [3] = "College", [4] = "Pro", [5] = "All-League", [6] = "Hall of Fame" }, tiers = {
-		{ 2, 5000 }, { 3, 10000 }, { 4, 25000, "Pro" }, { 5, 60000, "AllStar" }, { 6, 150000, "AllStar" } } },
+		{ 2, 500 }, { 3, 1000 }, { 4, 2500, "Pro" }, { 5, 6000, "AllStar" }, { 6, 15000, "AllStar" } } },
 	{ id = "HotStreak", name = "Hot Streak", text = "Win %s games in a row", stat = "bestStreak", max = true, tiers = {
-		{ 3, 3000 }, { 5, 8000 }, { 10, 30000, "Pro" } } },
+		{ 3, 300 }, { 5, 800 }, { 10, 3000, "Pro" } } },
 	{ id = "Timeout", name = "Clipboard Coach", text = "Call %s timeouts", stat = "timeoutsCalled", tiers = {
-		{ 10, 2000 }, { 100, 10000 }, { 1000, 40000 } } },
+		{ 10, 200 }, { 100, 1000 }, { 1000, 4000 } } },
 	{ id = "Challenger", name = "Challenger", text = "Play %s server challenges", stat = "challengesPlayed", tiers = {
-		{ 1, 1000 }, { 10, 6000 }, { 50, 25000 } } },
+		{ 1, 100 }, { 10, 600 }, { 50, 2500 } } },
 	{ id = "Legend", name = "Legend Hunter", text = "Pull %s Hall of Fame players", stat = "hofPulled", tiers = {
-		{ 1, 25000 }, { 5, 100000, "AllStar" } } },
+		{ 1, 2500 }, { 5, 10000, "AllStar" } } },
 }
 
 Achievements.ById = {}

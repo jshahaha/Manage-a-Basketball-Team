@@ -145,14 +145,14 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 
 | Pack | Coins · Robux | Contents | Player Common / Rare / Epic / Legendary / Hall of Fame % | Badge Bronze / Silver / Gold / Diamond / Hall of Fame % |
 |---|---|---|---|---|
-| Rookie Pack | 2,500 · R$ 19 | 1 player, 1–2 badges, 1 item | 85 / 15 / — / — / — | 80 / 20 / — / — / — |
-| Blacktop Pack | 10,000 · R$ 49 | 1 player, 1–2 badges, 1 item | 60 / 33 / 7 / — / — | 55 / 38 / 7 / — / — |
-| Pro Pack | 40,000 · R$ 99 | 1–2 players (35% for a 2nd), 1–2 badges, 1 item | — / 60 / 33 / 7 / — | — / 55 / 38 / 7 / — |
-| All-Star Pack | 150,000 · R$ 249 | 1–2 players (50% for a 2nd), 2–3 badges, 1 item | — / — / 70 / 27 / 3 | — / — / 70 / 27 / 3 |
-| Hall of Fame Pack | 500,000 · R$ 599 | 2 players, 2–3 badges, 1 item | — / — / — / 88 / 12 | — / — / — / 88 / 12 |
-| Badge Pack | 20,000 · R$ 59 | 3–4 badges | — | 50 / 35 / 13 / 2 / — |
-| Coach Pack | 60,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — | — |
-| Elite Coach Pack | 250,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 | — |
+| Rookie Pack | 250 · R$ 19 | 1 player, 1–2 badges, 1 item | 85 / 15 / — / — / — | 80 / 20 / — / — / — |
+| Blacktop Pack | 1,000 · R$ 49 | 1 player, 1–2 badges, 1 item | 60 / 33 / 7 / — / — | 55 / 38 / 7 / — / — |
+| Pro Pack | 4,000 · R$ 99 | 1–2 players (35% for a 2nd), 1–2 badges, 1 item | — / 60 / 33 / 7 / — | — / 55 / 38 / 7 / — |
+| All-Star Pack | 15,000 · R$ 249 | 1–2 players (50% for a 2nd), 2–3 badges, 1 item | — / — / 70 / 27 / 3 | — / — / 70 / 27 / 3 |
+| Hall of Fame Pack | 50,000 · R$ 599 | 2 players, 2–3 badges, 1 item | — / — / — / 88 / 12 | — / — / — / 88 / 12 |
+| Badge Pack | 2,000 · R$ 59 | 3–4 badges | — | 50 / 35 / 13 / 2 / — |
+| Coach Pack | 6,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — | — |
+| Elite Coach Pack | 25,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 | — |
 
 **The item.** Every player pack ends its reveal with one useful item instead of a filler player: a **Cosmetic** (35%, a jersey, court floor, ball or celebration), a **Coin Pouch** (30%, 10–30% of the pack's coin price back), a **Badge Upgrade** (20%) or a **Scout Ticket** (15%, one free Scouting Report refresh). Badge Upgrades have their own rarity, and the rarity decides which tier they work on: **Bronze → Silver** (60% of upgrades), **Silver → Gold** (28%), **Gold → Diamond** (10%) and **Diamond → Hall of Fame** (2%). The player still needs the stats for the new tier. Stamina only exists inside a match, so there are no energy items.
 
@@ -160,7 +160,7 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 
 - **A fixed card list.** Every player and coach in the game is on one list (`src/shared/Catalog.lua`): 216 players (80 Common, 60 Rare, 40 Epic, 24 Legendary, 12 Hall of Fame) and 28 coaches. Each card has a set name, position and ratings, so everyone pulls the same "Deuce Reyes". Duplicates raise the card's star level.
 - **See what's inside:** every pack has a **Contents** button (the list icon next to it). It opens a grid of every card that pack can give, best first, with rarity, OVR, position, face, and the chance of each card. A filter switches between rarities, and cards you already own are ticked. A **Collection book** in the menu shows all 216 players and 28 coaches, with the ones you haven't found shown as silhouettes.
-- **Bundles:** the shop keeps one card per pack. Pressing **Buy** opens a small popup to pick **1×, 5× or 20×**. 5 packs cost 10% less and 20 cost 20% less (for example 5 Pro Packs for 180,000 coins instead of 200,000). The popup then offers **Open now** or **Keep**.
+- **Bundles:** the shop keeps one card per pack. Pressing **Buy** opens a small popup to pick **1×, 5× or 20×**. 5 packs cost 10% less and 20 cost 20% less (for example 5 Pro Packs for 18,000 coins instead of 20,000). The popup then offers **Open now** or **Keep**.
 - **A bundle is its own item.** A kept 5× or 20× bundle sits in the inventory as one box ("Pro Pack Bundle ×5"), not as 5 loose packs. Opening it plays the first pack in full, then offers **Open all**, which flips the rest fast and ends on a summary of the best pulls. In code, an inventory entry is `{ kind = "pack", pack = "Pro" }` or `{ kind = "bundle", pack = "Pro", size = 5 }`.
 - **Robux:** every pack and bundle can also be bought with Robux. Game passes come later.
 - **Fewer players, plus badges and an item.** Packs give **1–2 players, 1–3 badges and 1 item** (see Badges in `PLAYERS_AND_COACHING.md`), so the bench doesn't fill with junk cards. The item flips first, then badges, then players, with the best player last. Tapping a flipped badge flips it again to show what it does and the stats it needs.
@@ -201,8 +201,8 @@ Club buildings, upgraded with **coins** over a build timer (`src/shared/Faciliti
 
 | Building | Each level (max 10) | At level 10 | Level 1 cost, then x1.8 | Build time |
 |---|---|---|---|---|
-| **Arena** | +4% coins from every game, win or loss, and +0.2 OVR to your players at home | +40% coins, +2 OVR at home | 20,000 | level x 2 hours |
-| **Training Facility** | sessions 5% shorter and gains 3% bigger | 50% shorter, +30% gains | 15,000 | level x 1.5 hours |
+| **Arena** | +4% coins from every game, win or loss, and +0.2 OVR to your players at home | +40% coins, +2 OVR at home | 2,000 | level x 2 hours |
+| **Training Facility** | sessions 5% shorter and gains 3% bigger | 50% shorter, +30% gains | 1,500 | level x 1.5 hours |
 
 Arena looks (lights, scoreboard, seat colors) are separate and bought with gems, because they're cosmetic.
 
@@ -234,7 +234,7 @@ Rarity inside the Cosmetic pack item: Common 60%, Rare 28%, Epic 10%, Legendary 
 - **Coins** are the main currency, with big numbers and fast growth. They buy packs, badges (equip cost), market buys, scouted players and early report refreshes.
 - **Gems** are the premium currency. Free players earn them slowly from daily quests, achievements and Elo milestones, and they can also be bought with Robux. Gems buy **scout team upgrades, extra scout and training slots, cosmetics (including arena looks), the Gem Pack, and skipping timers** (training sessions and facility builds). Possible later: a second saved lineup, renaming the club. They never buy players or badges directly, so the market stays coin-based.
 - **Fans** grow with wins and pay passive income every minute you're online. Upgrading your Home Court (seats, scoreboard, lights) raises how much each fan pays.
-- **Daily quests:** 3 a day, drawn from a pool and reset at 00:00 UTC. Each pays coins, from 1,000 to 4,000. Examples: win 2 games, make 15 threes, throw down 8 dunks, open a pack, call 3 timeouts, or play a server challenge.
+- **Daily quests:** 3 a day, drawn from a pool and reset at 00:00 UTC. Each pays coins, from 100 to 400. Examples: win 2 games, make 15 threes, throw down 8 dunks, open a pack, call 3 timeouts, or play a server challenge.
 - **Achievements:** lifetime goals with tiers that each pay once. The big tiers pay packs. Examples: Winner (1 / 10 / 50 / 250 / 1,000 wins), From Downtown (threes), Posterizer (dunks), Pack Rat, Collector, Climber (reach each Elo tier), Hot Streak, Clipboard Coach (timeouts), Challenger and Legend Hunter (pull Hall of Fame players).
 - There's also a login streak and **redeem codes**. The owner makes codes in `src/server/Codes.lua`, or live from chat with `!makecode` (see the README).
 - **Robux (later):** VIP (2× coins), gem bundles, Robux packs with shown odds, and court cosmetics. Nothing is pay-to-win only.

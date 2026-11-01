@@ -26,7 +26,7 @@
 ]]
 
 return {
-	TIPOFF = { coins = 5000 },
-	FASTBREAK = { coins = 10000, packs = { Blacktop = 1 } },
+	TIPOFF = { coins = 500 },
+	FASTBREAK = { coins = 1000, packs = { Blacktop = 1 } },
 	WELCOME = { packs = { Pro = 1 }, newPlayersOnly = true },
 }

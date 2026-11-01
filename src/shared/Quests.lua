@@ -10,16 +10,16 @@ Quests.PerDay = 3
 
 -- event: what the game reports. targets: possible amounts. coins: reward per target.
 Quests.Pool = {
-	{ id = "play", event = "gamesPlayed", text = "Play %d games", targets = { 3, 5 }, coins = { 1500, 2500 } },
-	{ id = "win", event = "gamesWon", text = "Win %d games", targets = { 2, 3 }, coins = { 2500, 4000 } },
-	{ id = "threes", event = "threesMade", text = "Make %d threes", targets = { 15, 30 }, coins = { 2000, 3500 } },
-	{ id = "dunks", event = "dunks", text = "Throw down %d dunks", targets = { 8, 15 }, coins = { 2000, 3500 } },
-	{ id = "points", event = "pointsScored", text = "Score %d points", targets = { 250, 500 }, coins = { 2000, 3500 } },
-	{ id = "blowout", event = "blowoutWins", text = "Win %d game by 15 or more", targets = { 1 }, coins = { 3000 } },
-	{ id = "packs", event = "packsOpened", text = "Open %d packs", targets = { 1, 2 }, coins = { 1500, 2500 } },
-	{ id = "train", event = "trainingStarted", text = "Start %d training sessions", targets = { 2, 3 }, coins = { 1500, 2000 } },
-	{ id = "timeouts", event = "timeoutsCalled", text = "Call %d timeouts", targets = { 3, 6 }, coins = { 1000, 1800 } },
-	{ id = "challenge", event = "challengesPlayed", text = "Play %d server challenge", targets = { 1 }, coins = { 2500 } },
+	{ id = "play", event = "gamesPlayed", text = "Play %d games", targets = { 3, 5 }, coins = { 150, 250 } },
+	{ id = "win", event = "gamesWon", text = "Win %d games", targets = { 2, 3 }, coins = { 250, 400 } },
+	{ id = "threes", event = "threesMade", text = "Make %d threes", targets = { 15, 30 }, coins = { 200, 350 } },
+	{ id = "dunks", event = "dunks", text = "Throw down %d dunks", targets = { 8, 15 }, coins = { 200, 350 } },
+	{ id = "points", event = "pointsScored", text = "Score %d points", targets = { 250, 500 }, coins = { 200, 350 } },
+	{ id = "blowout", event = "blowoutWins", text = "Win %d game by 15 or more", targets = { 1 }, coins = { 300 } },
+	{ id = "packs", event = "packsOpened", text = "Open %d packs", targets = { 1, 2 }, coins = { 150, 250 } },
+	{ id = "train", event = "trainingStarted", text = "Start %d training sessions", targets = { 2, 3 }, coins = { 150, 200 } },
+	{ id = "timeouts", event = "timeoutsCalled", text = "Call %d timeouts", targets = { 3, 6 }, coins = { 100, 180 } },
+	{ id = "challenge", event = "challengesPlayed", text = "Play %d server challenge", targets = { 1 }, coins = { 250 } },
 }
 
 function Quests.dayNumber(now: number): number

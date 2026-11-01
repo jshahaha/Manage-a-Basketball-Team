@@ -4,6 +4,11 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.2.0 (2026-11-01): Coins down 10x, gems slower
+### Changed
+- Every coin number divided by 10: starting coins (250), packs (Rookie 250 to Hall of Fame 50,000), badge equip costs, quest and achievement rewards, Arena and Training Facility costs, scout sign prices and refresh (500), Coin Pouch rounding, and the launch codes
+- Gems come in slower: start with 10, daily sweep 3, each achievement tier 3, Elo tier rewards halved (10 / 20 / 40 / 75 / 150)
+
 ## v0.1.9 (2026-11-01): Facilities, scouting prices, score effects
 ### Added
 - Gem slots: Scouting Report starts at 3 players, up to 6 (100/250/650 gems); training starts at 3 slots, up to 5 (150/400 gems)

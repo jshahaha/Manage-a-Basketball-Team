@@ -23,11 +23,11 @@ local Scouting = {}
 -- Players per report: Config.GemSlots.Scout (3, up to 6 with gems). Saved as state.slots.
 -- Sign price: scales with the player's OVR but always overpriced next to packs, with a random spread
 -- (x1.3 to x1.8) so prices overlap and don't give away the OVR or rarity. Each scout level takes 4% off.
-Scouting.PriceBase = 3000 -- value of a 55 OVR player
+Scouting.PriceBase = 300 -- value of a 55 OVR player
 Scouting.PriceGrowth = 1.13 -- value grows 13% per OVR point
 Scouting.Markup = { 1.3, 1.8 }
 Scouting.DiscountPerLevel = 0.04
-Scouting.RefreshCost = 5000 -- coins, to refresh before the timer runs out
+Scouting.RefreshCost = 500 -- coins, to refresh before the timer runs out
 -- Same odds at every level: upgrades buy information, not better players.
 Scouting.Odds = { Common = 50, Rare = 32, Epic = 13, Legendary = 4.5, HallOfFame = 0.5 }
 
@@ -86,7 +86,7 @@ end
 function Scouting.listPrice(rng, player): number
 	local value = Scouting.PriceBase * Scouting.PriceGrowth ^ (PlayerFactory.overall(player) - 55)
 	local mult = rng:range(Scouting.Markup[1], Scouting.Markup[2])
-	return math.max(1000, math.floor(value * mult / 100 + 0.5) * 100)
+	return math.max(100, math.floor(value * mult / 10 + 0.5) * 10)
 end
 
 -- Cheapest and dearest list price for an OVR (before the scout discount).
@@ -98,7 +98,7 @@ end
 -- What you pay at your scout level.
 function Scouting.price(listPrice: number, level: number): number
 	local off = 1 - Scouting.DiscountPerLevel * math.clamp(level, 0, Scouting.MaxLevel)
-	return math.floor(listPrice * off / 100 + 0.5) * 100
+	return math.floor(listPrice * off / 10 + 0.5) * 10
 end
 
 -- What the UI may show for one scouted player at this level. Never includes OVR.
