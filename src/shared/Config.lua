@@ -36,12 +36,25 @@ Config.PositionlessChance = 0.05
 
 -- Coaches have no rating, only rarity. Rarity makes their play style hit harder
 -- (multiplier on the style edge) and decides how many styles they know.
+-- plays = how many plays from their styles' playbook they know; playBonus = extra
+-- success chance when one of their plays is called.
 Config.CoachRarity = {
-	Common = { styleBoost = 1.00, styles = 1 },
-	Rare = { styleBoost = 1.10, styles = 1 },
-	Epic = { styleBoost = 1.20, styles = 2 },
-	Legendary = { styleBoost = 1.30, styles = 2 },
-	HallOfFame = { styleBoost = 1.40, styles = 3 },
+	Common = { styleBoost = 1.00, styles = 1, plays = 2, playBonus = 0.00 },
+	Rare = { styleBoost = 1.10, styles = 1, plays = 3, playBonus = 0.02 },
+	Epic = { styleBoost = 1.20, styles = 2, plays = 4, playBonus = 0.04 },
+	Legendary = { styleBoost = 1.30, styles = 2, plays = 5, playBonus = 0.06 },
+	HallOfFame = { styleBoost = 1.40, styles = 3, plays = 6, playBonus = 0.08 },
+}
+
+-- Playbook: plays each offensive style unlocks, in the order a coach learns them.
+-- Diagrams for each play are on the UI page (Playbook section).
+Config.Playbook = {
+	FiveOut = { "DriveAndKick", "Floppy", "SpainPickAndRoll" },
+	PaceAndSpace = { "EarlyDragThree", "DriveAndKick", "Lob" },
+	InsideOut = { "PostUp", "HornsFlare", "BackdoorCut" },
+	PickAndRoll = { "PickAndRoll", "Lob", "SpainPickAndRoll" },
+	Motion = { "BackdoorCut", "HornsFlare", "Floppy" },
+	IsoStar = { "Isolation", "PickAndRoll", "PostUp" },
 }
 
 -- Weight range in lb by position.
@@ -94,45 +107,46 @@ Config.Finishes = {
 }
 
 -- Packs -------------------------------------------------------------------
--- odds are per card and must add up to 1. count = cards in the pack.
--- guarantee = the best card is at least this rarity (that card is re-rolled with
--- only the rarities at or above it, keeping their relative odds).
--- Hall of Famers only drop from the All-Star Pack and event packs.
+-- A ladder: each rarity drops from at most 3 neighbouring packs, and Hall of Famers
+-- only from the top 2. odds are per card and add up to 1. count = cards per pack.
+-- Cards come from the fixed card list in Catalog.lua, so players can see every card
+-- a pack can give. order = position in the shop.
 Config.Packs = {
+	Rookie = {
+		name = "Rookie Pack", kind = "players", order = 1, count = 3, coins = 2500, robux = 19,
+		odds = { Common = 0.85, Rare = 0.15 },
+	},
 	Blacktop = {
-		name = "Blacktop Pack",
-		kind = "players",
-		count = 3,
-		coins = 5000,
-		robux = 29,
-		odds = { Common = 0.74, Rare = 0.22, Epic = 0.04 },
+		name = "Blacktop Pack", kind = "players", order = 2, count = 3, coins = 10000, robux = 49,
+		odds = { Common = 0.60, Rare = 0.33, Epic = 0.07 },
 	},
 	Pro = {
-		name = "Pro Pack",
-		kind = "players",
-		count = 4,
-		coins = 40000,
-		robux = 99,
-		guarantee = "Rare",
-		odds = { Common = 0.36, Rare = 0.41, Epic = 0.19, Legendary = 0.04 },
+		name = "Pro Pack", kind = "players", order = 3, count = 4, coins = 40000, robux = 99,
+		odds = { Rare = 0.60, Epic = 0.33, Legendary = 0.07 },
 	},
 	AllStar = {
-		name = "All-Star Pack",
-		kind = "players",
-		count = 5,
-		coins = 250000,
-		robux = 399,
-		guarantee = "Epic",
-		odds = { Rare = 0.42, Epic = 0.42, Legendary = 0.145, HallOfFame = 0.015 },
+		name = "All-Star Pack", kind = "players", order = 4, count = 4, coins = 150000, robux = 249,
+		odds = { Epic = 0.70, Legendary = 0.27, HallOfFame = 0.03 },
+	},
+	HallOfFame = {
+		name = "Hall of Fame Pack", kind = "players", order = 5, count = 5, coins = 500000, robux = 599,
+		odds = { Legendary = 0.88, HallOfFame = 0.12 },
 	},
 	Coach = {
-		name = "Coach Pack",
-		kind = "coach",
-		count = 1,
-		coins = 60000,
-		robux = 149,
-		odds = { Common = 0.55, Rare = 0.30, Epic = 0.12, Legendary = 0.03 },
+		name = "Coach Pack", kind = "coach", order = 6, count = 1, coins = 60000, robux = 149,
+		odds = { Common = 0.60, Rare = 0.30, Epic = 0.09, Legendary = 0.01 },
 	},
+	EliteCoach = {
+		name = "Elite Coach Pack", kind = "coach", order = 7, count = 1, coins = 250000, robux = 399,
+		odds = { Rare = 0.45, Epic = 0.40, Legendary = 0.13, HallOfFame = 0.02 },
+	},
+}
+
+-- Bundles: buy several of the same pack at once for less per pack.
+Config.Bundles = {
+	{ size = 1, discount = 0 },
+	{ size = 5, discount = 0.10 },
+	{ size = 20, discount = 0.20 },
 }
 
 -- Walkout cutscene plays for cards of this rarity or better.

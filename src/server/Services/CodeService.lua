@@ -166,7 +166,7 @@ local HELP = table.concat({
 	"!makecode NAME coins=5000 fans=100 pack=Pro:2 boost=DoubleCoins:30",
 	"   options: uses=500  days=7  hours=12  until=2026-12-31  new=yes",
 	"!delcode NAME   !codes   !codehelp",
-	"Packs: Blacktop, Pro, AllStar, Coach",
+	"Packs: Rookie, Blacktop, Pro, AllStar, HallOfFame, Coach, EliteCoach",
 }, "\n")
 
 local function onChat(player: Player, text: string)

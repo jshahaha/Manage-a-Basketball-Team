@@ -132,18 +132,32 @@ Each coach knows **one main play style** and sometimes a second one. Your team c
 - "Strong vs" is a small edge, not a guaranteed win. Under [General Rules](GENERAL_RULES.md), no style should win more than about 60% of the time.
 - **Switching during a game:** between quarters, or at a timeout, you can change to any other style your coaches know.
 
+### Playbook (plays and diagrams)
+Each offensive style unlocks a set of plays. These are what you pick under **Next play** at a timeout, and what Coach's Calls offer. Your Offensive Coach knows as many of them as their rarity allows (table below), in the order listed. Every play and defense has a small **court diagram** (on the UI page): circles are your players, arrows are cuts, dashed lines are passes, zigzags are dribbles and a T is a screen.
+
+| Style | Plays it unlocks, in order |
+|---|---|
+| 5-Out | Drive & Kick, Floppy, Spain Pick & Roll |
+| Pace & Space | Early Drag Three, Drive & Kick, Lob |
+| Inside Out | Post Up, Horns Flare, Backdoor Cut |
+| Pick & Roll | Pick & Roll, Lob, Spain Pick & Roll |
+| Motion | Backdoor Cut, Horns Flare, Floppy |
+| Iso Star | Isolation, Pick & Roll, Post Up |
+
+Defensive styles each get a diagram that shows where the five stand and who covers which area.
+
 ### Coach cards
 - **What a coach has:**
   - A rarity from Common to Hall of Fame.
   - **No rating.** Rarity is what makes a coach better:
 
-    | Rarity | Play style strength | Styles known |
-    |---|---|---|
-    | Common | normal | 1 |
-    | Rare | +10% | 1 |
-    | Epic | +20% | 2 |
-    | Legendary | +30% | 2 |
-    | Hall of Fame (event packs only) | +40% | 3 |
+    | Rarity | Play style strength | Styles known | Plays known | Play success bonus |
+    |---|---|---|---|---|
+    | Common | normal | 1 | 2 | — |
+    | Rare | +10% | 1 | 3 | +2% |
+    | Epic | +20% | 2 | 4 | +4% |
+    | Legendary | +30% | 2 | 5 | +6% |
+    | Hall of Fame (Elite Coach Pack only) | +40% | 3 | 6 | +8% |
   - Their play style or styles.
   - One **trait**. For example:
     - Three-Point Guru gives +3PT inside their system.
@@ -153,7 +167,7 @@ Each coach knows **one main play style** and sometimes a second one. Your team c
 - **Fit:** when your roster's archetypes match the coach's system, your team gets bonus chemistry. For example, four Snipers with a 5-Out coach.
 - **How you get coaches:**
   - Hire them at the **Coaching Office** in the plaza, which shows 3 coaches and refreshes every few hours. You pay with coins.
-  - Rare coaches can also drop from higher-tier packs.
+  - Or open a **Coach Pack** (60,000 coins) or an **Elite Coach Pack** (250,000 coins, better odds and the only way to get Hall of Fame coaches).
   - You can sell coaches on the market.
 - **Free coaches:** every new club starts with a free Common coach for each side, one running Motion and one running Man-to-Man.
 

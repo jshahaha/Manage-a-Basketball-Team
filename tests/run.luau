@@ -103,26 +103,62 @@ test("pack odds add up to 1", function()
 	end
 end)
 
-test("packs: card counts, guarantees, Hall of Famers only in top packs", function()
-	local rng = Rng.new(21)
-	eq(Config.Packs.Blacktop.count, 3)
-	eq(Config.Packs.Pro.count, 4)
-	eq(Config.Packs.AllStar.count, 5)
-	ok(not Config.Packs.Blacktop.odds.HallOfFame and not Config.Packs.Pro.odds.HallOfFame, "HoF only in top packs")
-	for _ = 1, 300 do
-		local cards = PlayerFactory.openPack(rng, "AllStar")
-		eq(#cards, 5)
-		local best = Config.RarityById[cards[#cards].rarity].order
-		ok(best >= Config.RarityById.Epic.order, "All-Star guarantees Epic+")
-		for i = 2, #cards do
-			ok(Config.RarityById[cards[i].rarity].order >= Config.RarityById[cards[i - 1].rarity].order, "best card last")
-		end
-		local pro = PlayerFactory.openPack(rng, "Pro")
-		ok(Config.RarityById[pro[4].rarity].order >= Config.RarityById.Rare.order, "Pro guarantees Rare+")
-		for _, c in ipairs(PlayerFactory.openPack(rng, "Blacktop")) do
-			ok(c.rarity ~= "HallOfFame" and c.rarity ~= "Legendary", "Blacktop tops out at Epic")
+test("packs: ladder, each rarity in at most 3 packs, Hall of Fame only in the top 2", function()
+	local where = {}
+	for id, pack in pairs(Config.Packs) do
+		if pack.kind == "players" then
+			for r in pairs(pack.odds) do
+				where[r] = (where[r] or 0) + 1
+			end
 		end
 	end
+	for r, n in pairs(where) do
+		ok(n <= 3, r .. " is in " .. n .. " packs")
+	end
+	eq(where.HallOfFame, 2)
+	ok(Config.Packs.AllStar.odds.HallOfFame and Config.Packs.HallOfFame.odds.HallOfFame, "HoF in top 2")
+	ok(Config.Packs.Coach.kind == "coach" and Config.Packs.EliteCoach.kind == "coach", "two coach packs")
+end)
+
+test("catalog: fixed card list, packs draw from it", function()
+	local Catalog = require("../src/shared/Catalog")
+	local ps, cs = Catalog.players(), Catalog.coaches()
+	eq(#ps, 216)
+	eq(#cs, 28)
+	local names = {}
+	for _, p in ipairs(ps) do
+		ok(not names[p.name], "duplicate name " .. p.name)
+		names[p.name] = true
+		ok(PlayerFactory.overall(p) <= Config.MaxOvr, "cap")
+	end
+	eq(Catalog.get(ps[1].id), ps[1])
+	local rng = Rng.new(4)
+	for _ = 1, 200 do
+		local cards = PlayerFactory.openPack(rng, "AllStar", Catalog)
+		eq(#cards, 4)
+		for i, c in ipairs(cards) do
+			ok(Config.Packs.AllStar.odds[c.rarity] ~= nil, "rarity not in pack")
+			eq(Catalog.get(c.id), c)
+			if i > 1 then
+				ok(Config.RarityById[c.rarity].order >= Config.RarityById[cards[i - 1].rarity].order, "best last")
+			end
+		end
+		local coach = PlayerFactory.openPack(rng, "EliteCoach", Catalog)[1]
+		eq(coach.kind, "coach")
+	end
+	-- contents add up to 1 per card slot
+	local total = 0
+	for _, e in ipairs(Catalog.packContents("Pro")) do
+		total += e.chance
+	end
+	ok(math.abs(total - 1) < 1e-9, "contents sum " .. total)
+end)
+
+test("bundles are cheaper per pack", function()
+	eq(PlayerFactory.bundlePrice("Pro", 1, "coins"), 40000)
+	eq(PlayerFactory.bundlePrice("Pro", 5, "coins"), 180000)
+	eq(PlayerFactory.bundlePrice("Pro", 20, "coins"), 640000)
+	eq(PlayerFactory.bundlePrice("Pro", 5, "robux"), 446)
 end)
 
 test("player info: nationality, weight, positions, no club yet", function()
@@ -170,11 +206,11 @@ test("rollRarity follows the odds", function()
 	local counts = {}
 	local N = 20000
 	for _ = 1, N do
-		local r = PlayerFactory.rollRarity(rng, Config.Packs.Pro.odds)
+		local r = PlayerFactory.rollRarity(rng, Config.Packs.Blacktop.odds)
 		counts[r] = (counts[r] or 0) + 1
 	end
-	ok(math.abs(counts.Rare / N - 0.41) < 0.02, "Rare ~41%")
-	ok(math.abs(counts.Common / N - 0.36) < 0.02, "Common ~36%")
+	ok(math.abs(counts.Rare / N - 0.33) < 0.02, "Rare ~33%")
+	ok(math.abs(counts.Common / N - 0.60) < 0.02, "Common ~60%")
 	eq(PlayerFactory.rollRarity(rng, { Epic = 1 }), "Epic")
 end)
 

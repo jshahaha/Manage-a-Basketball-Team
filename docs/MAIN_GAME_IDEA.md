@@ -141,20 +141,25 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 ## 5. Packs
 
-| Pack | Price | Cards | Common / Rare / Epic / Legendary / Hall of Fame % (per card) | Guaranteed |
-|---|---|---|---|---|
-| Blacktop Pack | 5,000 coins · R$ 29 | 3 | 74 / 22 / 4 / — / — | — |
-| Pro Pack | 40,000 coins · R$ 99 | 4 | 36 / 41 / 19 / 4 / — | 1 Rare or better |
-| All-Star Pack | 250,000 coins · R$ 399 | 5 | — / 42 / 42 / 14.5 / 1.5 | 1 Epic or better |
-| Coach Pack | 60,000 coins · R$ 149 | 1 coach | 55 / 30 / 12 / 3 / — | — |
-| Event pack (e.g. Holiday Hoops, limited) | R$ 499 | 5 | — / — / 77 / 20 / 3 | 1 Legendary or better |
+Packs climb a ladder. Each rarity only drops from at most three packs next to each other, and **Hall of Famers only drop from the top two**. The shop shows rarity odds per card. It doesn't show odds by OVR.
 
-**Hall of Famers only drop from the All-Star Pack and event packs.** The Blacktop Pack tops out at Epic, and the Pro Pack tops out at Legendary.
+| Pack | Coins · Robux | Cards | Common / Rare / Epic / Legendary / Hall of Fame % (per card) |
+|---|---|---|---|
+| Rookie Pack | 2,500 · R$ 19 | 3 | 85 / 15 / — / — / — |
+| Blacktop Pack | 10,000 · R$ 49 | 3 | 60 / 33 / 7 / — / — |
+| Pro Pack | 40,000 · R$ 99 | 4 | — / 60 / 33 / 7 / — |
+| All-Star Pack | 150,000 · R$ 249 | 4 | — / — / 70 / 27 / 3 |
+| Hall of Fame Pack | 500,000 · R$ 599 | 5 | — / — / — / 88 / 12 |
+| Coach Pack | 60,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — |
+| Elite Coach Pack | 250,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 |
 
 **OVR ranges for now:** Common 50–64, Rare 65–72, Epic 73–79, Legendary 80–86 and Hall of Fame 87–91. **No card goes above 93**, including Finishes and training. Stronger cards come in a later update, when we raise the cap.
 
-Packs give **3, 4 or 5 players** depending on the pack. The best card is always revealed last. The shop shows odds both by rarity and by OVR range.
-
+- **A fixed card list.** Every player and coach in the game is on one list (`src/shared/Catalog.lua`): 216 players (80 Common, 60 Rare, 40 Epic, 24 Legendary, 12 Hall of Fame) and 28 coaches. Each card has a set name, position and ratings, so everyone pulls the same "Deuce Reyes". Duplicates raise the card's star level.
+- **See what's inside:** every pack has a **Contents** button (the list icon next to it). It opens a grid of every card that pack can give, best first, with rarity, OVR, position, face, and the chance of each card. A filter switches between rarities, and cards you already own are ticked. A **Collection book** in the menu shows all 216 players and 28 coaches, with the ones you haven't found shown as silhouettes.
+- **Bundles:** buy 1, 5 or 20 of the same pack. 5 packs cost 10% less and 20 cost 20% less (for example 5 Pro Packs for 180,000 coins instead of 200,000). A bundle arrives as one big box. Opening it plays the first pack in full, then offers **Open all**, which flips the rest fast and ends on a summary of the best pulls.
+- **Robux:** every pack and bundle can also be bought with Robux. Game passes come later.
+- Packs give **3, 4 or 5 players** depending on the pack. The best card is always revealed last.
 - Odds are always shown in-game, and Robux packs follow Roblox's rules on paid random items.
 - **Reveal:** the pack slams on the floor and shakes, glowing in the best card's rarity color, then rips open. The cards fly out face-down, and you tap each one to flip it. Each flip plays its rarity color, sound and an announcer line. On a Legendary or better, the whole server gets an alert.
 - **Hover on good cards:** hovering (or holding on mobile) over an Epic or better card tilts it toward the cursor with a moving holo shine in its rarity color. Legendary and Hall of Fame cards also give off sparks, and Finish cards show their Finish pattern.

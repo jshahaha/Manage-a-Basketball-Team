@@ -59,7 +59,7 @@ for _, n in ipairs({ "UIClick", "UIBack", "UIToggle", "UIOpenPanel", "UIClosePan
 end
 
 -- Pack opening
-for _, n in ipairs({ "PackDrop", "PackShake", "PackRip", "CardWhoosh", "CardFlip", "RevealCommon", "RevealRare",
+for _, n in ipairs({ "PackDrop", "PackShake", "PackRip", "CardWhoosh", "CardFlip", "CardsGather", "RevealCommon", "RevealRare",
 	"RevealEpic", "RevealLegendary", "RevealHallOfFame", "FinishShimmer", "QuickSell" }) do
 	def(n, "Effects", { volume = 0.8, pitchJitter = 0 })
 end

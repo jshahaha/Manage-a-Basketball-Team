@@ -4,6 +4,17 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.2 (2026-11-01): Pack ladder, card list, playbook
+### Added
+- Fixed card list (`Catalog.lua`): 216 players and 28 coaches. Packs draw from it, and each pack has a Contents view
+- 5 player packs on a ladder (Rookie, Blacktop, Pro, All-Star, Hall of Fame) and 2 coach packs (Coach, Elite Coach)
+- Bundles of 5 (10% off) and 20 (20% off), with coin and Robux prices
+- Playbook: plays per style, more plays and a success bonus for rarer coaches, and court diagrams for every play and defense
+### Changed
+- Each rarity drops from at most 3 neighbouring packs, and Hall of Famers only from the top 2
+- The shop no longer shows odds by OVR range
+- Sounds: the synthesized effects and AI commentator were replaced with real recordings from professional sound libraries (see `assets/audio/CREDITS.md`)
+
 ## v0.1.1 (2026-11-01): Sound
 ### Added
 - `docs/AUDIO.md`: every sound the game needs (ball and court, crowd, in-game moments, menus, pack opening, music), where to get each one, and the full commentator script

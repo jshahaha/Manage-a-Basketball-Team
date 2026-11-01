@@ -168,11 +168,12 @@ function PlayerFactory.rollRarity(rng, odds): string
 	return rng:weighted(entries)
 end
 
--- Open a player pack: returns a list of new players, best card last (so the
--- reveal builds up). Applies the pack's guarantee to the best card.
-function PlayerFactory.openPack(rng, packId: string)
+-- Open a pack: returns the rolled cards' rarities, best last (so the reveal builds
+-- up). The server turns each into an owned card with Catalog.draw (Catalog requires
+-- this module, so it is passed in to avoid a require loop).
+function PlayerFactory.rollPack(rng, packId: string)
 	local pack = Config.Packs[packId]
-	assert(pack and pack.kind == "players", "not a player pack: " .. tostring(packId))
+	assert(pack, "unknown pack " .. tostring(packId))
 	local rarities = {}
 	for i = 1, pack.count do
 		rarities[i] = PlayerFactory.rollRarity(rng, pack.odds)
@@ -180,21 +181,27 @@ function PlayerFactory.openPack(rng, packId: string)
 	table.sort(rarities, function(a, b)
 		return Config.RarityById[a].order < Config.RarityById[b].order
 	end)
-	local g = pack.guarantee and Config.RarityById[pack.guarantee]
-	if g and Config.RarityById[rarities[#rarities]].order < g.order then
-		local better = {}
-		for id, p in pairs(pack.odds) do
-			if Config.RarityById[id].order >= g.order then
-				better[id] = p
-			end
+	return rarities
+end
+
+function PlayerFactory.openPack(rng, packId: string, Catalog)
+	local pack = Config.Packs[packId]
+	local cards = {}
+	for i, r in ipairs(PlayerFactory.rollPack(rng, packId)) do
+		cards[i] = Catalog.draw(rng, pack.kind == "coach" and "coach" or "player", r)
+	end
+	return cards
+end
+
+-- Price of a bundle of `size` packs, in coins or robux ("coins" | "robux").
+function PlayerFactory.bundlePrice(packId: string, size: number, currency: string): number
+	local pack = Config.Packs[packId]
+	for _, b in ipairs(Config.Bundles) do
+		if b.size == size then
+			return math.floor(pack[currency] * size * (1 - b.discount) + 0.5)
 		end
-		rarities[#rarities] = PlayerFactory.rollRarity(rng, better)
 	end
-	local players = {}
-	for i, r in ipairs(rarities) do
-		players[i] = PlayerFactory.generate(rng, { rarity = r })
-	end
-	return players
+	error("no bundle of size " .. tostring(size))
 end
 
 -- The free starting roster for a new club: a full matchday ten, one starter
