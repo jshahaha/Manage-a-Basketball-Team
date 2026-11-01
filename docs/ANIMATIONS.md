@@ -28,7 +28,7 @@ These numbers are what the clips are tuned to. They come from published motion-c
 
 **Skilled-player style** (from studying Practical Basketball on Roblox and real guards; we don't copy its animations, only learn what makes moves look skilled):
 
-- **Ball size:** the ball is about as wide as the head. Ours was too small, which made everyone look like a kid with a toy. The rim is about twice the ball.
+- **Body and ball size:** players have a slim athletic build (narrow torso, thin long limbs) and the ball is a little wider than the head. Our first chunky model made the ball look tiny. The rim is about twice the ball. In Roblox, use a slim R15 body scale for the same look.
 - **Wrists and ankles:** the rig now has wrist and ankle joints (R15 has them). The shot ends in a wrist snap ("goose neck"), every dribble push is a wrist snap, and feet stay flat on the floor in a crouch and point their toes in the air (automatic, so clips don't need ankle keys).
 - **Dribble posture:** low and wide, chest up, eyes up, off arm out as an arm bar, the body bobs on each push, and the hand rides the ball back up instead of slapping it.
 - **Separate moves that chain:** live dribble, crossover, between the legs, behind the back and hesitation all start and end in the same pose, so the game can chain any of them (the walkout combo is four of them chained).

@@ -3,34 +3,35 @@
 // Sounds are fired from clip events on the animation clock, so they stay in sync.
 (function(){
 const T = window.THREE;
-const BALL_R = .58; // a real ball is about as wide as a head
+const BALL_R = .64; // a real ball is a little wider than a head
 // ---------------- Rig (studs, Y up, facing +Z) ----------------
 const RIG = {
   hipH: 2.45,
+  // Slim athletic build (narrow torso, long thin limbs), so the ball reads at its real size.
   parts: [
     // name, parent joint, box size [w,h,d], center offset from joint, material slot
-    ['LowerTorso','Root',[2,0.55,1],[0,0.27,0],'shorts'],
-    ['UpperTorso','Waist',[2,1.6,1],[0,0.8,0],'jersey'],
-    ['Head','Neck',[1.15,1.2,1.15],[0,0.62,0],'skin'],
-    ['RUpperArm','RShoulder',[0.85,1.1,0.85],[0,-0.45,0],'skin'],
-    ['RLowerArm','RElbow',[0.78,0.95,0.78],[0,-0.42,0],'skin'],
-    ['RHand','RWrist',[0.7,0.38,0.7],[0,-0.17,0],'skin'],
-    ['LUpperArm','LShoulder',[0.85,1.1,0.85],[0,-0.45,0],'skin'],
-    ['LLowerArm','LElbow',[0.78,0.95,0.78],[0,-0.42,0],'skin'],
-    ['LHand','LWrist',[0.7,0.38,0.7],[0,-0.17,0],'skin'],
-    ['RUpperLeg','RHip',[0.95,1.15,0.95],[0,-0.55,0],'shorts'],
-    ['RLowerLeg','RKnee',[0.88,1.0,0.88],[0,-0.5,0],'skin'],
-    ['RFoot','RAnkle',[0.9,0.35,1.35],[0,-0.17,0.2],'shoe'],
-    ['LUpperLeg','LHip',[0.95,1.15,0.95],[0,-0.55,0],'shorts'],
-    ['LLowerLeg','LKnee',[0.88,1.0,0.88],[0,-0.5,0],'skin'],
-    ['LFoot','LAnkle',[0.9,0.35,1.35],[0,-0.17,0.2],'shoe'],
+    ['LowerTorso','Root',[1.4,0.55,0.72],[0,0.27,0],'shorts'],
+    ['UpperTorso','Waist',[1.5,1.6,0.78],[0,0.8,0],'jersey'],
+    ['Head','Neck',[0.95,1.0,0.95],[0,0.55,0],'skin'],
+    ['RUpperArm','RShoulder',[0.48,1.1,0.48],[0,-0.45,0],'skin'],
+    ['RLowerArm','RElbow',[0.44,0.95,0.44],[0,-0.42,0],'skin'],
+    ['RHand','RWrist',[0.44,0.38,0.44],[0,-0.17,0],'skin'],
+    ['LUpperArm','LShoulder',[0.48,1.1,0.48],[0,-0.45,0],'skin'],
+    ['LLowerArm','LElbow',[0.44,0.95,0.44],[0,-0.42,0],'skin'],
+    ['LHand','LWrist',[0.44,0.38,0.44],[0,-0.17,0],'skin'],
+    ['RUpperLeg','RHip',[0.6,1.15,0.6],[0,-0.55,0],'shorts'],
+    ['RLowerLeg','RKnee',[0.52,1.0,0.52],[0,-0.5,0],'skin'],
+    ['RFoot','RAnkle',[0.56,0.3,1.1],[0,-0.17,0.18],'shoe'],
+    ['LUpperLeg','LHip',[0.6,1.15,0.6],[0,-0.55,0],'shorts'],
+    ['LLowerLeg','LKnee',[0.52,1.0,0.52],[0,-0.5,0],'skin'],
+    ['LFoot','LAnkle',[0.56,0.3,1.1],[0,-0.17,0.18],'shoe'],
   ],
   // joint, parent, offset from parent joint
   joints: [['Root',null,[0,0,0]],['Waist','Root',[0,0.55,0]],['Neck','Waist',[0,1.6,0]],
-    ['RShoulder','Waist',[-1.42,1.42,0]],['RElbow','RShoulder',[0,-1.0,0]],
-    ['LShoulder','Waist',[1.42,1.42,0]],['LElbow','LShoulder',[0,-1.0,0]],
-    ['RHip','Root',[-0.5,0,0]],['RKnee','RHip',[0,-1.1,0]],
-    ['LHip','Root',[0.5,0,0]],['LKnee','LHip',[0,-1.1,0]],
+    ['RShoulder','Waist',[-1.0,1.42,0]],['RElbow','RShoulder',[0,-1.0,0]],
+    ['LShoulder','Waist',[1.0,1.42,0]],['LElbow','LShoulder',[0,-1.0,0]],
+    ['RHip','Root',[-0.38,0,0]],['RKnee','RHip',[0,-1.1,0]],
+    ['LHip','Root',[0.38,0,0]],['LKnee','LHip',[0,-1.1,0]],
     ['RWrist','RElbow',[0,-0.86,0]],['LWrist','LElbow',[0,-0.86,0]],['RAnkle','RKnee',[0,-1.0,0]],['LAnkle','LKnee',[0,-1.0,0]]],
 };
 // ---------------- Clips ----------------
@@ -251,7 +252,7 @@ function chain(names, extra){
   }
   return out;
 }
-const DRIBBLE_CAM = { face: 0, view: -28, cam: [[2,4.4,18.5],[0,2.5,0]] };
+const DRIBBLE_CAM = { face: 0, view: -28, cam: [[1.6,4.0,14.5],[0,2.6,0]] };
 
 // Live dribble: two right-hand pounds, about 2.2 a second.
 CLIPS.DribbleLive = withBase(Object.assign({ len: .9, loop: true,
@@ -478,14 +479,14 @@ function Walkout(container){
     // face on the front of the head
     if (kit.faceCanvas){
       const tex = new T.CanvasTexture(kit.faceCanvas);
-      const face = new T.Mesh(new T.PlaneGeometry(1.1, 1.1), new T.MeshBasicMaterial({ map: tex, transparent: true }));
-      face.position.set(0, 0, .6); model.meshes.find(m=>m.name==='Head').add(face);
+      const face = new T.Mesh(new T.PlaneGeometry(.92, .92), new T.MeshBasicMaterial({ map: tex, transparent: true }));
+      face.position.set(0, 0, .5); model.meshes.find(m=>m.name==='Head').add(face);
     }
     // number on the jersey
     if (kit.numberCanvas){
       const t2 = new T.CanvasTexture(kit.numberCanvas);
-      const num = new T.Mesh(new T.PlaneGeometry(1.4, 1.0), new T.MeshBasicMaterial({ map: t2, transparent: true }));
-      num.position.set(0, 0, .52); model.meshes.find(m=>m.name==='UpperTorso').add(num);
+      const num = new T.Mesh(new T.PlaneGeometry(1.1, .8), new T.MeshBasicMaterial({ map: t2, transparent: true }));
+      num.position.set(0, 0, .41); model.meshes.find(m=>m.name==='UpperTorso').add(num);
     }
     ball.material = new T.MeshLambertMaterial({ color: 0xE8641A }); ballShell.material.color.set(0x000000); ballShell.scale.setScalar(1.05);
     amb.intensity = .75; key.intensity = .9; rim.intensity = .6; floorDark.material.opacity = .55;
@@ -541,8 +542,8 @@ function Walkout(container){
     const rootW = model.joints.Root.position.clone();
     const q = new T.Quaternion().setFromEuler(new T.Euler(0, model.joints.Root.rotation.y, 0));
     const loc = (x,y,z)=> new T.Vector3(x,0,z).applyQuaternion(q).add(new T.Vector3(rootW.x, 0, rootW.z)).setY(y);
-    if (where === 'floorR') return loc(-1.35, BALL_R, 1.0);
-    if (where === 'floorL') return loc(1.35, BALL_R, 1.0);
+    if (where === 'floorR') return loc(-1.2, BALL_R, 1.1);
+    if (where === 'floorL') return loc(1.2, BALL_R, 1.1);
     if (where === 'floorMid') return loc(0, BALL_R, 1.25);
     if (where === 'floorBetween') return loc(0, BALL_R, .1);
     if (where === 'floorBehind') return loc(0, BALL_R, -1.1);
