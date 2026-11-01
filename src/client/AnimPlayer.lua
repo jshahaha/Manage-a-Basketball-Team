@@ -1,5 +1,7 @@
 --!nonstrict
--- Plays AnimClips keyframes on an R15 character by writing Motor6D.Transform every frame.
+-- Plays AnimClips keyframes on an R15 character by writing .Transform on its joints every frame.
+-- Works with classic Motor6D joints and with the AnimationConstraint joints that newer avatars
+-- (and rigs built by CreateHumanoidModelFromDescription) use. Both expose .Transform.
 -- Used for the pack walkout and the in-game signature moves. Because sounds are fired from
 -- the clip's own events on the same clock, a dribble sound always lands on the bounce.
 --
@@ -24,7 +26,7 @@ function AnimPlayer.new(character: Model, opts)
 	self.character = character
 	self.motors = {}
 	for _, d in ipairs(character:GetDescendants()) do
-		if d:IsA("Motor6D") and table.find(MOTORS, d.Name) then
+		if (d:IsA("Motor6D") or d:IsA("AnimationConstraint")) and table.find(MOTORS, d.Name) then
 			self.motors[d.Name] = d
 		end
 	end
