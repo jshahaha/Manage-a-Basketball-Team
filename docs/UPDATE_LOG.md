@@ -4,6 +4,19 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.5 (2026-11-01): Animations tuned to real basketball movement
+### Added
+- In-game clips: Idle, Jog, Defensive Slide (loops), Layup, Chest Pass, Rebound. `AnimClips.ForPlay` maps match plays to clips
+- Animation lab on the UI page: every clip on the player model, with 1×, 0.5× and 0.25× speed, looping and live sound cues
+- Movement study in `docs/ANIMATIONS.md`, with the numbers each clip is tuned to and the sources
+### Changed
+- Jump shot: the ball now leaves on the way up, before the top of the jump. The arm finishes at a shooter's angle instead of straight up, and the follow-through is held until the ball drops. The ball takes about 1 s to reach the rim
+- Dunk: takeoff off the left foot with the right knee driving, after a longer and lower last step
+- Pack items are now Cosmetic (40%), Coin Pouch (35%) and Badge Upgrade (25%, one badge up a tier, up to Diamond). Energy Drink and Training Pass were removed because stamina only exists inside a match
+- Shot, dunk, block and layup now fire ShotRelease, Swish, Dunk, Block and LayupKiss cues, which will play once those sounds are uploaded
+### Fixed
+- Crossover: the ball bounced on the floor twice with no hand in between
+
 ## v0.1.4 (2026-11-01): Badge icons, Badge Applier, 3D walkout, sound check
 ### Added
 - An icon for each of the 20 badges, in a hex frame per tier (100 PNGs in `assets/icons/badges/`)

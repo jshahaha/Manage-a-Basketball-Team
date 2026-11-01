@@ -46,6 +46,8 @@ for name, c in C.items():
         ks = ', '.join('{ %s, "%s", %s, %s }' % (num(k[0]), k[1], num(k[2] if len(k) > 2 else 0), num(k[3] if len(k) > 3 else 0)) for k in c['ball'])
         L.append(f'\t\tball = {{ {ks} }},')
     if c.get('hoopAt'): L.append(f'\t\thoopAt = {{ {num(c["hoopAt"][0])}, "{c["hoopAt"][1]}" }},')
+    if c.get('hoopOff'): L.append('\t\thoopOffset = { %s, %s },' % (num(-c['hoopOff'][0]), num(c['hoopOff'][1])))
+    if c.get('shotHoop'): L.append('\t\tshotHoop = true,')
     if c.get('events'):
         ks = ', '.join('{ %s, "%s" }' % (num(e[0]), e[1]) for e in sorted(c['events']))
         L.append(f'\t\tevents = {{ {ks} }},')

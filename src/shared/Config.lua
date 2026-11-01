@@ -159,10 +159,10 @@ Config.Packs = {
 -- item in your inventory (one "5x Pro Bundle" box), not 5 loose packs.
 -- The extra item in every player pack. weight = chance out of the total.
 Config.PackItems = {
-	{ id = "EnergyDrink", name = "Energy Drink", weight = 30, text = "Refills one player's energy to 100%." },
-	{ id = "TrainingPass", name = "Training Pass", weight = 25, text = "Finishes one training session instantly." },
-	{ id = "CoinPouch", name = "Coin Pouch", weight = 25, text = "Gives back 10 to 30% of the pack's coin price." },
-	{ id = "Cosmetic", name = "Cosmetic", weight = 20, text = "A jersey, court floor, ball or celebration." },
+	{ id = "Cosmetic", name = "Cosmetic", weight = 40, text = "A jersey, court floor, ball or celebration." },
+	{ id = "CoinPouch", name = "Coin Pouch", weight = 35, text = "Gives back 10 to 30% of the pack's coin price." },
+	{ id = "BadgeUpgrade", name = "Badge Upgrade", weight = 25, maxTier = "Diamond",
+		text = "Moves one badge you own up a tier (up to Diamond). The player still needs the stats for it." },
 }
 
 Config.Bundles = {

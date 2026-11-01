@@ -168,6 +168,9 @@ test("catalog: fixed card list, packs draw from it", function()
 end)
 
 test("badges: tiers, slots, stat bars, coins, boosts", function()
+	eq(Badges.nextTier("Silver"), "Gold")
+	eq(Badges.nextTier("Diamond"), nil)
+	eq(Badges.nextTier("Gold", "Gold"), nil)
 	eq(#Badges.Tiers, 5)
 	eq(Badges.slots({ rarity = "Common" }), 1)
 	eq(Badges.slots({ rarity = "HallOfFame" }), 5)
@@ -621,6 +624,12 @@ test("animation clips: sorted keys, sounds exist, walkout move for every archety
 		ok(AnimClips.WalkoutMove[rule.id] ~= nil, "no walkout move for " .. rule.id)
 	end
 	ok(AnimClips.WalkoutMove.AllAround ~= nil, "AllAround")
+	for play, clip in pairs(AnimClips.ForPlay) do
+		ok(AnimClips.Clips[clip] ~= nil, "play " .. play .. " uses missing clip " .. clip)
+	end
+	for _, n in ipairs({ "Idle", "Jog", "DefSlide" }) do
+		ok(AnimClips.Clips[n].loop == true, n .. " should loop")
+	end
 	-- sampling hits the keys exactly
 	local k = AnimClips.Clips.Shoot.joints.RightShoulder
 	eq(math.floor(AnimClips.sample(k, k[3][1], 3)[1] + 0.5), k[3][2])

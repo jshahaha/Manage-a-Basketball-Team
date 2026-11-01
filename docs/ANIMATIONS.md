@@ -10,20 +10,66 @@ Every animation the game needs, how it is built, and the sound cue each one trig
 - **Authoring and preview.** Clips are authored in the 3D prototype (`docs/prototypes/walkout3d.js`, shown live on the UI page). `python3 scripts/gen_animclips.py` converts it to `AnimClips.lua`. The page and the game play the exact same numbers. For polish we can import the clips into Roblox's Animation Editor or Moon Animator, or into Blender, once js's computer is free.
 - **Blending.** Clips cross-fade over 0.12 s by default. Locomotion (idle, jog, sprint, defensive slide) loops. Moves play once and hand back to locomotion.
 
+## What real basketball movement looks like (study, 2026-11-01)
+
+These numbers are what the clips are tuned to. They come from published motion-capture studies and coaching material (sources at the bottom). Our characters are blocky, so we keep the timing and the shapes and push the poses a little for readability.
+
+| Move | What real players do | What the clip does |
+|---|---|---|
+| Jump shot | Dip to a knee angle of about 110–115°, then extend to about 165–170° at release. The elbow is about 80–90° at the set point and about 160° (20° short of straight) at release. **Good shooters release on the way up, before the top of the jump.** Release angle is 50–60°. Proficient shooters stay upright and lean forward less. | Dip at 0.30 s, takeoff 0.55 s, release 0.72 s, apex 0.82 s, land 1.08 s. About 0.5 s in the air. The shooting arm finishes about 40° above horizontal (not straight up, which read as a block) and **holds the follow-through until the ball drops**. |
+| Ball flight | A deep jumper takes about 1 s to reach the rim at 7–7.6 m/s. | Ball reaches the rim about 1.0 s after release, with a high arc. |
+| Layup | One-foot takeoff off the **opposite** foot (right hand, left foot). The last step is long and low, and the free knee drives up. Push-off height can exceed half the player's height. | Gather, right step, plant left, right knee up, release at the top, land, recover. |
+| Dunk | Same footwork as the layup with a faster approach. Upward takeoff speed is about 3.5–3.8 m/s, which is a jump of about 0.5–0.6 m and about 0.7 s in the air. One-foot takeoffs are faster, and two-foot takeoffs go a little higher. | Penultimate step lowered, takeoff off the left foot with the right knee driving (this was the wrong leg before), slam at 1.12 s, short rim hang, two-foot landing. |
+| Dribble | A live pound dribble bounces about 2–3 times a second, and a low dribble is faster. The ball always comes back to a hand before a crossover. | 2.5 bounces a second. **Fixed:** the old crossover bounced the ball twice on the floor with no hand in between. |
+| Block | Two-foot jump, timed so the hand meets the ball at the top of the jump, arm straight. | Hand meets the ball at 0.76 s, at the apex. |
+| Rebound | Read the miss, load, jump with both hands high, and "chin" the ball with the elbows out. | Catch at the top, then chin it as the player lands. |
+| Chest pass | Step toward the target, extend the arms, turn the thumbs down, and follow through. | Release at 0.45 s on the step. |
+| Defensive slide | Wide, low stance. Push off the trail foot and never cross the feet. Hands active. | Feet open and close, and never cross. |
+
+**Game-feel rules we follow** (from game animation practice):
+
+- Keep the wind-up short. Put the "ready" feeling into the idle stance so a move can start right away.
+- Transitions are part of the animation. Blend into and out of every clip, and make sure a clip can be interrupted cleanly (for example, a pass cancelled into a shot).
+- The silhouette must read from the match camera. That's why the shooting arm and the block arm are clearly different now.
+- Put contact frames (bounce, release, rim, catch) on exact keys and hang sounds on them.
+
+Sources:
+
+- [Jump shot kinematics at 4.75 m and 5.75 m (Journal of Sports, 2025)](https://www.journalofsports.com/pdf/2025/vol10issue2/PartE/10-2-61-835.pdf)
+- [Proficient vs non-proficient shooters (Frontiers, 2023)](https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2023.1208915/pdf)
+- [Release the ball early for better jump shots (Physical Education Update)](https://www.physicaleducationupdate.com/public/329.cfm)
+- [Three-step layup ankle biomechanics (PMC)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10618240/)
+- [One-foot vs two-foot takeoff (ISBS)](https://ojs.ub.uni-konstanz.de/cpa/article/view/4049/3748)
+- [The 12 principles of animation, reframed for games (Animworks)](https://anim.works/?p=23056)
+
 ## Walkout (pack opening)
 
 | Clip | Length | Used for | Sound cues |
 |---|---|---|---|
 | Walk | 1.0 s loop | Silhouette walks out of the tunnel | ShoeSqueak when it stops |
-| Shoot | 2.3 s | Snipers: dip, jump, release, follow-through | ShoeSqueak 0.35 s (dip), ShoeSqueak 1.33 s (landing), CrowdCheerM 1.5 s (ball drops in) |
-| Dunk | 2.6 s | Slashers and post scorers: two-step run, leap, one-hand slam, hang, land, flex | ShoeSqueak at each step, RimOut 1.13 s (slam), CrowdCheerL 1.18 s, Dribble when the ball bounces |
-| Dribble | 2.4 s | Floor generals and all-around players: low stance, two pounds, crossover, two pounds, crossover back | Dribble on every floor contact (7), ShoeSqueak on each crossover |
-| Block | 2.4 s | Rim protectors, lockdown defenders, glass cleaners: load, jump, swat, land | ShoeSqueak 0.36 s, Dribble 0.76 s (hand hits ball), CrowdOoh 0.82 s, ShoeSqueak 1.23 s |
+| Shoot | 2.6 s | Snipers: dip, jump, release on the way up, held follow-through | ShoeSqueak 0.30 s (dip), ShotRelease 0.72 s, ShoeSqueak 1.08 s (landing), Swish 1.85 s, CrowdCheerM 1.9 s |
+| Dunk | 2.6 s | Slashers and post scorers: two steps, long low last step, left-foot takeoff, one-hand slam, hang, land, flex | ShoeSqueak 0.42 s and 0.62 s, Dunk and RimOut 1.12 s (slam), CrowdCheerL 1.18 s, Dribble when the ball bounces |
+| Dribble | 2.4 s | Floor generals and all-around players: low stance, two pounds, crossover, two pounds, crossover back | Dribble on every floor contact (7), ShoeSqueak on each crossover (0.85 s, 1.85 s) |
+| Block | 2.4 s | Rim protectors, lockdown defenders, glass cleaners: load, jump, swat, land | ShoeSqueak 0.36 s, Block 0.76 s (hand hits ball), CrowdOoh 0.82 s, ShoeSqueak 1.23 s |
 | Pose | 1.2 s, holds | Lights up: turns to camera and flexes | CrowdCheerL |
 
 Order: clues (nation top left, position right, archetype bottom left) → Walk → move → OVR slams → lights up on Pose with the real kit and face.
 
 ## In-game (match)
+
+**Built so far** (in `AnimClips.lua` and the Animation lab on the UI page, mapped from match plays by `AnimClips.ForPlay`):
+
+| Clip | Length | Sound cues |
+|---|---|---|
+| Idle (loop) | 2.0 s | none |
+| Jog (loop) | 0.7 s | ShoeSqueak |
+| DefSlide (loop) | 0.9 s | ShoeSqueak on each push |
+| Layup | 2.2 s | ShoeSqueak on steps, LayupKiss 0.85 s, Swish 1.22 s, CrowdCheerM |
+| ChestPass | 1.2 s | PassChest 0.45 s |
+| Rebound | 2.0 s | ReboundGrab 0.75 s |
+| Shoot, Dunk, Dribble, Block | see the walkout table | |
+
+**Still to build:**
 
 | Group | Clips | Sync points |
 |---|---|---|
@@ -48,6 +94,7 @@ Signature moves: a few dunks and celebrations are locked to Legendary and Hall o
 
 ## Still needs js's computer
 
+- Upload ShotRelease, Swish, LayupKiss, Dunk, Block and PassChest sounds. The cues already fire, and the lab shows them as "to upload".
 - Import the clips into Studio and check them on the real R15 rig at game speed.
 - A rig in Blender for the walkout poses if we want hand-tuned curves.
 - Upload the missing sounds (swish, dunk, block slap) from the Creator Store so the cues above have their sounds.

@@ -27,6 +27,16 @@ for i, t in ipairs(Badges.Tiers) do
 	Badges.TierById[t.id] = t
 end
 
+-- Badge Upgrade item: the next tier up, or nil when the badge is already at the cap.
+function Badges.nextTier(tierId: string, maxTier: string?): string?
+	local t = Badges.TierById[tierId]
+	local cap = Badges.TierById[maxTier or "Diamond"]
+	if not t or not cap or t.order >= cap.order then
+		return nil
+	end
+	return Badges.Tiers[t.order + 1].id
+end
+
 -- Badge slots by player rarity.
 Badges.Slots = { Common = 1, Rare = 2, Epic = 3, Legendary = 4, HallOfFame = 5 }
 
