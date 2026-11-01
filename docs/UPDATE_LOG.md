@@ -4,6 +4,16 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.0 (2026-11-01): First code
+### Added
+- Rojo project with tests (`luau tests/run.luau`), run by GitHub Actions on every push
+- Shared logic: 20 player ratings, the fictional player generator, Elo, projected scoreline, box scores and team stats, daily quests and achievements
+- Saving: profiles with autosave and a session lock
+- **Codes:** `src/server/Codes.lua`, plus live `!makecode`, `!delcode`, `!codes` and `!codehelp` chat commands for admins, and a CODES button with a redeem panel in game
+- Design: a free sub and strategy break after every quarter, box scores, and a team stats page. Player badges added to the Ideas Queue
+
+---
+
 ## v0.0.7 (2026-11-01): Elo & challenges
 ### Changed
 - Server challenges are live games of about 5 to 6 minutes, with timeouts for both coaches. Queued games last about 2.5 to 3 minutes

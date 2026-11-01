@@ -48,7 +48,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
   - Their AI coach calls their timeouts.
   - Every club's snapshot is saved whenever its lineup or coaches change. The owner gets a notification like "Copper Ridge beat your team 88–81 while you were away", which shows their Elo change and a Rematch button.
 - **Live games happen only through server challenges** (below).
-- **VS screen:** both managers' avatars, club badges, team OVR, chemistry and rating.
+- **VS screen:** both managers' avatars, club badges, team OVR, chemistry and Elo, plus a **projected scoreline** like "104 – 99 · 62% to win". The projection comes from both teams' minutes-weighted ratings and both play styles. Even teams project around 105–110 points each, fast styles push the totals up, and slow styles bring them down.
 - **Server challenge:** walk up to any manager in your server, or tap their name, and challenge them. If they accept, it's a **live game** played on the challenger's Home Court, so the rest of the server can come and watch.
   - It's **longer** than a queued game: 4 quarters of about 75 seconds each, so **about 5 to 6 minutes** in total.
   - **Both coaches call their own timeouts** (4 each), make subs and switch styles in real time. The game only pauses while a timeout is running.
@@ -94,6 +94,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 - After big plays a **REPLAY** shows a close-up from a new angle with a name lower third, and you can tap to skip.
 - **Highlight moments:** big banners appear (AND-ONE!, FROM DOWNTOWN!, BIG BLOCK!, BUZZER BEATER!), dunks play as a letterboxed **slow-motion HIGHLIGHT**, and the game ends with a **VICTORY!** celebration in front of the bench. You can tap to skip.
 - **Coach controls during the game:**
+  - **Quarter breaks:** after every quarter, both coaches get a free break (the same screen as a timeout, without using one) to make subs, change the minutes plan, switch play style or give a team talk.
   - Switch **play style** between quarters, choosing only from the styles your Offensive Coach and Defensive Coach know (for example 5-Out, Pick & Roll, Motion, 2-3 Zone, Switch Everything or Full-Court Press). Each style counters some styles and is weak to others.
   - **Timeouts** (4 per game): the game pauses, and you have 15 seconds to:
     - make subs
@@ -103,7 +104,8 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
     The five players on the floor get +15% energy, and the opponent's run resets. If you don't pick in time, your coaches decide.
   - **Clutch Timeout** (our signature feature): in the last minute of a close game, you pick the final play yourself: Isolation, Pick & Roll or Kick-Out Three.
-- Afterward you see the score, an MVP card, coins, fans and rating change, and progress on your quests.
+- Afterward you see the score, a **box score** for both teams (MIN, PTS, FG, 3PT, FT, REB, AST, STL, BLK, TO), an MVP card, coins, fans, your Elo change and progress on your quests.
+- **Team stats** page: W–L, PPG, opponent PPG, point differential, FG%, 3P%, FT%, RPG, APG, SPG, BPG and turnovers per game. Each player's card has the same stats for their career.
 
 ## 4. Players & collection
 
@@ -163,8 +165,9 @@ Every player pack gives **3 players**. The shop shows odds both by rarity and by
 
 - **Coins** are the main currency, with big numbers and fast growth.
 - **Fans** grow with wins and pay passive income every minute you're online. Upgrading your Home Court (seats, scoreboard, lights) raises how much each fan pays.
-- **Daily quests:** for example, play 3 matches, score 60 points with threes, or win 2 games. **Weekly quests** are larger.
-- There's also a login streak and codes (`TIPOFF`, `FASTBREAK`).
+- **Daily quests:** 3 a day, drawn from a pool and reset at 00:00 UTC. Each pays coins, from 1,000 to 4,000. Examples: win 2 games, make 15 threes, throw down 8 dunks, open a pack, call 3 timeouts, or play a server challenge.
+- **Achievements:** lifetime goals with tiers that each pay once. The big tiers pay packs. Examples: Winner (1 / 10 / 50 / 250 / 1,000 wins), From Downtown (threes), Posterizer (dunks), Pack Rat, Collector, Climber (reach each Elo tier), Hot Streak, Clipboard Coach (timeouts), Challenger and Legend Hunter (pull Hall of Fame players).
+- There's also a login streak and **redeem codes**. The owner makes codes in `src/server/Codes.lua`, or live from chat with `!makecode` (see the README).
 - **Robux (later):** VIP (2× coins), an extra scout slot, Robux packs with shown odds, and court cosmetics. Nothing is pay-to-win only.
 
 ## 10. Look & feel
