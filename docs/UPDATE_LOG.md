@@ -4,6 +4,18 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.4 (2026-11-01): Badge icons, Badge Applier, 3D walkout, sound check
+### Added
+- An icon for each of the 20 badges, in a hex frame per tier (100 PNGs in `assets/icons/badges/`)
+- Badge cards flip over to show what they do, the stats they need and the equip cost
+- Badge Applier: badge → Use → eligible players highlighted, or player → empty slot → badges that fit
+- Packs include 1 item: Energy Drink, Training Pass, Coin Pouch or a cosmetic (`Config.PackItems`)
+- 3D walkout with the real blocky player model: walk, jump shot, dunk, dribble combo, block and a pose
+- `AnimClips.lua` (generated from the prototype) and `AnimPlayer.lua`: keyframe clips with sound events on the same clock. `docs/ANIMATIONS.md` lists every animation the game needs
+### Changed
+- Pack contents: 1–2 players, 1–3 badges and 1 item (Badge Pack: 3–4 badges)
+- Sounds: every file checked with an audio classifier. The whistles, boo, groan, crowd loop and big cheers were replaced because they were mostly dribbling or had no whistle
+
 ## v0.1.3 (2026-11-01): Badges
 ### Added
 - Badges (`Badges.lua`): 20 badges in 5 tiers (Bronze, Silver, Gold, Diamond, Hall of Fame). Equipping needs the stat bar for the tier and coins. Badge slots go by rarity (Common 1 up to Hall of Fame 5)

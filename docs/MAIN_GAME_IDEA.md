@@ -145,14 +145,16 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 
 | Pack | Coins · Robux | Contents | Player Common / Rare / Epic / Legendary / Hall of Fame % | Badge Bronze / Silver / Gold / Diamond / Hall of Fame % |
 |---|---|---|---|---|
-| Rookie Pack | 2,500 · R$ 19 | 1 player + 2 badges | 85 / 15 / — / — / — | 80 / 20 / — / — / — |
-| Blacktop Pack | 10,000 · R$ 49 | 1 player + 2 badges | 60 / 33 / 7 / — / — | 55 / 38 / 7 / — / — |
-| Pro Pack | 40,000 · R$ 99 | 2 players + 2 badges | — / 60 / 33 / 7 / — | — / 55 / 38 / 7 / — |
-| All-Star Pack | 150,000 · R$ 249 | 2 players + 2 badges | — / — / 70 / 27 / 3 | — / — / 70 / 27 / 3 |
-| Hall of Fame Pack | 500,000 · R$ 599 | 2 players + 3 badges | — / — / — / 88 / 12 | — / — / — / 88 / 12 |
-| Badge Pack | 20,000 · R$ 59 | 4 badges | — | 50 / 35 / 13 / 2 / — |
+| Rookie Pack | 2,500 · R$ 19 | 1 player, 1–2 badges, 1 item | 85 / 15 / — / — / — | 80 / 20 / — / — / — |
+| Blacktop Pack | 10,000 · R$ 49 | 1 player, 1–2 badges, 1 item | 60 / 33 / 7 / — / — | 55 / 38 / 7 / — / — |
+| Pro Pack | 40,000 · R$ 99 | 1–2 players (35% for a 2nd), 1–2 badges, 1 item | — / 60 / 33 / 7 / — | — / 55 / 38 / 7 / — |
+| All-Star Pack | 150,000 · R$ 249 | 1–2 players (50% for a 2nd), 2–3 badges, 1 item | — / — / 70 / 27 / 3 | — / — / 70 / 27 / 3 |
+| Hall of Fame Pack | 500,000 · R$ 599 | 2 players, 2–3 badges, 1 item | — / — / — / 88 / 12 | — / — / — / 88 / 12 |
+| Badge Pack | 20,000 · R$ 59 | 3–4 badges | — | 50 / 35 / 13 / 2 / — |
 | Coach Pack | 60,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — | — |
 | Elite Coach Pack | 250,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 | — |
+
+**The item.** Every player pack ends its reveal with one useful item instead of a filler player: **Energy Drink** (30%, refills one player's energy), **Training Pass** (25%, finishes one training session), **Coin Pouch** (25%, 10–30% of the pack's coin price back) or a **Cosmetic** (20%, a jersey, court floor, ball or celebration).
 
 **OVR ranges for now:** Common 50–64, Rare 65–72, Epic 73–79, Legendary 80–86 and Hall of Fame 87–91. **No card goes above 93**, including Finishes and training. Stronger cards come in a later update, when we raise the cap.
 
@@ -161,14 +163,14 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 - **Bundles:** the shop keeps one card per pack. Pressing **Buy** opens a small popup to pick **1×, 5× or 20×**. 5 packs cost 10% less and 20 cost 20% less (for example 5 Pro Packs for 180,000 coins instead of 200,000). The popup then offers **Open now** or **Keep**.
 - **A bundle is its own item.** A kept 5× or 20× bundle sits in the inventory as one box ("Pro Pack Bundle ×5"), not as 5 loose packs. Opening it plays the first pack in full, then offers **Open all**, which flips the rest fast and ends on a summary of the best pulls. In code, an inventory entry is `{ kind = "pack", pack = "Pro" }` or `{ kind = "bundle", pack = "Pro", size = 5 }`.
 - **Robux:** every pack and bundle can also be bought with Robux. Game passes come later.
-- **Fewer players, plus badges.** Packs give **1 or 2 players** and **2 or 3 badges** (see Badges in `PLAYERS_AND_COACHING.md`), so the bench doesn't fill with junk cards. The best card is always revealed last. Badges flip first, then players.
+- **Fewer players, plus badges and an item.** Packs give **1–2 players, 1–3 badges and 1 item** (see Badges in `PLAYERS_AND_COACHING.md`), so the bench doesn't fill with junk cards. The item flips first, then badges, then players, with the best player last. Tapping a flipped badge flips it again to show what it does and the stats it needs.
 - Odds are always shown in-game, and Robux packs follow Roblox's rules on paid random items.
 - **Reveal:** the pack slams on the floor and shakes, glowing in the best card's rarity color, then rips open. The cards fly out face-down, and you tap each one to flip it. Each flip plays its rarity color, sound and an announcer line. On a Legendary or better, the whole server gets an alert.
 - **Hover on good cards:** hovering (or holding on mobile) over an Epic or better card tilts it toward the cursor with a moving holo shine in its rarity color. Legendary and Hall of Fame cards also give off sparks, and Finish cards show their Finish pattern.
 - **Walkout cutscene (Legendary and Hall of Fame):** instead of flipping, the card plays a short cutscene on your Home Court. You can tap to skip it after the first time.
   1. The arena lights go out, and a spotlight hits the tunnel with smoke.
   2. **Clues** appear one at a time, each in a different spot on the screen: the flag of the player's nation (top left), then their position (right), then the archetype (bottom, for example "Rim Protector").
-  3. A **silhouette** walks out of the tunnel and does a move that fits the archetype: a jump shot (Sniper), a dunk (Slasher, Post Scorer), a dribble combo (Floor General, All-Around) or a block (Rim Protector, Lockdown, Glass Cleaner). The **OVR** slams onto the screen in the rarity color.
+  3. The player's **real 3D model**, blacked out with a rim light in the rarity color, walks out of the tunnel and does a move that fits the archetype: a jump shot (Sniper), a dunk (Slasher, Post Scorer), a dribble combo (Floor General, All-Around) or a block (Rim Protector, Lockdown, Glass Cleaner). Sounds come from the animation's own timeline, so they land on the bounce, the slam or the swat. The **OVR** slams onto the screen in the rarity color. See `docs/ANIMATIONS.md`.
   4. The lights come up on the 3D player doing a signature celebration, with the name, the card and confetti.
   5. A Hall of Fame walkout adds a drumroll, an air horn and a gold spotlight, and the whole server sees a "HALL OF FAMER PULLED" alert.
 

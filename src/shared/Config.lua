@@ -112,34 +112,36 @@ Config.Finishes = {
 -- add up to 1. count = players per pack, badges = badge items per pack.
 -- Cards come from the fixed card list in Catalog.lua, so players can see every card
 -- a pack can give. order = position in the shop.
+-- Player packs: `count` players (plus one more with `extraPlayerChance`), a random number of
+-- badges in the `badges` range, and `items` extra items rolled from Config.PackItems.
 Config.Packs = {
 	Rookie = {
-		name = "Rookie Pack", kind = "players", order = 1, count = 1, badges = 2, coins = 2500, robux = 19,
+		name = "Rookie Pack", kind = "players", order = 1, count = 1, badges = { 1, 2 }, items = 1, coins = 2500, robux = 19,
 		odds = { Common = 0.85, Rare = 0.15 },
 		badgeOdds = { Bronze = 0.80, Silver = 0.20 },
 	},
 	Blacktop = {
-		name = "Blacktop Pack", kind = "players", order = 2, count = 1, badges = 2, coins = 10000, robux = 49,
+		name = "Blacktop Pack", kind = "players", order = 2, count = 1, badges = { 1, 2 }, items = 1, coins = 10000, robux = 49,
 		odds = { Common = 0.60, Rare = 0.33, Epic = 0.07 },
 		badgeOdds = { Bronze = 0.55, Silver = 0.38, Gold = 0.07 },
 	},
 	Pro = {
-		name = "Pro Pack", kind = "players", order = 3, count = 2, badges = 2, coins = 40000, robux = 99,
+		name = "Pro Pack", kind = "players", order = 3, count = 1, extraPlayerChance = 0.35, badges = { 1, 2 }, items = 1, coins = 40000, robux = 99,
 		odds = { Rare = 0.60, Epic = 0.33, Legendary = 0.07 },
 		badgeOdds = { Silver = 0.55, Gold = 0.38, Diamond = 0.07 },
 	},
 	AllStar = {
-		name = "All-Star Pack", kind = "players", order = 4, count = 2, badges = 2, coins = 150000, robux = 249,
+		name = "All-Star Pack", kind = "players", order = 4, count = 1, extraPlayerChance = 0.5, badges = { 2, 3 }, items = 1, coins = 150000, robux = 249,
 		odds = { Epic = 0.70, Legendary = 0.27, HallOfFame = 0.03 },
 		badgeOdds = { Gold = 0.70, Diamond = 0.27, HallOfFame = 0.03 },
 	},
 	HallOfFame = {
-		name = "Hall of Fame Pack", kind = "players", order = 5, count = 2, badges = 3, coins = 500000, robux = 599,
+		name = "Hall of Fame Pack", kind = "players", order = 5, count = 2, badges = { 2, 3 }, items = 1, coins = 500000, robux = 599,
 		odds = { Legendary = 0.88, HallOfFame = 0.12 },
 		badgeOdds = { Diamond = 0.88, HallOfFame = 0.12 },
 	},
 	Badge = {
-		name = "Badge Pack", kind = "badges", order = 6, count = 0, badges = 4, coins = 20000, robux = 59,
+		name = "Badge Pack", kind = "badges", order = 6, count = 0, badges = { 3, 4 }, coins = 20000, robux = 59,
 		odds = {},
 		badgeOdds = { Bronze = 0.50, Silver = 0.35, Gold = 0.13, Diamond = 0.02 },
 	},
@@ -155,6 +157,14 @@ Config.Packs = {
 
 -- Bundles: buy several of the same pack at once for less per pack. A bundle is its own
 -- item in your inventory (one "5x Pro Bundle" box), not 5 loose packs.
+-- The extra item in every player pack. weight = chance out of the total.
+Config.PackItems = {
+	{ id = "EnergyDrink", name = "Energy Drink", weight = 30, text = "Refills one player's energy to 100%." },
+	{ id = "TrainingPass", name = "Training Pass", weight = 25, text = "Finishes one training session instantly." },
+	{ id = "CoinPouch", name = "Coin Pouch", weight = 25, text = "Gives back 10 to 30% of the pack's coin price." },
+	{ id = "Cosmetic", name = "Cosmetic", weight = 20, text = "A jersey, court floor, ball or celebration." },
+}
+
 Config.Bundles = {
 	{ size = 1, discount = 0 },
 	{ size = 5, discount = 0.10 },

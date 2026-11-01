@@ -175,7 +175,11 @@ function PlayerFactory.rollPack(rng, packId: string)
 	local pack = Config.Packs[packId]
 	assert(pack, "unknown pack " .. tostring(packId))
 	local rarities = {}
-	for i = 1, pack.count do
+	local n = pack.count
+	if pack.extraPlayerChance and rng:chance(pack.extraPlayerChance) then
+		n += 1
+	end
+	for i = 1, n do
 		rarities[i] = PlayerFactory.rollRarity(rng, pack.odds)
 	end
 	table.sort(rarities, function(a, b)
@@ -184,17 +188,30 @@ function PlayerFactory.rollPack(rng, packId: string)
 	return rarities
 end
 
--- Returns cards (players or a coach, best last) and badge items.
+-- Returns cards (players or a coach, best last), badges and extra items.
 function PlayerFactory.openPack(rng, packId: string, Catalog, Badges)
 	local pack = Config.Packs[packId]
-	local cards, badges = {}, {}
+	local cards, badges, items = {}, {}, {}
 	for i, r in ipairs(PlayerFactory.rollPack(rng, packId)) do
 		cards[i] = Catalog.draw(rng, pack.kind == "coach" and "coach" or "player", r)
 	end
-	for i = 1, pack.badges or 0 do
-		badges[i] = Badges.roll(rng, pack.badgeOdds)
+	if pack.badges then
+		for i = 1, rng:int(pack.badges[1], pack.badges[2]) do
+			badges[i] = Badges.roll(rng, pack.badgeOdds)
+		end
 	end
-	return cards, badges
+	for i = 1, pack.items or 0 do
+		local entries = {}
+		for _, it in ipairs(Config.PackItems) do
+			table.insert(entries, { it, it.weight })
+		end
+		local it = rng:weighted(entries)
+		items[i] = { kind = "item", id = it.id }
+		if it.id == "CoinPouch" then
+			items[i].coins = math.floor(pack.coins * rng:range(0.10, 0.30) / 100 + 0.5) * 100
+		end
+	end
+	return cards, badges, items
 end
 
 -- Price of a bundle of `size` packs, in coins or robux ("coins" | "robux").

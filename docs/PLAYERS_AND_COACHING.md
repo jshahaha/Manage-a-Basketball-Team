@@ -185,6 +185,14 @@ Badges are perks that sit in a player's **badge slots**. They come from packs (e
 | Diamond | 84 | 76 | 100,000 coins | +8 |
 | Hall of Fame | 90 | 82 | 300,000 coins | +10 |
 
+**Icons.** Every badge has its own icon in a hexagon frame colored by tier (`assets/icons/badges/<Badge>_<Tier>.png`, 100 images ready to upload). The badge card shows only the icon, the name and the tier. Tap it to flip it over: the back says what it does, the stats it needs, the equip cost and the boost.
+
+**Equipping (the Badge Applier).** Badges live in the inventory. Two ways in:
+1. **Badge first:** Inventory → Badges → tap a badge → **Use**. The Badge Applier lists your players. Players who can take it are highlighted green with their stat (for example "Can equip · Three-Point 84"), and the rest are greyed out with the reason ("Needs Three-Point 76 (has 58)", "No free slot", "Already has Diamond Laser").
+2. **Player first:** Inventory → Players → tap a player → tap an empty **+** slot. The badges that fit are highlighted at the top of the list.
+
+Both end on a confirm popup with the coin cost. Equipping a higher tier of a badge the player already has shows "Upgrade from Silver" and replaces it in the same slot.
+
 **Slots by rarity:** Common 1, Rare 2, Epic 3, Legendary 4, Hall of Fame 5. A player can't hold the same badge twice. Equipping a higher tier of a badge they already have replaces it in the same slot. Unequipping returns the badge card but not the coins.
 
 **The 20 badges** (main stat first):

@@ -7,13 +7,13 @@ Real recordings for the game, as `.ogg` files ready to upload to Roblox. Upload 
 - **BigSoundBank** recordings are CC0 (public domain). https://bigsoundbank.com
 - All files were trimmed, faded and loudness-matched.
 
-## One family per group
-So sounds that play near each other match, each group comes from a single recording set at a single loudness:
+## One family per group, checked by ear and by classifier
+Sounds that play near each other come from the same recording set at the same loudness where possible. Every file was also run through an audio classifier (PANNs CNN14, trained on Google AudioSet) to confirm it is what its name says. That check caught crowd clips that were mostly dribbling and whistles that had no whistle in them, so those were replaced.
 
 | Group | Recording set | Loudness |
 |---|---|---|
-| Court (ball, rim, squeaks, whistles) | Sound Ex Machina basketball packs, BigSoundBank | −16 LUFS |
-| Crowd (cheers, ooh, groan, boo, chant, win/loss) | Sound Ex Machina indoor basketball arena | −18 LUFS (crowd loop −26) |
+| Court (ball, rim, squeaks, whistles) | Sound Ex Machina basketball packs, BigSoundBank (whistle #1105, squeaks, buzzer) | −16 LUFS |
+| Crowd (cheers, ooh, groan, boo, chant, win/loss) | Indoor arena cheers from 2496SoundEffects (The Forum), Sound Ex Machina applause and chants, Sonic Bat for the boo and the near-miss "ooh" (the only real ones available), BigSoundBank crowd chatter for the loop | −18 LUFS (crowd loop −26) |
 | Menus | Kpow Sounds UI Soundpack 13 | −21 LUFS |
 | Coins | CB Sound Design Essential Sounds Coins | −19 LUFS |
 | Rewards (quests, achievements, codes, trades) | Cinematic Sound Design | −18 LUFS |
@@ -45,15 +45,15 @@ The AI voice was dropped because it sounded flat. Options, best first:
 | `CoinsGainM.ogg` | Some coins | CB Sound Design, Essential Sounds Coins (Sonniss GDC bundle) |
 | `CoinsGainS.ogg` | A few coins | CB Sound Design, Essential Sounds Coins (Sonniss GDC bundle) |
 | `CoinsSpend.ogg` | Purchase | CB Sound Design, Essential Sounds Coins (Sonniss GDC bundle) |
-| `CrowdBed.ogg` | Arena ambience: crowd, dribbles (loop) | Sound Ex Machina (Sonniss GDC bundle) |
-| `CrowdBoo.ogg` | Crowd booing | Sound Ex Machina, Basketball Game ULTRA (Sonniss GDC bundle) |
-| `CrowdCheerL.ogg` | Big cheer with yells and whistling | Sound Ex Machina (Sonniss GDC bundle) |
-| `CrowdCheerM.ogg` | Crowd cheers a basket | Sound Ex Machina (Sonniss GDC bundle) |
+| `CrowdBed.ogg` | Indoor crowd chatter (loop) | BigSoundBank (CC0) #3515 |
+| `CrowdBoo.ogg` | Crowd booing | Sonic Bat, Stadium Ambience (Sonniss GDC bundle) |
+| `CrowdCheerL.ogg` | Big indoor arena cheer | 2496SoundEffects, Surround At The Show (Sonniss GDC bundle) |
+| `CrowdCheerM.ogg` | Indoor arena crowd cheers a basket | 2496SoundEffects, Surround At The Show (Sonniss GDC bundle) |
 | `CrowdCheerS.ogg` | Light applause and cheer | Sound Ex Machina (Sonniss GDC bundle) |
 | `CrowdDefenseChant.ogg` | Drum beat and crowd clapping in unison (loop) | Sound Ex Machina, Basketball Game ULTRA (Sonniss GDC bundle) |
 | `CrowdGroan.ogg` | Crowd groans at a missed chance | Sound Ex Machina (Sonniss GDC bundle) |
-| `CrowdOoh.ogg` | Crowd reacts to a near miss | Sound Ex Machina (Sonniss GDC bundle) |
-| `CrowdRoar.ogg` | Arena erupts (buzzer beater, win) | Sound Ex Machina (Sonniss GDC bundle) |
+| `CrowdOoh.ogg` | Crowd reacts to a near miss | Sonic Bat, Stadium Ambience (Sonniss GDC bundle) |
+| `CrowdRoar.ogg` | Stadium crowd surges (buzzer beater, win) | 2496SoundEffects, Surround At The Show (Sonniss GDC bundle) |
 | `Defeat.ogg` | Loss: crowd disappointed | Sound Ex Machina (Sonniss GDC bundle) |
 | `Dribble_1.ogg` | Ball dribble | Sound Ex Machina (Sonniss GDC bundle) |
 | `Dribble_2.ogg` | Ball dribble | Sound Ex Machina (Sonniss GDC bundle) |
@@ -68,7 +68,7 @@ The AI voice was dropped because it sounded flat. Options, best first:
 | `ReboundGrab.ogg` | Ball off the board and caught | Sound Ex Machina (Sonniss GDC bundle) |
 | `RevealEpic.ogg` | Epic reveal | Shapeforms Audio, Future UI (Sonniss GDC bundle) |
 | `RevealHallOfFame.ogg` | Hall of Fame reveal (drums and arena build) | Sound Ex Machina, Basketball Game ULTRA (Sonniss GDC bundle) |
-| `RevealLegendary.ogg` | Legendary reveal (crowd erupts) | Sound Ex Machina (Sonniss GDC bundle) |
+| `RevealLegendary.ogg` | Legendary reveal (arena cheers) | 2496SoundEffects, Surround At The Show (Sonniss GDC bundle) |
 | `RevealRare.ogg` | Rare reveal | Shapeforms Audio, Future UI (Sonniss GDC bundle) |
 | `RimOut_1.ogg` | Ball off the backboard and rim | Sound Ex Machina (Sonniss GDC bundle) |
 | `RimOut_2.ogg` | Ball off the backboard and rim | Sound Ex Machina (Sonniss GDC bundle) |
@@ -85,7 +85,6 @@ The AI voice was dropped because it sounded flat. Options, best first:
 | `UIError.ogg` | Can't do that | Kpow Sounds, UI Soundpack 13 (Sonniss GDC bundle) |
 | `UIOpenPanel.ogg` | Panel opens | Kpow Sounds, UI Soundpack 13 (Sonniss GDC bundle) |
 | `UIToggle.ogg` | Toggle / scroll | Kpow Sounds, UI Soundpack 13 (Sonniss GDC bundle) |
-| `Victory.ogg` | Win: crowd cheers | Sound Ex Machina (Sonniss GDC bundle) |
-| `WhistleLong.ogg` | Referee whistle, longer | Sound Ex Machina (Sonniss GDC bundle) |
-| `WhistleShort.ogg` | Referee whistle in an arena | Sound Ex Machina (Sonniss GDC bundle) |
-
+| `Victory.ogg` | Win: arena cheers | 2496SoundEffects, Surround At The Show (Sonniss GDC bundle) |
+| `WhistleLong.ogg` | Referee whistle, long blast | BigSoundBank (CC0) #1105 |
+| `WhistleShort.ogg` | Referee whistle, short blast | BigSoundBank (CC0) #1105 |

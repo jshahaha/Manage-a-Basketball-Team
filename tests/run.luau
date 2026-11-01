@@ -9,6 +9,7 @@ local PlayerFactory = require("../src/shared/PlayerFactory")
 local Badges = require("../src/shared/Badges")
 local Inventory = require("../src/shared/Inventory")
 local Ratings2 = require("../src/shared/Ratings")
+local AnimClips = require("../src/shared/AnimClips")
 local Elo = require("../src/shared/Elo")
 local CodeRules = require("../src/shared/CodeRules")
 local Quests = require("../src/shared/Quests")
@@ -139,9 +140,12 @@ test("catalog: fixed card list, packs draw from it", function()
 	eq(Catalog.get(ps[1].id), ps[1])
 	local rng = Rng.new(4)
 	for _ = 1, 200 do
-		local cards, badges = PlayerFactory.openPack(rng, "AllStar", Catalog, Badges)
-		eq(#cards, 2)
-		eq(#badges, 2)
+		local cards, badges, items = PlayerFactory.openPack(rng, "AllStar", Catalog, Badges)
+		ok(#cards >= 1 and #cards <= 2, "1-2 players")
+		ok(#badges >= 2 and #badges <= 3, "2-3 badges")
+		eq(#items, 1)
+		local _, _, coachItems = PlayerFactory.openPack(rng, "Coach", Catalog, Badges)
+		eq(#coachItems, 0)
 		for _, b in ipairs(badges) do
 			ok(Config.Packs.AllStar.badgeOdds[b.tier] ~= nil, "badge tier not in pack")
 		end
@@ -598,6 +602,30 @@ test("archetype names have spaces", function()
 	for id in pairs(Ratings2.ArchetypeNames) do
 		ok(Ratings2.ArchetypeNames[id] ~= id or not id:find("%l%u"), id)
 	end
+end)
+
+test("animation clips: sorted keys, sounds exist, walkout move for every archetype", function()
+	for name, clip in pairs(AnimClips.Clips) do
+		ok(clip.length > 0, name)
+		for joint, keys in pairs(clip.joints) do
+			for i = 2, #keys do
+				ok(keys[i][1] >= keys[i - 1][1], name .. "." .. joint .. " keys out of order")
+			end
+			ok(keys[#keys][1] <= clip.length + 1e-6, name .. "." .. joint .. " key past the end")
+		end
+		for _, e in ipairs(clip.events or {}) do
+			ok(Sounds.List[e[2]] ~= nil, name .. " event sound " .. e[2] .. " not in Sounds.lua")
+		end
+	end
+	for _, rule in ipairs(Ratings2.ArchetypeRules) do
+		ok(AnimClips.WalkoutMove[rule.id] ~= nil, "no walkout move for " .. rule.id)
+	end
+	ok(AnimClips.WalkoutMove.AllAround ~= nil, "AllAround")
+	-- sampling hits the keys exactly
+	local k = AnimClips.Clips.Shoot.joints.RightShoulder
+	eq(math.floor(AnimClips.sample(k, k[3][1], 3)[1] + 0.5), k[3][2])
+	local evs = AnimClips.eventsBetween(AnimClips.Clips.Dribble, 0, 0.25)
+	eq(evs[1], "Dribble")
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))
