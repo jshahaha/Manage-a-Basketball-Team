@@ -1,4 +1,4 @@
-# Players, Stamina, Bench & Coaching Staff
+# Players, Stamina, Bench & Coaches
 
 This is the detailed design for player ratings, stamina, the bench, minutes and coaches. It expands section 4 of [MAIN_GAME_IDEA.md](MAIN_GAME_IDEA.md).
 
@@ -70,28 +70,53 @@ Every rating runs from 1 to 99. There are 20 ratings in 6 groups.
   - High-Stamina players can carry 38 or more minutes well.
 - **Minutes presets** are saved along with each lineup preset.
 
-## 5. Coaching staff
+## 5. Coaching staff: Offensive Coach + Defensive Coach
 
-Your avatar is always the **Head Coach**. You hire up to **4 staff coaches**, who stand at the bench during games.
+Your avatar is the **Head Coach**. You hire **two coaches**, and they decide **how your team plays**. Both stand on your bench during games.
 
-| Staff role | What it boosts |
-|---|---|
-| **Offensive Coordinator** | The strength of your offensive tactic, and team shooting and finishing in games |
-| **Defensive Coordinator** | The strength of your defensive tactic, and the defensive ratings of your players |
-| **Player Development** | Training XP and training speed |
-| **Strength & Conditioning** | How fast energy drains and recovers in games, and fewer injuries if we add them later |
+### Play styles
+Each coach knows **one main play style** and sometimes a second one. Your team can only run styles that your coaches know, so finding the right coach is how you change the way you play.
 
-- **Each coach** has a rarity (Common to Hall of Fame), a rating from 1 to 99 for their role, and one **specialty trait**. For example:
-  - **Three-Point Guru:** +3PT for Snipers
-  - **Rim Protection:** +Block and Interior Defense for bigs
-  - **Pace Lover:** Pace & Space drains less energy
-  - **Clutch Caller:** your Clutch Timeout play gets a bigger boost
+**Offense (Offensive Coach):**
+
+| Style | How it plays | Players it suits | Strong vs | Weak vs |
+|---|---|---|---|---|
+| **5-Out** | All five players spread out past the arc. You get drives and kick-outs for threes | Snipers, ball handlers, a big who can shoot | Zone | Switch Everything |
+| **Pace & Space** | Fast breaks and early threes, with the most possessions per game | Fast guards, high Stamina | Drop Coverage | Full-Court Press |
+| **Inside Out** | Feed the post, and shooters spot up when the defense collapses | Post scorers, Strength, Close Shot | Switch Everything | 2-3 Zone |
+| **Pick & Roll** | Ball handler plus a rolling big, with lots of dunks and lobs | A Floor General and a dunking big | Man-to-Man | Drop Coverage |
+| **Motion** | Constant cutting and passing, so no single star is needed | High Passing across the team | Full-Court Press | Man-to-Man |
+| **Iso Star** | Clear out and give the ball to your best scorer | One very high OVR scorer | Drop Coverage | 2-3 Zone |
+
+**Defense (Defensive Coach):**
+
+| Style | How it plays | Players it suits | Strong vs | Weak vs |
+|---|---|---|---|---|
+| **Man-to-Man** | Everyone guards their own player | High Perimeter D | Motion, Iso Star | Pick & Roll |
+| **2-3 Zone** | Protects the paint and gives up corner threes | Tall bigs, Block, Interior D | Inside Out, Iso Star | 5-Out |
+| **Switch Everything** | Swaps on every screen | Versatile defenders with similar sizes | 5-Out | Inside Out |
+| **Drop Coverage** | The big stays back to protect the rim | A Rim Protector center | Pick & Roll | Pace & Space, Iso Star |
+| **Full-Court Press** | Pressure all over the court that forces turnovers, but **drains energy fast** | Speed, Steal, high Stamina | Pace & Space | Motion |
+
+- "Strong vs" is a small edge, not a guaranteed win. Under [General Rules](GENERAL_RULES.md), no style should win more than about 60% of the time.
+- **Switching during a game:** between quarters, or at a timeout, you can change to any other style your coaches know.
+
+### Coach cards
+- **What a coach has:**
+  - A rarity from Common to Hall of Fame.
+  - A **Coaching rating** from 1 to 99. A higher rating makes their style stronger.
+  - Their play style or styles.
+  - One **trait**. For example:
+    - Three-Point Guru gives +3PT inside their system.
+    - Rim Protection gives more blocks in a zone.
+    - Conditioning Freak makes the press drain less energy.
+    - Clutch Caller makes your Clutch Timeout play stronger.
+- **Fit:** when your roster's archetypes match the coach's system, your team gets bonus chemistry. For example, four Snipers with a 5-Out coach.
 - **How you get coaches:**
-  - Hire them at the **Coaching Office** station in the plaza. It has a rotating list of 3 coaches that refreshes every few hours, and you pay with coins.
-  - A rare coach can also drop from higher-tier packs.
-  - Coaches can be sold on the market like players.
-- **Coach chemistry:** a staff coach whose specialty matches your tactics or archetypes adds a little chemistry.
-- Staff appear as 3D characters on your bench and on your Home Court, wearing your club colors.
+  - Hire them at the **Coaching Office** in the plaza, which shows 3 coaches and refreshes every few hours. You pay with coins.
+  - Rare coaches can also drop from higher-tier packs.
+  - You can sell coaches on the market.
+- **Free coaches:** every new club starts with a free Common coach for each side, one running Motion and one running Man-to-Man.
 
 ## 6. What this means for the sim code
 
@@ -99,4 +124,4 @@ The existing `MatchSim` already handles possessions, fatigue, fouls and rotation
 - Swap its 6 stats for the 20 ratings above.
 - Pick the shot type (3PT, mid-range, layup, dunk, close shot or post-up) from the players' ratings, then use the matching rating for the make %.
 - Track energy for each player and follow the minutes targets when making subs.
-- Apply the staff coach boosts.
+- Replace the 3-and-3 tactic matchups with the style table above, and apply the coach's rating and trait.

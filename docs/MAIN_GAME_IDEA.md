@@ -60,7 +60,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 - After big plays a **REPLAY** shows a close-up from a new angle with a name lower third, and you can tap to skip.
 - **Highlight moments:** big banners appear (AND-ONE!, FROM DOWNTOWN!, BIG BLOCK!, BUZZER BEATER!), dunks play as a letterboxed **slow-motion HIGHLIGHT**, and the game ends with a **VICTORY!** celebration in front of the bench. You can tap to skip.
 - **Coach controls during the game:**
-  - Switch **tactics** between quarters: Pace & Space, Inside Out or Motion on offense, and Man, Zone or Press on defense. Each counters another.
+  - Switch **play style** between quarters, choosing only from the styles your Offensive Coach and Defensive Coach know (for example 5-Out, Pick & Roll, Motion, 2-3 Zone, Switch Everything or Full-Court Press). Each style counters some styles and is weak to others.
   - **Clutch Timeout** (our signature feature): in the last minute of a close game, you pick the final play yourself: Isolation, Pick & Roll or Kick-Out Three.
 - Afterward you see the score, an MVP card, coins, fans and rating change, and progress on your quests.
 
@@ -71,7 +71,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 - **Positions:** PG, SG, SF, PF, C. **Ratings (20):** Mid-Range, Three-Point, Free Throw · Layup, Driving Dunk, Standing Dunk, Close Shot, Post Moves · Passing, Ball Handling · Interior D, Perimeter D, Steal, Block · Off/Def Rebound · Speed, Strength, Vertical, **Stamina**. Cards show 6 group scores (SHO FIN PLY DEF REB ATH). OVR is weighted by position.
 - **Stamina:** players lose energy on the floor and get it back on the bench. Tired players play worse.
 - **Minutes:** you split 240 player-minutes across a 10-player matchday roster (5 starters + 5 bench), or press Auto Minutes.
-- **Coaching staff:** your avatar is the Head Coach. You hire an Offensive Coordinator, Defensive Coordinator, Player Development coach and Strength & Conditioning coach, and they sit on your bench.
+- **Coaches:** your avatar is the Head Coach. You hire an **Offensive Coach** and a **Defensive Coach**, and the play styles they know decide how your team plays (for example 5-Out, Pick & Roll, 2-3 Zone or Full-Court Press).
 - **Rarity:** Common (grey), Rare (blue), Epic (purple), Legendary (orange) and **Hall of Fame** (gold, above Legendary). Hall of Fame players are fictional legends we invent, such as "Big Moe Okonkwo".
 - **Finishes** are rare cosmetic variants that also give a stat boost, and any player can roll one:
   - **Hot Hand** (flame trail, +3 OVR)

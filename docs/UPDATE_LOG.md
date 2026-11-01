@@ -6,7 +6,9 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ## v0.0.4 (2026-11-01): Players & coaching
 ### Added
-- [Players & Coaching](PLAYERS_AND_COACHING.md): 20 basketball ratings in 6 groups, in-game stamina and energy, a 10-player matchday roster, minutes allocation (240 player-minutes) and a 4-role coaching staff
+- [Players & Coaching](PLAYERS_AND_COACHING.md): 20 basketball ratings in 6 groups, in-game stamina and energy, a 10-player matchday roster, minutes allocation (240 player-minutes) and coaches
+### Changed
+- Coaching staff cut to an **Offensive Coach** and a **Defensive Coach**. Each coach brings play styles: 5-Out, Pace & Space, Inside Out, Pick & Roll, Motion and Iso Star on offense, and Man-to-Man, 2-3 Zone, Switch Everything, Drop Coverage and Full-Court Press on defense
 
 ---
 

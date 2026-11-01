@@ -9,6 +9,6 @@ An original Roblox basketball management sim. You build a franchise, scout and t
 | [Update Log](docs/UPDATE_LOG.md) | What changed in each version |
 | [General Rules](docs/GENERAL_RULES.md) | Originality, safety, code and git rules |
 | [Reference Study](docs/REFERENCE_STUDY.md) | Research notes on how the genre plays |
-| [Players & Coaching](docs/PLAYERS_AND_COACHING.md) | Ratings, stamina, bench, minutes and coaching staff |
+| [Players & Coaching](docs/PLAYERS_AND_COACHING.md) | Ratings, stamina, bench, minutes, coaches and play styles |
 
 **Status:** design and UI are in review. The game code lands after approval.
