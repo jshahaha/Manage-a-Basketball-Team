@@ -154,7 +154,7 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 | Coach Pack | 60,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — | — |
 | Elite Coach Pack | 250,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 | — |
 
-**The item.** Every player pack ends its reveal with one useful item instead of a filler player: a **Cosmetic** (40%, a jersey, court floor, ball or celebration), a **Coin Pouch** (35%, 10–30% of the pack's coin price back) or a **Badge Upgrade** (25%). Badge Upgrades have their own rarity, and the rarity decides which tier they work on: **Bronze → Silver** (60% of upgrades), **Silver → Gold** (28%), **Gold → Diamond** (10%) and **Diamond → Hall of Fame** (2%). The player still needs the stats for the new tier. Stamina only exists inside a match, so there are no energy items.
+**The item.** Every player pack ends its reveal with one useful item instead of a filler player: a **Cosmetic** (35%, a jersey, court floor, ball or celebration), a **Coin Pouch** (30%, 10–30% of the pack's coin price back), a **Badge Upgrade** (20%) or a **Scout Ticket** (15%, one free Scouting Report refresh). Badge Upgrades have their own rarity, and the rarity decides which tier they work on: **Bronze → Silver** (60% of upgrades), **Silver → Gold** (28%), **Gold → Diamond** (10%) and **Diamond → Hall of Fame** (2%). The player still needs the stats for the new tier. Stamina only exists inside a match, so there are no energy items.
 
 **OVR ranges for now:** Common 50–64, Rare 65–72, Epic 73–79, Legendary 80–86 and Hall of Fame 87–91. **No card goes above 93**, including Finishes and training. Stronger cards come in a later update, when we raise the cap.
 
@@ -177,7 +177,19 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 ## 6. Training, scouting & chemistry
 
 - **Training:** **3 timed slots.** You pick a player and a focus (Shooting, Finishing, Playmaking, Defense, Rebounding, Athleticism, or All). A session lasts about 1 hour and keeps running while you're offline. Progress stops at the player's potential, and star levels raise that cap.
-- **Scout Office:** send a scout on a 5-minute, 30-minute or 2-hour trip, and they come back with a player card. Longer trips find better odds. You start with 1 scout slot and can get more through progression or a game pass. This gives players a reason to come back.
+- **Scouting Report:** your scouts bring back a report of **5 players**. You see some of each player's info, **never their OVR**, and sign the one you want for coins. A new report comes every few hours. You can refresh early for coins, or for free with a **Scout Ticket** (a pack item).
+- **Scout team levels** (upgraded with gems). Each level reveals more, so a better scout team means better guesses:
+
+  | Level | Reveals |
+  |---|---|
+  | 0 | the player's best stat |
+  | 1 | + position |
+  | 2 | + 2nd best stat |
+  | 3 | + archetype and nationality |
+  | 4 | + 3rd best stat |
+  | 5 | + rarity |
+
+  Levels also shorten the refresh time a little. Odds stay the same, so upgrades buy information, not better players.
 - **Chemistry (0–100%)** gives a flat bonus to every stat in matches (up to about +10%). It goes up when:
   - your lineup's archetypes complement each other (a Floor General plus two Snipers, a Slasher plus a Glass Cleaner)
   - players fit their positions
@@ -197,12 +209,13 @@ Packs climb a ladder. Each rarity only drops from at most three packs next to ea
 
 ## 9. Economy & progression
 
-- **Coins** are the main currency, with big numbers and fast growth.
+- **Coins** are the main currency, with big numbers and fast growth. They buy packs, badges (equip cost), market buys, scouted players and early report refreshes.
+- **Gems** are the premium currency. Free players earn them slowly from daily quests, achievements and Elo milestones, and they can also be bought with Robux. Gems buy **scout team upgrades, cosmetics, the Gem Pack, and skipping training timers**. They never buy players or badges directly, so the market stays coin-based.
 - **Fans** grow with wins and pay passive income every minute you're online. Upgrading your Home Court (seats, scoreboard, lights) raises how much each fan pays.
 - **Daily quests:** 3 a day, drawn from a pool and reset at 00:00 UTC. Each pays coins, from 1,000 to 4,000. Examples: win 2 games, make 15 threes, throw down 8 dunks, open a pack, call 3 timeouts, or play a server challenge.
 - **Achievements:** lifetime goals with tiers that each pay once. The big tiers pay packs. Examples: Winner (1 / 10 / 50 / 250 / 1,000 wins), From Downtown (threes), Posterizer (dunks), Pack Rat, Collector, Climber (reach each Elo tier), Hot Streak, Clipboard Coach (timeouts), Challenger and Legend Hunter (pull Hall of Fame players).
 - There's also a login streak and **redeem codes**. The owner makes codes in `src/server/Codes.lua`, or live from chat with `!makecode` (see the README).
-- **Robux (later):** VIP (2× coins), an extra scout slot, Robux packs with shown odds, and court cosmetics. Nothing is pay-to-win only.
+- **Robux (later):** VIP (2× coins), gem bundles, Robux packs with shown odds, and court cosmetics. Nothing is pay-to-win only.
 
 ## 10. Look & feel
 

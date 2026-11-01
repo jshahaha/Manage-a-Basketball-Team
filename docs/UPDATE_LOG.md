@@ -4,6 +4,12 @@ Newest first. Each entry gets a version, a date, and short bullets under **Added
 
 ---
 
+## v0.1.7 (2026-11-01): Scouting Report and gems (design)
+### Added
+- Scouting Report: 5 players with hidden OVR, signed for coins. Scout levels 0–5 reveal best stat, position, 2nd stat, archetype and nationality, 3rd stat, then rarity
+- Gems: premium currency for scout upgrades, cosmetics, a Gem Pack and skipping training timers
+- Scout Ticket pack item (one free refresh). Items are now Cosmetic 35%, Coin Pouch 30%, Badge Upgrade 20%, Scout Ticket 15%
+
 ## v0.1.6 (2026-11-01): Skilled-player animations
 ### Added
 - Dribble moves: live dribble, crossover, between the legs, behind the back, hesitation. They chain, and the walkout combo is four of them
