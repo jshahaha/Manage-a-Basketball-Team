@@ -21,6 +21,7 @@ local PlayerFactory = require(Shared.PlayerFactory)
 local PlayerModel = require(Shared.PlayerModel)
 local Possession = require(Shared.Possession)
 local Rng = require(Shared.Rng)
+local ShotFeel = require(Shared.ShotFeel)
 local Audio = require(script.Parent:WaitForChild("Audio"))
 
 local ORIGIN = Vector3.new(0, 0, 400) -- away from the lobby
@@ -166,9 +167,14 @@ local function play(homeBall: boolean)
 	if assist == shooter then
 		assist = nil
 	end
-	local plan = Possession.plan({ offense = offense, dir = homeBall and 1 or -1, result = { kind = kind, shooter = shooter, assist = assist, made = true } })
+	local rating = ShotFeel.rating(team[shooter], kind)
+	local base = ({ jumper = 0.45, three = 0.37, dunk = 0.93 })[kind]
+	local made = rng:chance(math.clamp(base + (rating - 70) * 0.006, 0.05, 0.98))
+	local plan = Possession.plan({ offense = offense, dir = homeBall and 1 or -1, result = { kind = kind, shooter = shooter, assist = assist, made = made } })
 	local clip = AnimClips.Clips[plan.shotClip]
 	if kind == "dunk" then
+		made = true -- the view has no blocked dunk yet
+		plan.result.made = true
 		task.delay(plan.tShot + clip.hoopAt[1], function()
 			flashRim(plan.dir)
 			pop(rng:pick({ "SLAM!", "POSTER!", "BOOM!" }), Color3.fromRGB(255, 120, 60))
@@ -176,14 +182,16 @@ local function play(homeBall: boolean)
 			drawScore()
 		end)
 	else
+		local feel = ShotFeel.release(rng, made, rating)
 		task.delay(plan.tShot + releaseTime(plan.shotClip), function()
-			local perfect = rng:chance(0.45)
-			pop(perfect and "PERFECT RELEASE" or "GOOD RELEASE", perfect and Color3.fromRGB(90, 230, 120) or Color3.fromRGB(255, 200, 60))
+			pop(ShotFeel.Text[feel], Color3.fromRGB(table.unpack(ShotFeel.Color[feel])))
 		end)
-		task.delay(plan.tShot + 1.8, function()
-			score[side] += kind == "three" and 3 or 2
-			drawScore()
-		end)
+		if made then
+			task.delay(plan.tShot + 1.8, function()
+				score[side] += kind == "three" and 3 or 2
+				drawScore()
+			end)
+		end
 	end
 	view:play(plan, homeBall, function(ev)
 		Audio.play(ev, ball)

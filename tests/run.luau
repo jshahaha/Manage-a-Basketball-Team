@@ -13,6 +13,7 @@ local AnimClips = require("../src/shared/AnimClips")
 local PlayerModel = require("../src/shared/PlayerModel")
 local AnimSets = require("../src/shared/AnimSets")
 local Possession = require("../src/shared/Possession")
+local ShotFeel = require("../src/shared/ShotFeel")
 local Scouting = require("../src/shared/Scouting")
 local Cosmetics = require("../src/shared/Cosmetics")
 local Facilities = require("../src/shared/Facilities")
@@ -880,6 +881,30 @@ test("a possession plan puts the shooter at the spot and plays real clips", func
 	assert(solo.handler == 2 and not solo.passer, "solo handler")
 	local f = Possession.frame(solo, solo.tShot + 0.3)
 	assert(f.ball.owner == 2 and f.players[2].clip == "DunkWindmill", "solo dunk")
+end)
+
+test("shot feedback agrees with the result and rewards good shooters", function()
+	local rng = Rng.new(7)
+	local function perfects(rating)
+		local n = 0
+		for _ = 1, 2000 do
+			local r = ShotFeel.release(rng, true, rating)
+			assert(r == "Perfect" or r == "Good", "made shots read well")
+			if r == "Perfect" then
+				n += 1
+			end
+		end
+		return n
+	end
+	assert(perfects(92) > perfects(60) * 2, "better shooters hit Perfect more")
+	for _ = 1, 500 do
+		assert(ShotFeel.release(rng, false, 75) ~= "Perfect", "a miss is never Perfect")
+	end
+	for _, k in ipairs({ "Perfect", "Good", "Early", "Late" }) do
+		assert(ShotFeel.Text[k] and #ShotFeel.Color[k] == 3, "text and color")
+	end
+	local plan = Possession.plan({ offense = { AnimSets.clips(nil), AnimSets.clips(nil), AnimSets.clips(nil), AnimSets.clips(nil), AnimSets.clips(nil) }, dir = -1, result = { kind = "jumper", shooter = 4, made = false } })
+	assert(plan.result.made == false and plan.handler == 4, "miss plan")
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))

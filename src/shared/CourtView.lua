@@ -73,6 +73,44 @@ function CourtView:dunkFit(plan, S, clip, rim)
 	return fit
 end
 
+-- A missed jumper: aimed at the front of the rim, then it kicks out and bounces away.
+local function rimKey(clip)
+	for _, k in ipairs(clip.ball or {}) do
+		if k[2] == "rim" then
+			return k[1]
+		end
+	end
+	return nil
+end
+
+function CourtView:missBall(plan, S, clip, ct, place, rim)
+	local back = Vector3.new(place.Position.X - rim.X, 0, place.Position.Z - rim.Z)
+	back = back.Magnitude > 0.01 and back.Unit or Vector3.xAxis
+	local front = rim + back * 0.55 -- front of the rim
+	local tr = rimKey(clip)
+	if not tr or ct <= tr then
+		return PoseSolver.ball(S, clip, ct, place, front)
+	end
+	-- Off the rim: long bounce out to one side, then a short one, then it rolls to a stop.
+	local side = Vector3.new(-back.Z, 0, back.X) * ((plan.shooter % 2 == 0) and 1 or -1)
+	local r = PoseSolver.BallRadius
+	local p0 = front + Vector3.yAxis * 0.6
+	local p1 = rim + back * 5 + side * 3
+	p1 = Vector3.new(p1.X, self.floorY + r, p1.Z)
+	local p2 = p1 + (back * 2.5 + side * 1.5)
+	local p3 = p2 + (back * 1.5 + side)
+	local u = ct - tr
+	local function hop(a, b, v, h)
+		return a:Lerp(b, v) + Vector3.yAxis * (h * 4 * v * (1 - v))
+	end
+	if u < 0.75 then
+		return hop(p0, p1, u / 0.75, 2.6)
+	elseif u < 1.2 then
+		return hop(p1, p2, (u - 0.75) / 0.45, 1.1)
+	end
+	return p2:Lerp(p3, smooth((u - 1.2) / 0.8))
+end
+
 -- Pose everyone and place the ball for time t. Returns the ball position (or nil).
 function CourtView:render(plan, t: number, homeHasBall: boolean)
 	local f = Possession.frame(plan, t)
@@ -92,7 +130,8 @@ function CourtView:render(plan, t: number, homeHasBall: boolean)
 		end
 		PoseSolver.pose(S, p.clip, ct, place)
 		if f.ball.owner == i then
-			ballPos = PoseSolver.ball(S, clip, ct, place, rim)
+			local miss = i == plan.shooter and p.clip == plan.shotClip and plan.result.made == false and not clip.hoopAt
+			ballPos = miss and self:missBall(plan, S, clip, ct, place, rim) or PoseSolver.ball(S, clip, ct, place, rim)
 			if not ballPos and not clip.ball then
 				ballPos = S.rh.Position + Vector3.yAxis * 0.7 -- clips without a ball track: carry it
 			end
@@ -125,7 +164,13 @@ function CourtView:play(plan, homeHasBall: boolean, onEvent)
 				if owner.clip ~= lastClip or ct < lastT then
 					lastT = -1
 				end
+				local missed = plan.result.made == false and owner.clip == plan.shotClip
 				for _, ev in ipairs(AnimClips.eventsBetween(clip, lastT, ct)) do
+					if missed and ev == "Swish" then
+						ev = "RimOut"
+					elseif missed and ev:find("^CrowdCheer") then
+						ev = "CrowdOoh"
+					end
 					onEvent(ev)
 				end
 				lastClip, lastT = owner.clip, ct
