@@ -93,7 +93,7 @@ function PlayerFactory.generate(rng, opts)
 		rarity = rarity.id,
 		finish = finish or nil,
 		ratings = ratings,
-		potential = math.min(Ratings.MAX, base + rng:int(2, 12)),
+		potential = math.min(Config.MaxOvr, base + rng:int(2, 12)),
 		height = height,
 		wingspan = height + rng:int(0, 6),
 		stars = 1,
@@ -112,7 +112,7 @@ function PlayerFactory.finishBonus(player): number
 end
 
 function PlayerFactory.overall(player): number
-	return math.min(Ratings.MAX, Ratings.ovr(player.ratings, player.pos) + PlayerFactory.finishBonus(player))
+	return math.min(Config.MaxOvr, Ratings.ovr(player.ratings, player.pos) + PlayerFactory.finishBonus(player))
 end
 
 function PlayerFactory.groupScores(player)
@@ -128,7 +128,7 @@ function PlayerFactory.rollRarity(rng, odds): string
 	local entries = {}
 	for _, r in ipairs(Config.Rarities) do
 		local p = odds[r.id] or 0
-		if p > 0 then
+		if p > 0 and not r.locked then
 			table.insert(entries, { r.id, p })
 		end
 	end
