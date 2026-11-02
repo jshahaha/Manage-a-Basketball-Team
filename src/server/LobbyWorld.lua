@@ -50,6 +50,13 @@ local WHITE = Color3.new(1, 1, 1)
 
 local part = LobbyDecor.part
 
+-- Where the walkway runs along each row: on the open side of the courts (the stands are
+-- always on the -Z side of a court).
+local function rowWalkZ(z)
+	return z < 0 and z + 40 or z - 54
+end
+
+
 local function signText(parent, face, text, color, size)
 	local g = Instance.new("SurfaceGui")
 	g.Face = face
@@ -236,12 +243,6 @@ local function buildPlaza(folder)
 	spawn.Neutral = true
 	spawn.Duration = 0
 	spawn.Parent = folder
-end
-
--- Where the walkway runs along each row: on the open side of the courts (the stands are
--- always on the -Z side of a court).
-local function rowWalkZ(z)
-	return z < 0 and z + 40 or z - 54
 end
 
 local function fence(parent, center)

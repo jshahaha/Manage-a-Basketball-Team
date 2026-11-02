@@ -71,10 +71,14 @@ Net.request().OnServerInvoke = function(player, action, payload)
 end
 
 DataService.start()
-LobbyWorld.start(function(player)
+-- The lobby is scenery plus plots; if building it ever fails, the rest of the game still runs.
+local okLobby, lobbyErr = pcall(LobbyWorld.start, function(player)
 	local profile = DataService.get(player)
 	return profile and profile.club and profile.club.name or nil
 end)
+if not okLobby then
+	warn("[Court] lobby build failed: " .. tostring(lobbyErr))
+end
 CodeService.start()
 
 local function onPlayer(player)
