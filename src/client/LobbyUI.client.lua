@@ -245,8 +245,11 @@ local refreshBoard
 local function bundlePopup(pack)
 	local pop = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(330, 250), BackgroundColor3 = C.panel, ZIndex = 20 }, body)
 	round(pop, 14)
-	stroke(pop, 3)
+	if not Theme.panelArt(pop, 20) then
+		stroke(pop, 3)
+	end
 	text(pop, { text = "Buy " .. pack.name, font = HEAD, size = 22, sz = UDim2.new(1, -20, 0, 36), pos = UDim2.fromOffset(10, 8), z = 21 })
+	local buying = false
 	for i, pr in ipairs(pack.prices) do
 		local label = string.format("%dx   %s coins", pr.size, comma(pr.coins))
 		if pr.discount > 0 then
@@ -256,13 +259,19 @@ local function bundlePopup(pack)
 		b.ZIndex = 21
 		b.Label.TextSize = 18
 		b.MouseButton1Click:Connect(function()
+			if buying then
+				return
+			end
+			buying = true
 			local ok, res = call("buyPack", { pack = pack.id, size = pr.size })
+			buying = false
 			if ok then
+				-- Close first so a slow toast or sound never leaves the popup on screen.
+				pop:Destroy()
 				profile.coins = res.coins
 				refreshBar()
-				Audio.play("CoinsSpend")
+				pcall(Audio.play, "CoinsSpend")
 				say(pr.size > 1 and string.format("%dx %s added to Packs", pr.size, pack.name) or pack.name .. " added to Packs")
-				pop:Destroy()
 			else
 				say(res)
 			end
@@ -347,8 +356,8 @@ local function drawCard(parent, c, z)
 		text(f, { text = table.concat(styles, ", "), size = 12, color = Color3.fromHex("5a5650"), sz = UDim2.new(1, -12, 0, 60), pos = UDim2.fromOffset(6, 132), z = z + 1 })
 		return f
 	end
-	text(f, { color = C.black, text = tostring(c.ovr), font = HEAD, size = 44, sz = UDim2.fromOffset(70, 50), pos = UDim2.fromOffset(6, 34), z = z + 1, align = Enum.TextXAlignment.Left })
-	text(f, { text = c.pos or "", font = HEAD, size = 22, color = C.black, sz = UDim2.fromOffset(60, 30), pos = UDim2.new(1, -66, 0, 42), z = z + 1, align = Enum.TextXAlignment.Right })
+	text(f, { color = C.black, text = tostring(c.ovr), font = HEAD, size = 44, sz = UDim2.fromOffset(70, 50), pos = UDim2.fromOffset(14, 36), z = z + 1, align = Enum.TextXAlignment.Left })
+	text(f, { text = c.pos or "", font = HEAD, size = 22, color = C.black, sz = UDim2.fromOffset(60, 30), pos = UDim2.new(1, -74, 0, 44), z = z + 1, align = Enum.TextXAlignment.Right })
 	text(f, { color = C.black, text = c.name, font = MARK, size = 20, sz = UDim2.new(1, -12, 0, 48), pos = UDim2.fromOffset(6, 90), z = z + 1, scaled = true })
 	text(f, { text = c.archetype and Ratings.archetypeName(c.archetype) or "", size = 13, color = Color3.fromHex("5a5650"), sz = UDim2.new(1, -12, 0, 18), pos = UDim2.fromOffset(6, 140), z = z + 1 })
 	local ft = c.height and string.format("%d'%d\"", math.floor(c.height / 12), c.height % 12) or ""
