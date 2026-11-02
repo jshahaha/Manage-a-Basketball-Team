@@ -15,6 +15,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Court = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Court"))
+local ServerStorage = game:GetService("ServerStorage")
 local LobbyDecor = require(script.Parent:WaitForChild("LobbyDecor"))
 
 local LobbyWorld = {}
@@ -89,6 +90,17 @@ local function cylinder(parent, name, h, r, cf, color, material)
 	return part(parent, { Name = name, Shape = Enum.PartType.Cylinder, Size = Vector3.new(h, r * 2, r * 2), CFrame = cf * CFrame.Angles(0, 0, math.rad(90)), Color = color, Material = material or Enum.Material.SmoothPlastic })
 end
 
+-- A flat ring built from many short blocks. Big cylinder parts render with only a few sides
+-- from a distance, so painted rings made this way stay round.
+local function smoothRing(parent, name, radius, width, y, color, material)
+	local n = math.max(48, math.floor(radius * 3))
+	local len = 2 * math.pi * radius / n + 0.15
+	for k = 0, n - 1 do
+		local a = k / n * math.pi * 2
+		part(parent, { Name = name, Size = Vector3.new(width, 1, len), CFrame = CFrame.new(math.cos(a) * radius, y, math.sin(a) * radius) * CFrame.Angles(0, -a, 0), Color = color, Material = material or Enum.Material.SmoothPlastic })
+	end
+end
+
 -- A storefront facing the plaza centre: glass front, striped awning, lit sign, planters.
 local function storefront(parent, info, pos)
 	local m = Instance.new("Model")
@@ -159,17 +171,27 @@ local function landmark(parent)
 	local stone = Color3.fromRGB(214, 210, 200)
 	cylinder(m, "BasinWall", 2.4, 15, CFrame.new(0, 1.2, 0), stone, Enum.Material.Marble)
 	cylinder(m, "Water", 0.4, 14, CFrame.new(0, 2.0, 0), Color3.fromRGB(70, 170, 210), Enum.Material.Glass).Transparency = 0.25
-	cylinder(m, "Plinth", 4, 5, CFrame.new(0, 2, 0), stone, Enum.Material.Marble)
-	cylinder(m, "Pillar", 26, 2, CFrame.new(0, 17, 0), Color3.fromRGB(46, 50, 70), Enum.Material.Metal)
-	local screen = part(m, { Name = "Screen", Size = Vector3.new(18, 10, 18), Position = Vector3.new(0, 34, 0), Color = INK, Material = Enum.Material.SmoothPlastic })
-	for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Back, Enum.NormalId.Left, Enum.NormalId.Right }) do
-		local l = signText(screen, face, "MANAGE A\nBASKETBALL TEAM", Color3.fromRGB(255, 200, 60))
-		l.Font = Enum.Font.GothamBlack
+	-- Centrepiece: the detailed basketball monument from ServerStorage.LobbyAssets when it's there,
+	-- otherwise the old pillar with a title screen.
+	local lib = ServerStorage:FindFirstChild("LobbyAssets")
+	local monument = lib and lib:FindFirstChild("Monument")
+	if monument then
+		monument = monument:Clone()
+		monument:PivotTo(CFrame.new(0, 2.2, 0))
+		monument.Parent = m
+	else
+		cylinder(m, "Plinth", 4, 5, CFrame.new(0, 2, 0), stone, Enum.Material.Marble)
+		cylinder(m, "Pillar", 26, 2, CFrame.new(0, 17, 0), Color3.fromRGB(46, 50, 70), Enum.Material.Metal)
+		local screen = part(m, { Name = "Screen", Size = Vector3.new(18, 10, 18), Position = Vector3.new(0, 34, 0), Color = INK, Material = Enum.Material.SmoothPlastic })
+		for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Back, Enum.NormalId.Left, Enum.NormalId.Right }) do
+			local l = signText(screen, face, "MANAGE A\nBASKETBALL TEAM", Color3.fromRGB(255, 200, 60))
+			l.Font = Enum.Font.GothamBlack
+		end
+		for _, y in ipairs({ -5.2, 5.2 }) do
+			part(m, { Name = "ScreenTrim", Size = Vector3.new(18.6, 0.5, 18.6), Position = Vector3.new(0, 34 + y, 0), Color = Color3.fromRGB(255, 140, 40), Material = Enum.Material.Neon })
+		end
+		part(m, { Name = "BigBall", Shape = Enum.PartType.Ball, Size = Vector3.one * 7, Position = Vector3.new(0, 43, 0), Color = Color3.fromRGB(230, 110, 30), Material = Enum.Material.SmoothPlastic })
 	end
-	for _, y in ipairs({ -5.2, 5.2 }) do
-		part(m, { Name = "ScreenTrim", Size = Vector3.new(18.6, 0.5, 18.6), Position = Vector3.new(0, 34 + y, 0), Color = Color3.fromRGB(255, 140, 40), Material = Enum.Material.Neon })
-	end
-	part(m, { Name = "BigBall", Shape = Enum.PartType.Ball, Size = Vector3.one * 7, Position = Vector3.new(0, 43, 0), Color = Color3.fromRGB(230, 110, 30), Material = Enum.Material.SmoothPlastic })
 	-- Fountain jets.
 	for k = 0, 5 do
 		local a = k / 6 * math.pi * 2
@@ -196,8 +218,8 @@ local function buildPlaza(folder)
 	-- Paving in rings: stone edge, warm tiles, a wood centre like a half court.
 	cylinder(plaza, "Edge", 1, PLAZA_R + 2, CFrame.new(0, -0.45, 0), Color3.fromRGB(170, 168, 160), Enum.Material.Concrete)
 	cylinder(plaza, "Paving", 1, PLAZA_R, CFrame.new(0, -0.4, 0), Color3.fromRGB(58, 60, 64), Enum.Material.Asphalt) -- blacktop
-	cylinder(plaza, "Ring", 1, 30, CFrame.new(0, -0.36, 0), Color3.fromHex("f5d33a"), Enum.Material.SmoothPlastic) -- painted court-yellow ring
-	cylinder(plaza, "Center", 1, 27, CFrame.new(0, -0.33, 0), Color3.fromRGB(66, 68, 72), Enum.Material.Asphalt)
+	smoothRing(plaza, "Ring", 28.5, 2.6, -0.36, Color3.fromHex("ffd45e")) -- painted court-yellow ring
+	smoothRing(plaza, "EdgeTrim", PLAZA_R + 0.6, 2.4, -0.38, Color3.fromRGB(170, 168, 160), Enum.Material.Concrete)
 	plaza.Parent = folder
 	landmark(folder)
 	-- Wide walkways: north and south to the court rows, plus a path along each row.
