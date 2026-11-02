@@ -22,13 +22,15 @@ local Possession = require(Shared.Possession)
 local Rng = require(Shared.Rng)
 local ShotFeel = require(Shared.ShotFeel)
 local Audio = require(script.Parent:WaitForChild("Audio"))
+local Theme = require(script.Parent:WaitForChild("Theme"))
+local T = Theme.C
 
 local MatchView = {}
 
 local ORIGIN = Vector3.new(0, 0, 400)
 local HOME_KIT = Color3.fromRGB(37, 99, 235)
 local NUMBERS = { 1, 3, 23, 8, 34, 0, 5, 21, 4, 12 }
-local INK = Color3.fromHex("1b2140")
+local INK = Theme.C.slate
 local WHITE = Color3.new(1, 1, 1)
 
 local function shortName(name)
@@ -242,18 +244,19 @@ function MatchView.run(data)
 	bug.Position = UDim2.new(0.5, 0, 0, 48)
 	bug.Size = UDim2.fromOffset(440, 44)
 	bug.BackgroundColor3 = INK
-	bug.BackgroundTransparency = 0.1
+	bug.BackgroundTransparency = 0.05
 	bug.Parent = gui
-	Instance.new("UICorner", bug).CornerRadius = UDim.new(0, 10)
+	Instance.new("UICorner", bug).CornerRadius = UDim.new(0, 4)
+	Theme.stroke(bug, 3, T.black)
 	local function cell(x, w, color)
 		local l = Instance.new("TextLabel")
 		l.BackgroundColor3 = color or INK
 		l.BackgroundTransparency = color and 0 or 1
 		l.Position = UDim2.fromOffset(x, 0)
 		l.Size = UDim2.fromOffset(w, 44)
-		l.Font = Enum.Font.GothamBlack
-		l.TextColor3 = WHITE
-		l.TextSize = 18
+		l.FontFace = Theme.HEAD
+		l.TextColor3 = color and Theme.textOn(color) or T.ink
+		l.TextSize = 22
 		l.TextScaled = false
 		l.TextTruncate = Enum.TextTruncate.AtEnd
 		l.Parent = bug
@@ -267,8 +270,13 @@ function MatchView.run(data)
 	homeName.TextScaled = true
 	local homePts = cell(130, 50)
 	local clockL = cell(180, 80)
-	clockL.TextSize = 15
-	clockL.TextColor3 = Color3.fromRGB(255, 200, 60)
+	clockL.TextSize = 17
+	clockL.TextColor3 = T.black
+	clockL.BackgroundColor3 = T.yellow -- clock on a strip of yellow tape
+	clockL.BackgroundTransparency = 0
+	clockL.Size = UDim2.fromOffset(80, 34)
+	clockL.Position = UDim2.fromOffset(180, 5)
+	clockL.Rotation = -2
 	local awayPts = cell(260, 50)
 	local awayName = cell(310, 130, kits[2])
 	awayName.Text = teamTag(data.away.name)
@@ -278,21 +286,22 @@ function MatchView.run(data)
 		local pad = Instance.new("UIPadding", l)
 		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 6), UDim.new(0, 6)
 	end
-	Instance.new("UICorner", homeName).CornerRadius = UDim.new(0, 10)
-	Instance.new("UICorner", awayName).CornerRadius = UDim.new(0, 10)
+	Instance.new("UICorner", homeName).CornerRadius = UDim.new(0, 4)
+	Instance.new("UICorner", awayName).CornerRadius = UDim.new(0, 4)
 
 	local ticker = Instance.new("TextLabel")
 	ticker.AnchorPoint = Vector2.new(0.5, 1)
 	ticker.Position = UDim2.new(0.5, 0, 1, -20)
 	ticker.Size = UDim2.new(0.9, 0, 0, 36)
 	ticker.BackgroundColor3 = INK
-	ticker.BackgroundTransparency = 0.25
-	ticker.TextColor3 = WHITE
-	ticker.Font = Enum.Font.GothamBold
-	ticker.TextSize = 17
+	ticker.BackgroundTransparency = 0.1
+	ticker.TextColor3 = T.ink
+	ticker.FontFace = Theme.HEAD
+	ticker.TextSize = 19
 	ticker.Text = ""
 	ticker.Parent = gui
-	Instance.new("UICorner", ticker).CornerRadius = UDim.new(0, 8)
+	Instance.new("UICorner", ticker).CornerRadius = UDim.new(0, 4)
+	Theme.stroke(ticker, 3, T.yellow)
 	Instance.new("UISizeConstraint", ticker).MaxSize = Vector2.new(620, 36)
 
 	local callout = Instance.new("TextLabel")
@@ -300,15 +309,17 @@ function MatchView.run(data)
 	callout.Position = UDim2.fromScale(0.5, 0.3)
 	callout.Size = UDim2.fromOffset(460, 60)
 	callout.BackgroundTransparency = 1
-	callout.Font = Enum.Font.GothamBlack
-	callout.TextSize = 40
+	callout.FontFace = Theme.MARK
+	callout.TextSize = 48
+	callout.TextStrokeColor3 = T.black
+	callout.Rotation = -4
 	callout.TextTransparency, callout.TextStrokeTransparency = 1, 1
 	callout.Parent = gui
 	local popScale = Instance.new("UIScale", callout)
 	local function pop(text, color)
 		callout.Text = text
 		callout.TextColor3 = color
-		callout.TextTransparency, callout.TextStrokeTransparency = 0, 0.3
+		callout.TextTransparency, callout.TextStrokeTransparency = 0, 0
 		popScale.Scale = 0.6
 		TweenService:Create(popScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
 		task.delay(1.1, function()
@@ -321,13 +332,14 @@ function MatchView.run(data)
 	skip.AnchorPoint = Vector2.new(1, 0)
 	skip.Position = UDim2.new(1, -12, 0, 52)
 	skip.Size = UDim2.fromOffset(96, 36)
-	skip.BackgroundColor3 = Color3.fromHex("5b6380")
-	skip.TextColor3 = WHITE
-	skip.Font = Enum.Font.FredokaOne
-	skip.TextSize = 17
+	skip.BackgroundColor3 = INK
+	skip.TextColor3 = T.yellow
+	skip.FontFace = Theme.HEAD
+	skip.TextSize = 20
 	skip.Text = "SKIP"
 	skip.Parent = gui
-	Instance.new("UICorner", skip).CornerRadius = UDim.new(0, 10)
+	Instance.new("UICorner", skip).CornerRadius = UDim.new(0, 4)
+	Theme.stroke(skip, 3, T.yellow)
 	skip.MouseButton1Click:Connect(function()
 		skipping = true
 		skip.Visible = false
@@ -477,30 +489,31 @@ function MatchView.run(data)
 	card.AnchorPoint = Vector2.new(0.5, 0.5)
 	card.Position = UDim2.fromScale(0.5, 0.55)
 	card.Size = UDim2.fromOffset(440, 330)
-	card.BackgroundColor3 = Color3.fromHex("f3f6fb")
+	card.BackgroundColor3 = T.asphalt
 	card.Parent = gui
-	Instance.new("UICorner", card).CornerRadius = UDim.new(0, 16)
-	local st = Instance.new("UIStroke", card)
-	st.Thickness = 3
-	st.Color = INK
+	Instance.new("UICorner", card).CornerRadius = UDim.new(0, 6)
+	Theme.stroke(card, 4, T.black)
+	Theme.asphalt(card)
 	local function line(text, y, size, color, font)
 		local l = Instance.new("TextLabel")
 		l.BackgroundTransparency = 1
 		l.Position = UDim2.fromOffset(16, y)
 		l.Size = UDim2.new(1, -32, 0, size + 8)
-		l.Font = font or Enum.Font.FredokaOne
+		l.FontFace = font or Theme.HEAD
 		l.TextSize = size
-		l.TextColor3 = color or INK
+		l.TextColor3 = color or T.ink
 		l.Text = text
 		l.TextWrapped = true
 		l.Parent = card
 		return l
 	end
-	line(rw.won and "WIN" or "LOSS", 12, 40, rw.won and Color3.fromHex("1f9e3f") or Color3.fromHex("e8456b"))
-	line(string.format("%s %d  -  %d %s", data.home.name, data.score[1], data.score[2], data.away.name), 64, 20)
+	-- WIN / LOSS sprayed across a strip of tape.
+	local tape, tapeText = Theme.tape(card, rw.won and "WIN!" or "LOSS", { anchor = Vector2.new(0.5, 0), pos = UDim2.new(0.5, 0, 0, -18), sz = UDim2.fromOffset(200, 56), rot = -3, color = rw.won and T.yellow or T.tape, size = 40, z = 3 })
+	tapeText.TextColor3 = rw.won and T.black or T.red
+	line(string.format("%s %d  -  %d %s", data.home.name, data.score[1], data.score[2], data.away.name), 56, 24)
 	local mvpTeam = data.mvp.side == 1 and data.home or data.away
 	local mvpBox = mvpTeam.box[data.mvp.index]
-	line(string.format("MVP  %s  %d PTS  %d REB  %d AST", mvpTeam.players[data.mvp.index].name, mvpBox.pts, mvpBox.oreb + mvpBox.dreb, mvpBox.ast), 100, 16, Color3.fromHex("b98a00"), Enum.Font.GothamBold)
+	line(string.format("MVP  %s  %d PTS  %d REB  %d AST", mvpTeam.players[data.mvp.index].name, mvpBox.pts, mvpBox.oreb + mvpBox.dreb, mvpBox.ast), 100, 16, T.yellow, Theme.BODY)
 	-- Your top three scorers.
 	local order = {}
 	for i = 1, #data.home.players do
@@ -512,21 +525,22 @@ function MatchView.run(data)
 	for k = 1, 3 do
 		local i = order[k]
 		local b = data.home.box[i]
-		line(string.format("%s   %d pts, %d reb, %d ast", names[1][i], b.pts, b.oreb + b.dreb, b.ast), 128 + k * 24, 15, Color3.fromHex("5b6380"), Enum.Font.GothamBold)
+		line(string.format("%s   %d pts, %d reb, %d ast", names[1][i], b.pts, b.oreb + b.dreb, b.ast), 128 + k * 24, 15, T.muted, Theme.BODY)
 	end
 	local sign = rw.eloDelta >= 0 and "+" or ""
-	line(string.format("+%d coins    +%d fans    Elo %s%d (%d)", rw.coins, rw.fans, sign, rw.eloDelta, rw.elo), 232, 18, INK)
+	line(string.format("+%d coins    +%d fans    Elo %s%d (%d)", rw.coins, rw.fans, sign, rw.eloDelta, rw.elo), 232, 18, T.lime)
 	local done = Instance.new("TextButton")
 	done.AnchorPoint = Vector2.new(0.5, 1)
 	done.Position = UDim2.new(0.5, 0, 1, -14)
 	done.Size = UDim2.fromOffset(180, 44)
-	done.BackgroundColor3 = Color3.fromHex("e8650c")
-	done.TextColor3 = WHITE
-	done.Font = Enum.Font.FredokaOne
-	done.TextSize = 22
+	done.BackgroundColor3 = T.yellow
+	done.TextColor3 = T.black
+	done.FontFace = Theme.HEAD
+	done.TextSize = 24
 	done.Text = "CONTINUE"
 	done.Parent = card
-	Instance.new("UICorner", done).CornerRadius = UDim.new(0, 12)
+	Instance.new("UICorner", done).CornerRadius = UDim.new(0, 6)
+	Theme.stroke(done, 3, T.black)
 	done.MouseButton1Click:Wait()
 	Audio.play("UIClick")
 
