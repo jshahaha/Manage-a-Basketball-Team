@@ -266,11 +266,23 @@ local SHOP_TABS = { { "PACKS", T.yellow }, { "ROBUX", T.lime }, { "CODES", T.sky
 local function packArt(card, pack, i)
 	-- The pack itself: a rendered foil wrapper when we have one.
 	local art = Theme.IMG["pack_" .. pack.id]
-	if art then
-		local img = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 14), Size = UDim2.fromOffset(110, 165), BackgroundTransparency = 1, Image = art, ScaleType = Enum.ScaleType.Fit, ZIndex = 13 }, card)
+	-- Square bundle art (x1/x5/x20) when we have it; it already has the stack and the badge.
+	local square = Theme.IMG["packq_" .. pack.id .. "_x1"]
+	if art or square then
+		local img = make("ImageLabel", {
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.new(0.5, 0, 0, 14),
+			Size = square and UDim2.fromOffset(152, 172) or UDim2.fromOffset(110, 165),
+			BackgroundTransparency = 1,
+			Image = square or art,
+			ScaleType = Enum.ScaleType.Fit,
+			ZIndex = 13,
+		}, card)
 		-- Gentle bob so the shelf feels alive, a shine across the foil, and sparkles on the top packs.
 		TweenService:Create(img, TweenInfo.new(1.6 + (i % 3) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = UDim2.new(0.5, 0, 0, 19) }):Play()
-		Theme.shine(img, 3.5, 14, 0.45)
+		if not square then
+			Theme.shine(img, 3.5, 14, 0.45) -- a shine band would show across the square art's empty corners
+		end
 		local fancy = { AllStar = C.gold, HallOfFame = C.pink, EliteCoach = C.gold }
 		if fancy[pack.id] then
 			Theme.glow(img, fancy[pack.id], 18, 0.5)
