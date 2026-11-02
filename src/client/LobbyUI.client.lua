@@ -305,8 +305,14 @@ local function packArt(card, pack, i)
 	local art = Theme.IMG["pack_" .. pack.id]
 	if art then
 		local img = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 0), Size = UDim2.fromOffset(124, 186), BackgroundTransparency = 1, Image = art, ScaleType = Enum.ScaleType.Fit, ZIndex = 13 }, card)
-		-- Gentle bob so the shelf feels alive.
+		-- Gentle bob so the shelf feels alive, a shine across the foil, and sparkles on the top packs.
 		TweenService:Create(img, TweenInfo.new(1.6 + (i % 3) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = UDim2.new(0.5, 0, 0, 5) }):Play()
+		Theme.shine(img, 3.5, 14, 0.45)
+		local fancy = { AllStar = C.gold, HallOfFame = C.pink, EliteCoach = C.gold }
+		if fancy[pack.id] then
+			Theme.glow(img, fancy[pack.id], 18, 0.5)
+			Theme.sparkles(img, Color3.new(1, 1, 1), 0.45, 15, 20)
+		end
 	else
 		local best
 		for id in pairs(pack.odds or {}) do
@@ -508,7 +514,8 @@ local function reveal(result)
 			table.insert(extras, f and f(it) or tostring(it.name or it.id))
 		end
 	end
-	local stage = make("Frame", { Size = UDim2.new(1, 0, 1, -50), BackgroundColor3 = C.stage, ZIndex = 12 }, body)
+	-- A CanvasGroup so the spinning rays are clipped to the stage.
+	local stage = make("CanvasGroup", { Size = UDim2.new(1, 0, 1, -50), BackgroundColor3 = C.stage, ZIndex = 12 }, body)
 	round(stage, 12)
 	local count = text(body, { font = HEAD, size = 18, color = C.muted, sz = UDim2.new(0.5, 0, 0, 40), pos = UDim2.new(0, 4, 1, -42), align = Enum.TextXAlignment.Left, z = 12 })
 	local nextB = button(body, "NEXT", C.orange, UDim2.fromOffset(140, 40), UDim2.new(1, -140, 1, -42))
@@ -531,11 +538,25 @@ local function reveal(result)
 			f.Size = UDim2.fromOffset(0, 210)
 			f.Position = UDim2.fromOffset(75, 0)
 			local order = (Config.RarityById[c.rarity] or { order = 1 }).order
-			if order >= 3 then
-				local glow = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(230, 290), BackgroundColor3 = rarityColor(c.rarity), BackgroundTransparency = 0.55, ZIndex = 12 }, stage)
-				round(glow, 30)
-				TweenService:Create(glow, TweenInfo.new(0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { BackgroundTransparency = 0.85 }):Play()
+			-- Light behind the card, more of it the rarer the card.
+			local rc = rarityColor(c.rarity)
+			local rays = Theme.rays(stage, rc, 300 + order * 60, 12, math.max(0.25, 0.75 - order * 0.1))
+			if rays then
+				local rs = make("UIScale", { Scale = 0.2 }, rays)
+				TweenService:Create(rs, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
 			end
+			Theme.glow(holder, rc, 50, 0.45 + order * 0.08)
+			if order >= 3 then
+				Theme.sparkles(stage, order >= 4 and rc or C.white, 0.5 - order * 0.07, 16, 18 + order * 3)
+			end
+			if order >= 4 then
+				Theme.wisps(stage, rc, 0.35, 13)
+			end
+			task.delay(0.4, function()
+				if f.Parent then
+					Theme.shine(f, 3, 20, 0.6)
+				end
+			end)
 			Audio.play("CardFlip")
 			Audio.play("Reveal" .. (c.rarity or "Common"))
 			TweenService:Create(f, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(150, 210), Position = UDim2.new() }):Play()
@@ -561,6 +582,8 @@ local function reveal(result)
 	if art then
 		nextB.Visible = false
 		count.Text = ""
+		local packRays = Theme.rays(stage, C.gold, 520, 13, 0.55)
+		Theme.wisps(stage, C.gold, 0.25, 13)
 		local p = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(170, 255), BackgroundTransparency = 1, Image = art, ZIndex = 14 }, stage)
 		local sc = make("UIScale", { Scale = 0.6 }, p)
 		TweenService:Create(sc, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
@@ -576,6 +599,9 @@ local function reveal(result)
 		TweenService:Create(sc, TweenInfo.new(0.2), { Scale = 1.5 }):Play()
 		task.wait(0.18)
 		p:Destroy()
+		if packRays then
+			packRays:Destroy()
+		end
 		TweenService:Create(flash, TweenInfo.new(0.35), { BackgroundTransparency = 1 }):Play()
 		task.delay(0.4, function()
 			flash:Destroy()
@@ -744,21 +770,46 @@ local function openQuests()
 		return
 	end
 	local list = make("Frame", { Size = UDim2.new(1, 0, 1, -40), BackgroundTransparency = 1, ZIndex = 12 }, body)
-	make("UIListLayout", { Padding = UDim.new(0, 8) }, list)
+	make("UIListLayout", { Padding = UDim.new(0, 10) }, list)
+	local tints = { C.gold, C.blue, C.pink, C.green, C.orange }
 	for i, q in ipairs(data.list) do
-		local row = make("Frame", { Size = UDim2.new(1, 0, 0, 62), BackgroundColor3 = C.panel, ZIndex = 12 }, list)
-		round(row, 10)
-		stroke(row, 2, C.rule)
-		text(row, { text = q.text, font = HEAD, size = 18, sz = UDim2.new(1, -170, 0, 32), pos = UDim2.fromOffset(14, 4), align = Enum.TextXAlignment.Left, z = 13 })
-		text(row, { text = string.format("%d / %d   ·   %s coins", q.progress, q.target, comma(q.coins)), size = 14, color = C.muted, sz = UDim2.new(1, -170, 0, 20), pos = UDim2.fromOffset(14, 36), align = Enum.TextXAlignment.Left, z = 13 })
 		local done = q.progress >= q.target
-		local b = button(row, q.claimed and "CLAIMED" or (done and "CLAIM" or "IN PROGRESS"), q.claimed and C.muted or (done and C.green or C.stage), UDim2.fromOffset(140, 42), UDim2.new(1, -150, 0, 10))
+		-- A soft card per quest: sticker icon, title, a chunky progress bar and the reward.
+		local row = make("Frame", { Size = UDim2.new(1, 0, 0, 78), BackgroundColor3 = C.panel, ZIndex = 12 }, list)
+		round(row, 16)
+		stroke(row, 2.5, C.black)
+		make("UIGradient", { Rotation = 90, Color = ColorSequence.new(Color3.fromHex("3b414e"), C.panel) }, row)
+		local chip = make("Frame", { Size = UDim2.fromOffset(58, 58), Position = UDim2.fromOffset(10, 10), BackgroundColor3 = tints[(i - 1) % #tints + 1], ZIndex = 13 }, row)
+		round(chip, 14)
+		stroke(chip, 2.5, C.black)
+		Theme.icon(chip, q.claimed and "trophy" or "quests", UDim2.fromOffset(50, 50), UDim2.fromOffset(4, 4), 14)
+		local title = text(row, { text = q.text, font = HEAD, size = 19, sz = UDim2.new(1, -240, 0, 28), pos = UDim2.fromOffset(80, 6), align = Enum.TextXAlignment.Left, z = 13 })
+		make("UIStroke", { Thickness = 1.5, Color = C.black }, title)
+		-- Progress bar.
+		local track = make("Frame", { Size = UDim2.new(1, -240, 0, 22), Position = UDim2.fromOffset(80, 40), BackgroundColor3 = C.stage, ZIndex = 13 }, row)
+		round(track, 11)
+		stroke(track, 2, C.black)
+		local frac = math.clamp(q.progress / math.max(1, q.target), 0, 1)
+		local fill = make("Frame", { Size = UDim2.new(0, 0, 1, 0), BackgroundColor3 = done and C.green or C.gold, ZIndex = 14 }, track)
+		round(fill, 11)
+		make("UIGradient", { Rotation = 90, Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromHex("d8d8d8")) }, fill)
+		if frac > 0 then
+			TweenService:Create(fill, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(math.max(frac, 0.08), 0, 1, 0) }):Play()
+		end
+		local pt = text(track, { text = string.format("%d / %d", math.min(q.progress, q.target), q.target), font = HEAD, size = 15, z = 15 })
+		make("UIStroke", { Thickness = 1.5, Color = C.black }, pt)
+		-- Reward: coin sticker and amount.
+		Theme.icon(row, "coin", UDim2.fromOffset(30, 30), UDim2.new(1, -152, 0, 6), 13)
+		local rw = text(row, { text = comma(q.coins), font = HEAD, size = 18, color = C.gold, sz = UDim2.fromOffset(60, 30), pos = UDim2.new(1, -120, 0, 6), align = Enum.TextXAlignment.Left, z = 13 })
+		make("UIStroke", { Thickness = 1.5, Color = C.black }, rw)
+		local b = button(row, q.claimed and "DONE" or (done and "CLAIM" or "GO"), q.claimed and T.slate or (done and C.green or C.blue), UDim2.fromOffset(110, 40), UDim2.new(1, -120, 0, 32))
 		b.ZIndex = 13
-		b.Label.TextSize = 16
-		if not done or q.claimed then
-			b.Label.TextColor3 = q.claimed and C.white or C.muted
-			b.AutoButtonColor = false
-		else
+		b.Label.TextSize = 18
+		if done and not q.claimed then
+			-- Claimable: glow, shine and sparkles so it gets noticed.
+			Theme.glow(b, C.green, 16, 0.8)
+			Theme.shine(b, 2.5)
+			Theme.sparkles(row, C.gold, 0.4, 16, 20)
 			b.MouseButton1Click:Connect(function()
 				local ok2, res = call("claimQuest", i)
 				if ok2 then
@@ -771,6 +822,14 @@ local function openQuests()
 					say(res)
 				end
 			end)
+		else
+			b.AutoButtonColor = false
+			b.Label.TextColor3 = q.claimed and C.muted or C.white
+			if not q.claimed then
+				b.MouseButton1Click:Connect(function()
+					say("Play matches to finish this one.")
+				end)
+			end
 		end
 	end
 	local h = math.floor((data.resetsIn or 0) / 3600)
@@ -824,29 +883,41 @@ for i, m in ipairs({ { "SHOP", C.orange, openShop, "shop" }, { "PACKS", C.green,
 	b.Rotation = 0
 	b.Label.TextSize = 24
 	Theme.withIcon(b, m[4], 1.15)
+	Theme.shine(b, 5 + i * 0.7)
 	b.MouseButton1Click:Connect(m[3])
 end
 
--- Quest board on the right: today's runs, written up like a court-side chalkboard.
+-- Quest board on the right: today's quests on a soft panel, each with a little progress bar.
 local board = make("TextButton", {
 	Text = "",
 	AutoButtonColor = false,
 	AnchorPoint = Vector2.new(1, 0),
 	Position = UDim2.new(1, -16, 0, 74),
-	Size = UDim2.fromOffset(240, 150),
-	BackgroundColor3 = T.slate,
-	BackgroundTransparency = 0.08,
+	Size = UDim2.fromOffset(250, 170),
+	BackgroundColor3 = T.asphalt,
 	Rotation = 0,
 }, gui)
-round(board, 4)
-stroke(board, 3, T.tape)
-text(board, { text = "today's runs", font = MARK, size = 22, color = T.yellow, sz = UDim2.new(1, -20, 0, 32), pos = UDim2.fromOffset(12, 6), align = Enum.TextXAlignment.Left, z = 2 })
-local boardRows = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, -46), Position = UDim2.fromOffset(12, 40), ZIndex = 2 }, board)
-make("UIListLayout", { Padding = UDim.new(0, 4) }, boardRows)
+round(board, 18)
+if not Theme.panelArt(board, 1) then
+	stroke(board, 3, C.black)
+end
+Theme.icon(board, "quests", UDim2.fromOffset(46, 46), UDim2.fromOffset(-10, -14), 3)
+local boardTitle = text(board, { text = "DAILY QUESTS", font = HEAD, size = 21, color = T.yellow, sz = UDim2.new(1, -60, 0, 30), pos = UDim2.fromOffset(42, 6), align = Enum.TextXAlignment.Left, z = 3 })
+make("UIStroke", { Thickness = 2, Color = C.black }, boardTitle)
+local boardRows = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, -28, 1, -50), Position = UDim2.fromOffset(14, 42), ZIndex = 2 }, board)
+make("UIListLayout", { Padding = UDim.new(0, 6) }, boardRows)
+local boardScale = make("UIScale", {}, board)
+board.MouseEnter:Connect(function()
+	TweenService:Create(boardScale, TweenInfo.new(0.15), { Scale = 1.03 }):Play()
+end)
+board.MouseLeave:Connect(function()
+	TweenService:Create(boardScale, TweenInfo.new(0.2), { Scale = 1 }):Play()
+end)
 board.MouseButton1Click:Connect(function()
 	Audio.play("UIClick")
 	openQuests()
 end)
+local boardFx = nil
 function refreshBoard()
 	local ok, data = call("getQuests")
 	if not ok then
@@ -857,27 +928,46 @@ function refreshBoard()
 			c:Destroy()
 		end
 	end
+	local claimable = false
 	for i, q in ipairs(data.list) do
 		if i > 3 then
 			break
 		end
 		local done = q.progress >= q.target
-		local row = make("Frame", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 2 }, boardRows)
-		local name = text(row, { text = q.text, font = BODY, size = 14, color = (done or q.claimed) and C.muted or C.ink, sz = UDim2.new(1, -56, 1, 0), align = Enum.TextXAlignment.Left, z = 3, scaled = true })
+		claimable = claimable or (done and not q.claimed)
+		local row = make("Frame", { Size = UDim2.new(1, 0, 0, 34), BackgroundTransparency = 1, ZIndex = 2 }, boardRows)
+		local name = text(row, { text = q.text, font = BODY, size = 13, color = q.claimed and C.muted or C.ink, sz = UDim2.new(1, -60, 0, 16), align = Enum.TextXAlignment.Left, z = 3, scaled = true })
 		if q.claimed then
 			-- Crossed out once claimed.
 			make("Frame", { AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.fromScale(0, 0.5), Size = UDim2.new(0.8, 0, 0, 2), BackgroundColor3 = C.muted, BorderSizePixel = 0, ZIndex = 4 }, name)
 		end
-		text(row, { text = q.claimed and "done" or (done and "CLAIM!" or string.format("%d/%d", q.progress, q.target)), font = done and not q.claimed and HEAD or MARK, size = 16, color = done and not q.claimed and C.green or C.muted, sz = UDim2.new(0, 54, 1, 0), pos = UDim2.new(1, -54, 0, 0), align = Enum.TextXAlignment.Right, z = 3 })
+		local track = make("Frame", { Size = UDim2.new(1, -60, 0, 10), Position = UDim2.fromOffset(0, 20), BackgroundColor3 = C.stage, ZIndex = 3 }, row)
+		round(track, 5)
+		stroke(track, 1.5, C.black)
+		local fill = make("Frame", { Size = UDim2.new(math.clamp(q.progress / math.max(1, q.target), 0, 1), 0, 1, 0), BackgroundColor3 = done and C.green or C.gold, ZIndex = 4 }, track)
+		round(fill, 5)
+		local tag = text(row, { text = q.claimed and "done" or (done and "CLAIM!" or string.format("%d/%d", q.progress, q.target)), font = HEAD, size = 16, color = done and not q.claimed and C.green or C.muted, sz = UDim2.new(0, 56, 1, 0), pos = UDim2.new(1, -56, 0, 0), align = Enum.TextXAlignment.Right, z = 3 })
+		make("UIStroke", { Thickness = 1.5, Color = C.black }, tag)
+	end
+	-- Something to claim: the board lights up.
+	if claimable and not boardFx then
+		boardFx = make("Frame", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), ZIndex = 5 }, board)
+		Theme.sparkles(boardFx, C.gold, 0.45, 5, 18)
+	elseif not claimable and boardFx then
+		boardFx:Destroy()
+		boardFx = nil
 	end
 end
 
 -- PLAY: big court-yellow sticker slab in the bottom right, where the thumb is.
 local playHolder = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -20), Size = UDim2.fromOffset(230, 92), BackgroundTransparency = 1 }, gui)
 local playB = button(playHolder, "PLAY", C.gold, UDim2.fromScale(1, 1))
-playB.Rotation = -1.5
+playB.Rotation = 0 -- level, so the shine stays clipped inside it
 playB.Label.TextSize = 44
 Theme.withIcon(playB, "ball", 0.82, 92)
+Theme.glow(playB, C.gold, 26, 0.75)
+Theme.shine(playB, 3)
+Theme.sparkles(playB, Color3.new(1, 1, 1), 0.6, 4, 18)
 local playing = false
 playB.MouseButton1Click:Connect(function()
 	if playing then

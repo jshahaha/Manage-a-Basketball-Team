@@ -181,16 +181,27 @@ function Theme.button(parent, label, color, sz, pos, onClick)
 		end
 		t.Position = p and UDim2.fromOffset(4, 4) or UDim2.fromOffset(4, 1)
 	end
+	-- Bounce: grow a touch on hover, squash on press, spring back on release.
+	local bounce = make("UIScale", { Name = "Bounce" }, b)
+	local function scaleTo(v, t, style)
+		game:GetService("TweenService"):Create(bounce, TweenInfo.new(t, style or Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = v }):Play()
+	end
 	b.MouseButton1Down:Connect(function()
 		set(true)
+		scaleTo(0.92, 0.08)
 	end)
 	b.MouseButton1Up:Connect(function()
 		set(false)
+		scaleTo(1, 0.35, Enum.EasingStyle.Back)
+	end)
+	b.MouseEnter:Connect(function()
+		scaleTo(1.05, 0.15)
 	end)
 	b.MouseLeave:Connect(function()
 		if pressed then
 			set(false)
 		end
+		scaleTo(1, 0.2)
 	end)
 	if onClick then
 		b.MouseButton1Click:Connect(onClick)
@@ -307,6 +318,153 @@ function Theme.sunset(o)
 		Rotation = 90,
 		Color = ColorSequence.new(C.sunsetTop, C.sunsetBottom),
 	}, o)
+end
+
+-- Effects ------------------------------------------------------------------------------------
+-- js (2026-11-02): the UI felt flat because nothing moved or glowed. These layer light on top of
+-- the art, like the big Roblox games do. Sprites come from tools/ui/make_fx.py and are white, so
+-- ImageColor3 tints them. Every looping effect stops by itself once its frame is destroyed.
+local TweenService = game:GetService("TweenService")
+
+local function alive(o)
+	return o and o.Parent ~= nil and o:IsDescendantOf(game)
+end
+
+-- Soft glow behind a frame or button (placed as a sibling just below it), breathing slowly.
+function Theme.glow(target, color, pad, strength)
+	if not IMG.fx_glow or not target.Parent then
+		return nil
+	end
+	pad = pad or 30
+	local a = target.AnchorPoint
+	local g = make("ImageLabel", {
+		Name = "Glow",
+		BackgroundTransparency = 1,
+		Image = IMG.fx_glow,
+		ImageColor3 = color or C.yellow,
+		ImageTransparency = 1 - (strength or 0.7),
+		AnchorPoint = a,
+		Size = target.Size + UDim2.fromOffset(pad * 2, pad * 2),
+		Position = target.Position + UDim2.fromOffset(pad * (2 * a.X - 1), pad * (2 * a.Y - 1)),
+		ZIndex = math.max(0, target.ZIndex - 1),
+		LayoutOrder = target.LayoutOrder,
+	}, target.Parent)
+	TweenService:Create(g, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { ImageTransparency = math.min(1, 1 - (strength or 0.7) + 0.3) }):Play()
+	target:GetPropertyChangedSignal("Visible"):Connect(function()
+		g.Visible = target.Visible
+	end)
+	target.Destroying:Connect(function()
+		g:Destroy()
+	end)
+	return g
+end
+
+-- A streak of light that sweeps across a frame every few seconds.
+function Theme.shine(target, every, z, strength)
+	if not IMG.fx_shine then
+		return nil
+	end
+	local clip = make("Frame", { Name = "Shine", BackgroundTransparency = 1, Size = UDim2.new(1, -6, 1, -8), Position = UDim2.fromOffset(3, 2), ClipsDescendants = true, ZIndex = z or target.ZIndex + 1 }, target)
+	Theme.round(clip, 14)
+	local s = make("ImageLabel", { BackgroundTransparency = 1, Image = IMG.fx_shine, ImageTransparency = 1 - (strength or 0.55), Size = UDim2.new(0, 0, 1, 0), Position = UDim2.fromScale(-0.6, 0), ZIndex = clip.ZIndex }, clip)
+	make("UIAspectRatioConstraint", { AspectRatio = 2, DominantAxis = Enum.DominantAxis.Height }, s)
+	task.spawn(function()
+		task.wait(math.random() * (every or 4))
+		while alive(clip) do
+			s.Position = UDim2.new(-0.6, 0, 0, 0)
+			TweenService:Create(s, TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), { Position = UDim2.new(1.1, 0, 0, 0) }):Play()
+			task.wait((every or 4) + math.random())
+		end
+	end)
+	return clip
+end
+
+-- Twinkling sparkles popping up at random spots over a frame.
+function Theme.sparkles(parent, color, rate, z, maxSize)
+	if not IMG.fx_sparkle then
+		return
+	end
+	task.spawn(function()
+		while alive(parent) do
+			if parent.Visible ~= false then
+				local sz = math.random(10, maxSize or 26)
+				local s = make("ImageLabel", {
+					BackgroundTransparency = 1,
+					Image = IMG.fx_sparkle,
+					ImageColor3 = color or C.white,
+					AnchorPoint = Vector2.new(0.5, 0.5),
+					Position = UDim2.fromScale(math.random(), math.random()),
+					Size = UDim2.fromOffset(0, 0),
+					Rotation = math.random(0, 45),
+					ZIndex = z or parent.ZIndex + 2,
+				}, parent)
+				local t = math.random(45, 80) / 100
+				TweenService:Create(s, TweenInfo.new(t, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(sz, sz), Rotation = s.Rotation + 45 }):Play()
+				task.delay(t, function()
+					TweenService:Create(s, TweenInfo.new(0.35), { Size = UDim2.fromOffset(0, 0), ImageTransparency = 1 }):Play()
+					task.delay(0.4, function()
+						s:Destroy()
+					end)
+				end)
+			end
+			task.wait((rate or 0.35) * (0.6 + math.random() * 0.8))
+		end
+	end)
+end
+
+-- Soft wisps of light drifting upwards from the bottom of a frame.
+function Theme.wisps(parent, color, rate, z)
+	if not IMG.fx_wisp then
+		return
+	end
+	task.spawn(function()
+		while alive(parent) do
+			if parent.Visible ~= false then
+				local sz = math.random(26, 60)
+				local x = math.random()
+				local w = make("ImageLabel", {
+					BackgroundTransparency = 1,
+					Image = IMG.fx_wisp,
+					ImageColor3 = color or C.white,
+					ImageTransparency = 1,
+					AnchorPoint = Vector2.new(0.5, 0.5),
+					Position = UDim2.fromScale(x, 0.95),
+					Size = UDim2.fromOffset(sz, sz),
+					ZIndex = z or parent.ZIndex + 1,
+				}, parent)
+				local life = 1.8 + math.random() * 1.4
+				TweenService:Create(w, TweenInfo.new(life, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Position = UDim2.fromScale(x + (math.random() - 0.5) * 0.25, 0.1 + math.random() * 0.3) }):Play()
+				TweenService:Create(w, TweenInfo.new(life * 0.35), { ImageTransparency = 0.45 }):Play()
+				task.delay(life * 0.55, function()
+					TweenService:Create(w, TweenInfo.new(life * 0.45), { ImageTransparency = 1 }):Play()
+				end)
+				task.delay(life + 0.1, function()
+					w:Destroy()
+				end)
+			end
+			task.wait((rate or 0.5) * (0.6 + math.random() * 0.8))
+		end
+	end)
+end
+
+-- Light rays spinning slowly behind something, centred in the parent.
+function Theme.rays(parent, color, size, z, transparency)
+	if not IMG.fx_rays then
+		return nil
+	end
+	local r = make("ImageLabel", {
+		Name = "Rays",
+		BackgroundTransparency = 1,
+		Image = IMG.fx_rays,
+		ImageColor3 = color or C.yellow,
+		ImageTransparency = transparency or 0.45,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromOffset(size or 420, size or 420),
+		ZIndex = z or parent.ZIndex,
+	}, parent)
+	TweenService:Create(r, TweenInfo.new(14, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), { Rotation = 360 }):Play()
+	return r
 end
 
 return Theme
