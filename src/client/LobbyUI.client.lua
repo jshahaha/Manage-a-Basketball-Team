@@ -443,7 +443,7 @@ local function packGrid(parent, packs, currency)
 				off = nil
 			end
 			if pr.discount > 0 then
-				off = Theme.tape(card, string.format("-%d%%", math.floor(pr.discount * 100 + 0.5)), { anchor = Vector2.new(0.5, 0.5), pos = UDim2.new(0, 34, 0, 18), sz = UDim2.fromOffset(62, 26), rot = -10, z = 16, font = HEAD, size = 17, color = C.red })
+				off = Theme.tape(card, string.format("-%d%%", math.floor(pr.discount * 100 + 0.5)), { anchor = Vector2.new(0.5, 0.5), pos = UDim2.new(0, 36, 0, 40), sz = UDim2.fromOffset(62, 26), rot = -10, z = 16, font = HEAD, size = 17, color = C.red })
 			end
 			buy.Label.Text = pr.size > 1 and ("BUY x" .. pr.size) or "BUY"
 			if animate and img then
