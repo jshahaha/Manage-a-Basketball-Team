@@ -125,6 +125,11 @@ local function storefront(parent, info, pos)
 	part(m, { Name = "Header", Size = Vector3.new(W, H - 8, 1.2), CFrame = at(0, 8 + (H - 8) / 2, -D / 2 + 0.6), Color = wall, Material = Enum.Material.Plaster })
 	part(m, { Name = "Roof", Size = Vector3.new(W + 1, 0.8, D + 1), CFrame = at(0, H + 0.4, 0), Color = trim, Material = Enum.Material.Concrete })
 	part(m, { Name = "Parapet", Size = Vector3.new(W + 1, 1.4, 0.8), CFrame = at(0, H + 1.5, -D / 2 - 0.1), Color = info.color, Material = Enum.Material.SmoothPlastic })
+	-- A big themed prop on the roof (giant pack, trophy, clipboard...), from LobbyAssets.Roof<id>.
+	local roofProp = LobbyDecor.prop(m, "Roof" .. info.id, at(0, H + 2.2, 1) * CFrame.Angles(0, math.pi, 0))
+	if roofProp then
+		roofProp.Name = "RoofProp"
+	end
 	-- Sign over the door, with a neon frame.
 	local sign = part(m, { Name = "Sign", Size = Vector3.new(15, 3.2, 0.5), CFrame = at(0, 10.6, -D / 2 - 0.15), Color = INK })
 	signText(sign, Enum.NormalId.Front, info.name)
