@@ -135,7 +135,7 @@ local function pill(tag, color, iconName, order)
 	local back = Theme.IMG.icon_bar
 	local f
 	if back then
-		f = make("ImageLabel", { BackgroundTransparency = 1, Image = back, ScaleType = Enum.ScaleType.Slice, SliceCenter = Rect.new(44, 0, 196, 82), SliceScale = 0.5, Size = UDim2.fromScale(1, 1), ZIndex = 2 }, holder)
+		f = make("ImageLabel", { BackgroundTransparency = 1, Image = back, ScaleType = Enum.ScaleType.Stretch, Size = UDim2.new(1, 0, 1, 4), ZIndex = 2 }, holder)
 	else
 		f = make("Frame", { BackgroundColor3 = T.slate, Size = UDim2.fromScale(1, 1), ZIndex = 2 }, holder)
 		round(f, 22)
