@@ -100,6 +100,9 @@ local function retry(fn)
 			return true, res
 		end
 		lastErr = res
+		if tostring(res):find("StudioAccessToApisNotAllowed") then
+			break -- retrying won't help
+		end
 		task.wait(attempt)
 	end
 	return false, lastErr
@@ -126,6 +129,12 @@ function DataService.load(player: Player)
 				return old
 			end)
 		end)
+		if not ok and game:GetService("RunService"):IsStudio() and tostring(err):find("StudioAccessToApisNotAllowed") then
+			-- Studio without API access: play on a fresh profile that isn't saved.
+			warn("[Court] Studio has no DataStore access; using an unsaved test profile")
+			store = nil
+			ok = true
+		end
 		if not ok then
 			warn("[Court] load failed", player.Name, err)
 			player:Kick("Couldn't load your club. Please rejoin.")
