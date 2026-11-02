@@ -14,6 +14,7 @@ local Badges = require(Shared:WaitForChild("Badges"))
 local Config = require(Shared:WaitForChild("Config"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local Net = require(Shared:WaitForChild("Net"))
+local Ratings = require(Shared:WaitForChild("Ratings"))
 local Audio = require(script.Parent:WaitForChild("Audio"))
 local MatchView = require(script.Parent:WaitForChild("MatchView"))
 
@@ -243,6 +244,7 @@ end
 local function openPanel(name)
 	title.Text = name
 	clearBody()
+	text(body, { text = "Loading...", font = HEAD, size = 20, color = C.muted, z = 12 }).Name = "Loading"
 	if not shade.Visible then
 		Audio.play("UIOpenPanel")
 	end
@@ -311,8 +313,12 @@ local KIND_TEXT = { players = "Players, badges, item", badges = "Badges only", c
 function openShop()
 	openPanel("SHOP")
 	local ok, data = call("getShop")
+	local loading = body:FindFirstChild("Loading")
+	if loading then
+		loading:Destroy()
+	end
 	if not ok then
-		say(data)
+		text(body, { text = tostring(data), font = HEAD, size = 20, color = C.muted, z = 12 })
 		return
 	end
 	local s = scroller(body)
@@ -364,7 +370,7 @@ local function drawCard(parent, c, z)
 	text(f, { text = tostring(c.ovr), font = HEAD, size = 44, sz = UDim2.fromOffset(70, 50), pos = UDim2.fromOffset(6, 34), z = z + 1, align = Enum.TextXAlignment.Left })
 	text(f, { text = c.pos or "", font = HEAD, size = 22, color = C.blue, sz = UDim2.fromOffset(60, 30), pos = UDim2.new(1, -66, 0, 42), z = z + 1, align = Enum.TextXAlignment.Right })
 	text(f, { text = c.name, font = HEAD, size = 19, sz = UDim2.new(1, -12, 0, 48), pos = UDim2.fromOffset(6, 90), z = z + 1, scaled = true })
-	text(f, { text = c.archetype or "", size = 13, color = C.muted, sz = UDim2.new(1, -12, 0, 18), pos = UDim2.fromOffset(6, 140), z = z + 1 })
+	text(f, { text = c.archetype and Ratings.archetypeName(c.archetype) or "", size = 13, color = C.muted, sz = UDim2.new(1, -12, 0, 18), pos = UDim2.fromOffset(6, 140), z = z + 1 })
 	local ft = c.height and string.format("%d'%d\"", math.floor(c.height / 12), c.height % 12) or ""
 	text(f, { text = ft .. (c.nation and ("  ·  " .. c.nation) or ""), size = 12, color = C.muted, sz = UDim2.new(1, -12, 0, 18), pos = UDim2.fromOffset(6, 162), z = z + 1 })
 	return f
@@ -456,8 +462,12 @@ end
 function openPacks()
 	openPanel("MY PACKS")
 	local ok, data = call("getInventory")
+	local loading = body:FindFirstChild("Loading")
+	if loading then
+		loading:Destroy()
+	end
 	if not ok then
-		say(data)
+		text(body, { text = tostring(data), font = HEAD, size = 20, color = C.muted, z = 12 })
 		return
 	end
 	if #data.items == 0 then
@@ -496,8 +506,12 @@ end
 function openClub()
 	openPanel("MY CLUB")
 	local ok, data = call("getRoster")
+	local loading = body:FindFirstChild("Loading")
+	if loading then
+		loading:Destroy()
+	end
 	if not ok then
-		say(data)
+		text(body, { text = tostring(data), font = HEAD, size = 20, color = C.muted, z = 12 })
 		return
 	end
 	-- order: the matchday ten first (5 starters, 5 bench), then the rest by OVR.
@@ -539,7 +553,7 @@ function openClub()
 			text(row, { text = tostring(p.ovr), font = HEAD, size = 20, sz = UDim2.fromOffset(40, 40), pos = UDim2.fromOffset(16, 0), z = 13 })
 			text(row, { text = p.pos or "", font = HEAD, size = 16, color = C.blue, sz = UDim2.fromOffset(40, 40), pos = UDim2.fromOffset(56, 0), z = 13 })
 			text(row, { text = p.name, font = BODY, size = 16, sz = UDim2.new(1, -230, 1, 0), pos = UDim2.fromOffset(100, 0), align = Enum.TextXAlignment.Left, z = 13 })
-			text(row, { text = p.archetype or "", size = 13, color = C.muted, sz = UDim2.fromOffset(120, 40), pos = UDim2.new(1, -126, 0, 0), align = Enum.TextXAlignment.Right, z = 13 })
+			text(row, { text = p.archetype and Ratings.archetypeName(p.archetype) or "", size = 13, color = C.muted, sz = UDim2.fromOffset(120, 40), pos = UDim2.new(1, -126, 0, 0), align = Enum.TextXAlignment.Right, z = 13 })
 			row.MouseButton1Click:Connect(function()
 				Audio.play("UIClick")
 				if not picked then

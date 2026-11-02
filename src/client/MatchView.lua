@@ -108,7 +108,7 @@ local function interest(ev)
 	return v
 end
 
-function MatchView.run(data, hideGui)
+function MatchView.run(data)
 	local player = Players.LocalPlayer
 	local rng = Rng.new(os.time())
 	local folder = Instance.new("Folder")
@@ -197,8 +197,13 @@ function MatchView.run(data, hideGui)
 	end
 
 	-- HUD -------------------------------------------------------------------------------------
-	if hideGui then
-		hideGui.Enabled = false
+	-- Hide the lobby screens (Lobby, Codes...) for the match and bring them back after.
+	local hidden = {}
+	for _, g in ipairs(player:WaitForChild("PlayerGui"):GetChildren()) do
+		if g:IsA("ScreenGui") and g.Enabled then
+			g.Enabled = false
+			table.insert(hidden, g)
+		end
 	end
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "MatchUI"
@@ -230,10 +235,11 @@ function MatchView.run(data, hideGui)
 		return l
 	end
 	local function teamTag(name)
-		return string.upper(name):sub(1, 14)
+		return string.upper(name)
 	end
 	local homeName = cell(0, 130, kits[1])
 	homeName.Text = teamTag(data.home.name)
+	homeName.TextScaled = true
 	local homePts = cell(130, 50)
 	local clockL = cell(180, 80)
 	clockL.TextSize = 15
@@ -241,6 +247,12 @@ function MatchView.run(data, hideGui)
 	local awayPts = cell(260, 50)
 	local awayName = cell(310, 130, kits[2])
 	awayName.Text = teamTag(data.away.name)
+	awayName.TextScaled = true
+	for _, l in ipairs({ homeName, awayName }) do
+		Instance.new("UITextSizeConstraint", l).MaxTextSize = 18
+		local pad = Instance.new("UIPadding", l)
+		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 6), UDim.new(0, 6)
+	end
 	Instance.new("UICorner", homeName).CornerRadius = UDim.new(0, 10)
 	Instance.new("UICorner", awayName).CornerRadius = UDim.new(0, 10)
 
@@ -496,8 +508,8 @@ function MatchView.run(data, hideGui)
 	camera.CameraType = Enum.CameraType.Custom
 	gui:Destroy()
 	folder:Destroy()
-	if hideGui then
-		hideGui.Enabled = true
+	for _, g in ipairs(hidden) do
+		g.Enabled = true
 	end
 end
 
