@@ -8,6 +8,7 @@ local TweenService = game:GetService("TweenService")
 
 local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
 local Audio = require(script.Parent:WaitForChild("Audio"))
+local Theme = require(script.Parent:WaitForChild("Theme"))
 
 local player = Players.LocalPlayer
 local INK = Color3.fromRGB(27, 33, 64)
@@ -47,83 +48,60 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = player:WaitForChild("PlayerGui")
 
 -- Button ----------------------------------------------------------------------
-local open = Instance.new("TextButton")
+local T = Theme.C
+local open = Theme.button(gui, "CODES", T.slate, UDim2.fromOffset(120, 50), UDim2.new(0, 16, 1, -66))
 open.Name = "OpenCodes"
-open.Size = UDim2.fromOffset(110, 46)
-open.Position = UDim2.new(0, 16, 1, -62)
-open.BackgroundColor3 = Color3.fromHex("1c1d21")
-open.Text = "CODES"
-open.TextSize = 22
-open.FontFace = Font.new("rbxasset://fonts/families/Oswald.json", Enum.FontWeight.Bold)
-open.TextColor3 = Color3.fromHex("f5d33a")
-open.Parent = gui
-round(open, 4)
-stroke(open, 3)
-open:FindFirstChildOfClass("UIStroke").Color = Color3.fromHex("f5d33a")
+open.Label.TextColor3 = T.yellow
+open.Label.TextSize = 22
 
--- Panel -----------------------------------------------------------------------
+-- Panel: asphalt with a sunset header, like the lobby panels -------------------
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.AnchorPoint = Vector2.new(0.5, 0.5)
 panel.Position = UDim2.fromScale(0.5, 0.5)
-panel.Size = UDim2.fromOffset(420, 240)
-panel.BackgroundColor3 = WHITE
+panel.Size = UDim2.fromOffset(440, 250)
+panel.BackgroundColor3 = T.asphalt
 panel.Visible = false
 panel.Parent = gui
-round(panel, 20)
-stroke(panel, 4)
+if not Theme.panelArt(panel) then
+	round(panel, 8)
+	stroke(panel, 4)
+end
 
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 56)
-header.BackgroundColor3 = ORANGE
+header.Position = UDim2.fromOffset(5, 5)
+header.Size = UDim2.new(1, -10, 0, 56)
+header.BackgroundColor3 = T.sunsetTop
 header.Parent = panel
-round(header, 20)
-local title = label(header, "REDEEM A CODE", 26, Enum.Font.FredokaOne, WHITE)
-title.Size = UDim2.new(1, -70, 1, 0)
-title.Position = UDim2.fromOffset(18, 0)
-title.TextXAlignment = Enum.TextXAlignment.Left
+round(header, 8)
+Theme.sunset(header)
+Theme.chainlink(header)
+Theme.tape(header, "REDEEM A CODE", { pos = UDim2.fromOffset(12, 8), sz = UDim2.fromOffset(230, 40), rot = -2, size = 22 })
 
-local close = Instance.new("TextButton")
-close.Size = UDim2.fromOffset(40, 40)
-close.Position = UDim2.new(1, -50, 0, 8)
-close.BackgroundColor3 = RED
-close.Text = "X"
-close.TextSize = 20
-close.Font = Enum.Font.FredokaOne
-close.TextColor3 = WHITE
-close.Parent = header
-round(close, 10)
-stroke(close, 3)
+local close = Theme.button(header, "X", T.red, UDim2.fromOffset(44, 44), UDim2.new(1, -52, 0, 6))
 
 local box = Instance.new("TextBox")
 box.Size = UDim2.new(1, -36, 0, 48)
-box.Position = UDim2.fromOffset(18, 74)
-box.BackgroundColor3 = Color3.fromRGB(246, 248, 252)
+box.Position = UDim2.fromOffset(18, 76)
+box.BackgroundColor3 = T.slate
 box.PlaceholderText = "Type a code..."
+box.PlaceholderColor3 = T.muted
 box.Text = ""
-box.TextSize = 20
-box.Font = Enum.Font.GothamBold
-box.TextColor3 = INK
+box.TextSize = 22
+box.FontFace = Theme.HEAD
+box.TextColor3 = T.ink
 box.ClearTextOnFocus = false
 box.Parent = panel
-round(box, 12)
+round(box, 6)
 stroke(box, 3)
+box:FindFirstChildOfClass("UIStroke").Color = T.line
 
-local redeem = Instance.new("TextButton")
-redeem.Size = UDim2.new(1, -36, 0, 48)
-redeem.Position = UDim2.fromOffset(18, 134)
-redeem.BackgroundColor3 = GREEN
-redeem.Text = "REDEEM"
-redeem.TextSize = 24
-redeem.Font = Enum.Font.FredokaOne
-redeem.TextColor3 = WHITE
-redeem.Parent = panel
-round(redeem, 12)
-stroke(redeem, 3)
+local redeem = Theme.button(panel, "REDEEM", T.lime, UDim2.new(1, -36, 0, 54), UDim2.fromOffset(18, 134))
+redeem.Label.TextSize = 26
 
-local result = label(panel, "", 15, Enum.Font.GothamBold)
+local result = label(panel, "", 15, Enum.Font.GothamBold, T.ink)
 result.Size = UDim2.new(1, -36, 0, 40)
-result.Position = UDim2.fromOffset(18, 190)
+result.Position = UDim2.fromOffset(18, 196)
 
 local busy = false
 local function submit()
@@ -131,21 +109,21 @@ local function submit()
 		return
 	end
 	busy = true
-	redeem.Text = "..."
+	redeem.Label.Text = "..."
 	local ok, res = pcall(function()
 		return Net.request():InvokeServer("redeemCode", box.Text)
 	end)
 	if ok and res and res.ok then
 		Audio.play("CodeRedeemed")
-		result.TextColor3 = GREEN
+		result.TextColor3 = Theme.C.lime
 		result.Text = res.data.message
 		box.Text = ""
 	else
 		Audio.play("UIError")
-		result.TextColor3 = RED
+		result.TextColor3 = Theme.C.red
 		result.Text = (ok and res and res.err) or "Couldn't reach the server."
 	end
-	redeem.Text = "REDEEM"
+	redeem.Label.Text = "REDEEM"
 	busy = false
 end
 
@@ -180,8 +158,8 @@ local function toast(text: string, color: Color3?, seconds: number?)
 	local f = Instance.new("TextLabel")
 	f.AutomaticSize = Enum.AutomaticSize.Y
 	f.Size = UDim2.fromOffset(540, 0)
-	f.BackgroundColor3 = color or INK
-	f.TextColor3 = WHITE
+	f.BackgroundColor3 = color or Theme.C.slate
+	f.TextColor3 = Theme.textOn(color or Theme.C.slate)
 	f.Font = Enum.Font.GothamBold
 	f.TextSize = 16
 	f.TextWrapped = true
@@ -203,9 +181,9 @@ end
 
 Net.push().OnClientEvent:Connect(function(kind, data)
 	if kind == "notice" then
-		toast(data.text, INK, 10)
+		toast(data.text, Theme.C.slate, 10)
 	elseif kind == "questDone" then
 		Audio.play("QuestComplete")
-		toast("Quest complete: " .. data.text .. "  (+" .. data.coins .. " coins to claim)", GREEN)
+		toast("Quest complete: " .. data.text .. "  (+" .. data.coins .. " coins to claim)", Theme.C.yellow)
 	end
 end)

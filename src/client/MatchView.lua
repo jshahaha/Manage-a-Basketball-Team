@@ -328,18 +328,10 @@ function MatchView.run(data)
 	end
 
 	local skipping = false
-	local skip = Instance.new("TextButton")
+	local skip = Theme.button(gui, "SKIP", T.slate, UDim2.fromOffset(110, 46))
 	skip.AnchorPoint = Vector2.new(1, 0)
-	skip.Position = UDim2.new(1, -12, 0, 52)
-	skip.Size = UDim2.fromOffset(96, 36)
-	skip.BackgroundColor3 = INK
-	skip.TextColor3 = T.yellow
-	skip.FontFace = Theme.HEAD
-	skip.TextSize = 20
-	skip.Text = "SKIP"
-	skip.Parent = gui
-	Instance.new("UICorner", skip).CornerRadius = UDim.new(0, 4)
-	Theme.stroke(skip, 3, T.yellow)
+	skip.Position = UDim2.new(1, -12, 0, 48)
+	skip.Label.TextColor3 = T.yellow
 	skip.MouseButton1Click:Connect(function()
 		skipping = true
 		skip.Visible = false
@@ -491,9 +483,11 @@ function MatchView.run(data)
 	card.Size = UDim2.fromOffset(440, 330)
 	card.BackgroundColor3 = T.asphalt
 	card.Parent = gui
-	Instance.new("UICorner", card).CornerRadius = UDim.new(0, 6)
-	Theme.stroke(card, 4, T.black)
-	Theme.asphalt(card)
+	if not Theme.panelArt(card) then
+		Instance.new("UICorner", card).CornerRadius = UDim.new(0, 6)
+		Theme.stroke(card, 4, T.black)
+		Theme.asphalt(card)
+	end
 	local function line(text, y, size, color, font)
 		local l = Instance.new("TextLabel")
 		l.BackgroundTransparency = 1
@@ -529,18 +523,10 @@ function MatchView.run(data)
 	end
 	local sign = rw.eloDelta >= 0 and "+" or ""
 	line(string.format("+%d coins    +%d fans    Elo %s%d (%d)", rw.coins, rw.fans, sign, rw.eloDelta, rw.elo), 232, 18, T.lime)
-	local done = Instance.new("TextButton")
+	local done = Theme.button(card, "CONTINUE", T.yellow, UDim2.fromOffset(200, 56))
 	done.AnchorPoint = Vector2.new(0.5, 1)
-	done.Position = UDim2.new(0.5, 0, 1, -14)
-	done.Size = UDim2.fromOffset(180, 44)
-	done.BackgroundColor3 = T.yellow
-	done.TextColor3 = T.black
-	done.FontFace = Theme.HEAD
-	done.TextSize = 24
-	done.Text = "CONTINUE"
-	done.Parent = card
-	Instance.new("UICorner", done).CornerRadius = UDim.new(0, 6)
-	Theme.stroke(done, 3, T.black)
+	done.Position = UDim2.new(0.5, 0, 1, -10)
+	done.Label.TextSize = 26
 	done.MouseButton1Click:Wait()
 	Audio.play("UIClick")
 
