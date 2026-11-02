@@ -7,22 +7,24 @@
 local Theme = {}
 
 Theme.C = {
-	asphalt = Color3.fromHex("2b2d31"), -- panel background
-	slate = Color3.fromHex("1c1d21"), -- rows and cards on a panel
-	deep = Color3.fromHex("141518"), -- shade behind popups
-	line = Color3.fromHex("3d4047"), -- quiet borders
-	ink = Color3.fromHex("f3efe2"), -- main text on asphalt (cream)
-	muted = Color3.fromHex("a3a8ae"),
-	black = Color3.fromHex("111111"), -- outlines and text on tape
-	tape = Color3.fromHex("f3efe2"),
-	yellow = Color3.fromHex("f5d33a"), -- court-line yellow: the main action colour
-	orange = Color3.fromHex("ff6a3d"),
-	sky = Color3.fromHex("4fd0ff"),
-	lime = Color3.fromHex("b7f36b"),
-	pink = Color3.fromHex("ff7ad9"),
-	red = Color3.fromHex("ff4d4d"),
-	sunsetTop = Color3.fromHex("ff8f5a"),
-	sunsetBottom = Color3.fromHex("ffc36b"),
+	-- Softened 2026-11-02 (js: "more friendly to the eye"): lighter slate panels, charcoal
+	-- instead of pure black, and slightly calmer accent colours.
+	asphalt = Color3.fromHex("3a3f4b"), -- panel background
+	slate = Color3.fromHex("2f3440"), -- rows and cards on a panel
+	deep = Color3.fromHex("262a33"), -- shade behind popups
+	line = Color3.fromHex("4f5666"), -- quiet borders
+	ink = Color3.fromHex("f5f2ea"), -- main text on panels (warm white)
+	muted = Color3.fromHex("b8bdc6"),
+	black = Color3.fromHex("23262e"), -- outlines and text on bright fills (soft charcoal)
+	tape = Color3.fromHex("f5f2ea"),
+	yellow = Color3.fromHex("ffd45e"), -- court-line yellow: the main action colour
+	orange = Color3.fromHex("ff8a5b"),
+	sky = Color3.fromHex("62b8ff"),
+	lime = Color3.fromHex("8fdc6e"),
+	pink = Color3.fromHex("ff8fcf"),
+	red = Color3.fromHex("ff6b6b"),
+	sunsetTop = Color3.fromHex("ffa27a"),
+	sunsetBottom = Color3.fromHex("ffcf8f"),
 	white = Color3.new(1, 1, 1),
 }
 local C = Theme.C
@@ -47,8 +49,9 @@ local make = Theme.make
 function Theme.round(o, r)
 	make("UICorner", { CornerRadius = UDim.new(0, r) }, o)
 end
+-- Outlines are drawn a third thinner than asked so the whole UI stays soft on the eye.
 function Theme.stroke(o, t, color, transparency)
-	return make("UIStroke", { Thickness = t, Color = color or C.black, Transparency = transparency or 0, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, o)
+	return make("UIStroke", { Thickness = math.max(1, math.floor(t * 0.67 + 0.5)), Color = color or C.black, Transparency = transparency or 0, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, o)
 end
 
 -- Dark text on bright fills, cream text on dark ones.
@@ -120,7 +123,7 @@ local BUTTON_ART = {
 	[C.asphalt:ToHex()] = "slate",
 }
 local BUTTON_TEXT = { yellow = C.black, orange = C.black, lime = C.black, sky = C.black, pink = C.black, red = C.white, slate = C.ink, purple = C.white }
-Theme.BUTTON_SLICE = Rect.new(24, 20, 136, 72) -- for the 160x96 button images
+Theme.BUTTON_SLICE = Rect.new(28, 24, 132, 68) -- for the 160x96 button images
 
 -- Buttons: a chunky sticker slab drawn as a 9-slice image (outline, lip, gloss), with the label
 -- as a child TextLabel named "Label". Pressing swaps to the pressed art and nudges the label.
@@ -205,7 +208,7 @@ function Theme.panelArt(frame, z)
 		Size = UDim2.fromScale(1, 1),
 		Image = IMG.panel,
 		ScaleType = Enum.ScaleType.Slice,
-		SliceCenter = Rect.new(32, 32, 224, 224),
+		SliceCenter = Rect.new(36, 36, 220, 220),
 		SliceScale = 0.6,
 		ZIndex = z or frame.ZIndex,
 	}, frame)
@@ -224,6 +227,7 @@ function Theme.chainlink(frame, z)
 		Image = IMG.chainlink,
 		ScaleType = Enum.ScaleType.Tile,
 		TileSize = UDim2.fromOffset(36, 36),
+		ImageTransparency = 0.6, -- a faint hint of fence, not a busy pattern
 		ZIndex = z or frame.ZIndex,
 	}, frame)
 	return true

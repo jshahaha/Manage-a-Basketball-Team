@@ -22,6 +22,11 @@ def mix(c1, c2, t):
 def shade(c, k):
     return (max(0, min(255, int(c[0] * k))), max(0, min(255, int(c[1] * k))), max(0, min(255, int(c[2] * k))), c[3])
 
+OUTLINE = (35, 38, 46, 255)  # soft charcoal instead of pure black
+
+def lighten(c, t):
+    return mix(c, (255, 255, 255, c[3]), t)
+
 def vgrad(w, h, top, bottom):
     g = Image.new("RGBA", (w, h))
     d = ImageDraw.Draw(g)
@@ -60,72 +65,65 @@ def button(name, face, w=160, h=96, pressed=False):
     light inner edge and a grain texture."""
     W, H = w * S, h * S
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    r = 16 * S
-    ol = 5 * S  # outline
-    lip = 0 if pressed else 8 * S
-    top = 0 if not pressed else 6 * S
+    r = 24 * S  # round, friendly corners
+    ol = 3 * S  # thin soft outline
+    lip = 0 if pressed else 7 * S
+    top = 0 if not pressed else 5 * S
     # drop shadow
     sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(sh).rounded_rectangle([2 * S, top + 6 * S, W - 2 * S, H - 1], r, fill=(0, 0, 0, 110))
-    sh = sh.filter(ImageFilter.GaussianBlur(3 * S))
+    ImageDraw.Draw(sh).rounded_rectangle([2 * S, top + 6 * S, W - 2 * S, H - 1], r, fill=(0, 0, 0, 60))
+    sh = sh.filter(ImageFilter.GaussianBlur(4 * S))
     img.alpha_composite(sh)
     d = ImageDraw.Draw(img)
     # outline body (covers lip + face)
-    d.rounded_rectangle([0, top, W - 1, H - 1 - 4 * S], r, fill=hexc("111111"))
+    d.rounded_rectangle([0, top, W - 1, H - 1 - 4 * S], r, fill=OUTLINE)
     # lip
     inner = [ol, top + ol, W - 1 - ol, H - 1 - 4 * S - ol]
-    d.rounded_rectangle(inner, r - ol, fill=shade(face, 0.62))
+    d.rounded_rectangle(inner, r - ol, fill=shade(face, 0.78))
     # face
     fbox = [ol, top + ol, W - 1 - ol, H - 1 - 4 * S - ol - lip]
     fw, fh = fbox[2] - fbox[0], fbox[3] - fbox[1]
-    g = vgrad(fw, fh, shade(face, 1.12), shade(face, 0.9))
+    g = vgrad(fw, fh, lighten(face, 0.18), face)
     m = rrect_mask(fw, fh, [0, 0, fw - 1, fh - 1], r - ol)
-    g = apply_speckle(g, m, hash(name) & 0xffff, 0.22)
+    g = apply_speckle(g, m, hash(name) & 0xffff, 0.05)
     img.paste(g, (fbox[0], fbox[1]), m)
     # gloss band on the top 40%
     gl = Image.new("RGBA", (fw, fh), (0, 0, 0, 0))
     gd = ImageDraw.Draw(gl)
-    gd.rounded_rectangle([4 * S, 3 * S, fw - 4 * S, int(fh * 0.42)], r - ol - 2 * S, fill=(255, 255, 255, 70))
+    gd.rounded_rectangle([4 * S, 3 * S, fw - 4 * S, int(fh * 0.45)], r - ol - 2 * S, fill=(255, 255, 255, 55))
     gl = gl.filter(ImageFilter.GaussianBlur(1.2 * S))
     gm = Image.new("L", (fw, fh), 0)
     gm.paste(m, (0, 0))
     gl.putalpha(ImageChops.multiply(gl.getchannel("A"), gm))
     img.alpha_composite(gl, (fbox[0], fbox[1]))
     # light inner edge along the top
-    d.rounded_rectangle([fbox[0] + 2 * S, fbox[1] + 2 * S, fbox[2] - 2 * S, fbox[3] - 2 * S], r - ol - 2 * S, outline=(255, 255, 255, 90), width=2 * S)
+    d.rounded_rectangle([fbox[0] + 2 * S, fbox[1] + 2 * S, fbox[2] - 2 * S, fbox[3] - 2 * S], r - ol - 2 * S, outline=(255, 255, 255, 70), width=2 * S)
     img = img.resize((w, h), Image.LANCZOS)
     img.save(os.path.join(OUT, name + ".png"))
     return img
 
 def panel():
-    """Asphalt panel: black frame, bevelled inner edge, speckled asphalt with a few cracks."""
+    """Calm slate panel: soft charcoal frame, a gentle top-to-bottom gradient, faint grain and a
+    light inner edge. Lighter than real asphalt so text and cards read easily."""
     w, h = 256, 256
     W, H = w * S, h * S
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    r = 18 * S
-    d.rounded_rectangle([0, 0, W - 1, H - 1], r, fill=hexc("111111"))
-    ib = [6 * S, 6 * S, W - 1 - 6 * S, H - 1 - 6 * S]
+    r = 26 * S
+    d.rounded_rectangle([0, 0, W - 1, H - 1], r, fill=OUTLINE)
+    ib = [4 * S, 4 * S, W - 1 - 4 * S, H - 1 - 4 * S]
     iw, ih = ib[2] - ib[0], ib[3] - ib[1]
-    g = vgrad(iw, ih, hexc("3b3e44"), hexc("2a2c30"))
+    g = vgrad(iw, ih, hexc("4b5160"), hexc("3a3f4b"))
     rnd = random.Random(4)
     gd = ImageDraw.Draw(g)
-    for _ in range(int(iw * ih * 0.05)):
+    for _ in range(int(iw * ih * 0.015)):
         x, y = rnd.randrange(iw), rnd.randrange(ih)
-        v = rnd.randint(30, 95)
-        gd.point((x, y), fill=(v, v, v + 4, 255))
-    for _ in range(5):  # hairline cracks
-        x, y = rnd.randrange(iw), rnd.randrange(ih)
-        pts = [(x, y)]
-        for _ in range(8):
-            x += rnd.randint(-14, 14) * S // 2
-            y += rnd.randint(4, 16) * S // 2
-            pts.append((x, y))
-        gd.line(pts, fill=(22, 23, 26, 255), width=S)
-    g = g.filter(ImageFilter.GaussianBlur(0.5))
-    m = rrect_mask(iw, ih, [0, 0, iw - 1, ih - 1], r - 6 * S)
+        v = rnd.randint(70, 100)
+        gd.point((x, y), fill=(v, v + 2, v + 8, 255))
+    g = g.filter(ImageFilter.GaussianBlur(0.6))
+    m = rrect_mask(iw, ih, [0, 0, iw - 1, ih - 1], r - 4 * S)
     img.paste(g, (ib[0], ib[1]), m)
-    d.rounded_rectangle(ib, r - 6 * S, outline=(255, 255, 255, 38), width=2 * S)
+    d.rounded_rectangle(ib, r - 4 * S, outline=(255, 255, 255, 45), width=2 * S)
     img = img.resize((w, h), Image.LANCZOS)
     img.save(os.path.join(OUT, "panel.png"))
 
@@ -190,9 +188,9 @@ def chainlink():
     img = img.resize((t, t), Image.LANCZOS)
     img.save(os.path.join(OUT, "chainlink.png"))
 
-COLORS = {
-    "yellow": "f5d33a", "orange": "ff6a3d", "lime": "9ee05a", "sky": "4fb8ff",
-    "pink": "ff6fc8", "red": "ff4d4d", "slate": "3a3d44", "purple": "a24bff",
+COLORS = {  # a little softer than pure neon so a full screen of them is easy on the eyes
+    "yellow": "ffd45e", "orange": "ff8a5b", "lime": "8fdc6e", "sky": "62b8ff",
+    "pink": "ff8fcf", "red": "ff6b6b", "slate": "4f5666", "purple": "a98bff",
 }
 for n, c in COLORS.items():
     button("btn_" + n, hexc(c))
@@ -201,6 +199,6 @@ panel()
 tape("tape_cream", hexc("f3efe2"))
 tape("tape_yellow", hexc("f5d33a"))
 chainlink()
-print("button 160x96: SliceCenter = Rect(24, 20, 136, 72)")
-print("panel 256x256: SliceCenter = Rect(32, 32, 224, 224)")
+print("button 160x96: SliceCenter = Rect(28, 24, 132, 68)")
+print("panel 256x256: SliceCenter = Rect(36, 36, 220, 220)")
 print("wrote", sorted(os.listdir(OUT)))

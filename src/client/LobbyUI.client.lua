@@ -169,7 +169,7 @@ local menu = make("Frame", {
 make("UIListLayout", { Padding = UDim.new(0, 10) }, menu)
 
 -- Modal panel shared by every screen: asphalt with a sunset strip and a tape title.
-local shade = make("TextButton", { Text = "", AutoButtonColor = false, Size = UDim2.fromScale(1, 1), BackgroundColor3 = T.deep, BackgroundTransparency = 0.35, Visible = false, ZIndex = 10 }, gui)
+local shade = make("TextButton", { Text = "", AutoButtonColor = false, Size = UDim2.fromScale(1, 1), BackgroundColor3 = T.deep, BackgroundTransparency = 0.5, Visible = false, ZIndex = 10 }, gui)
 local panel = make("Frame", {
 	AnchorPoint = Vector2.new(0.5, 0.5),
 	Position = UDim2.fromScale(0.5, 0.53),
@@ -183,8 +183,8 @@ if not Theme.panelArt(panel, 11) then
 	stroke(panel, 4, T.black)
 	Theme.asphalt(panel)
 end
-local strip = make("Frame", { Position = UDim2.fromOffset(5, 5), Size = UDim2.new(1, -10, 0, 56), BackgroundColor3 = T.sunsetTop, ZIndex = 11, BorderSizePixel = 0 }, panel)
-round(strip, 8)
+local strip = make("Frame", { Position = UDim2.fromOffset(4, 4), Size = UDim2.new(1, -8, 0, 56), BackgroundColor3 = T.sunsetTop, ZIndex = 11, BorderSizePixel = 0 }, panel)
+round(strip, 14)
 Theme.sunset(strip)
 -- Chain-link over the sunset (drawn tile, or thin lines as a fallback).
 for i = 0, (Theme.chainlink(strip, 11) and -1 or 30) do
@@ -709,7 +709,7 @@ end)
 for i, m in ipairs({ { "SHOP", C.orange, openShop }, { "PACKS", C.green, openPacks }, { "CLUB", C.blue, openClub }, { "QUESTS", C.pink, openQuests } }) do
 	local holder = make("Frame", { Size = UDim2.fromOffset(140, 50), BackgroundTransparency = 1, LayoutOrder = i }, menu)
 	local b = button(holder, m[1], m[2], UDim2.fromScale(1, 1))
-	b.Rotation = i % 2 == 0 and 1.5 or -1.5
+	b.Rotation = 0
 	b.Label.TextSize = 24
 	b.MouseButton1Click:Connect(m[3])
 end
@@ -723,7 +723,7 @@ local board = make("TextButton", {
 	Size = UDim2.fromOffset(240, 150),
 	BackgroundColor3 = T.slate,
 	BackgroundTransparency = 0.08,
-	Rotation = 1,
+	Rotation = 0,
 }, gui)
 round(board, 4)
 stroke(board, 3, T.tape)
@@ -762,7 +762,7 @@ end
 -- PLAY: big court-yellow sticker slab in the bottom right, where the thumb is.
 local playHolder = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -20), Size = UDim2.fromOffset(230, 92), BackgroundTransparency = 1 }, gui)
 local playB = button(playHolder, "PLAY", C.gold, UDim2.fromScale(1, 1))
-playB.Rotation = -3
+playB.Rotation = -1.5
 playB.Label.TextSize = 44
 local playing = false
 playB.MouseButton1Click:Connect(function()
