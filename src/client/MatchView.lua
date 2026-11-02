@@ -67,7 +67,7 @@ local function describe(ev, names)
 	elseif ev.kind == "freeThrows" then
 		return string.format("%s makes %d of 2 at the line", who, ev.ftm or 0)
 	end
-	local what = ({ three = "three", jumper = "jumper", dunk = ev.slam and "dunk" or "layup" })[ev.kind]
+	local what = ({ three = "three", jumper = "jumper", dunk = ev.slam and "dunk" or "drive" })[ev.kind]
 	local s
 	if ev.made then
 		s = string.format("%s hits the %s", who, what)
@@ -370,7 +370,7 @@ function MatchView.run(data)
 		elseif r.kind == "dunk" then
 			task.delay(plan.tShot + clip.hoopAt[1], function()
 				flashRim(dir)
-				pop(ev.slam and rng:pick({ "SLAM!", "POSTER!", "BOOM!" }) or "AND IN!", Color3.fromRGB(255, 120, 60))
+				pop(ev.slam and rng:pick({ "SLAM!", "POSTER!", "BOOM!" }) or "AT THE RIM!", Color3.fromRGB(255, 120, 60))
 			end)
 		else
 			local rating = shooterCard and shooterCard.ovr or 70
@@ -424,6 +424,7 @@ function MatchView.run(data)
 			end
 			if key[i] then
 				drawScore(shown, q, ev.clock + 14)
+				ticker.Text = (ev.team == 1 and data.home.name or data.away.name) .. " ball"
 				act(ev)
 			else
 				wait(tick)
