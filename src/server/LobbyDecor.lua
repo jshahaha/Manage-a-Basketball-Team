@@ -173,6 +173,21 @@ function LobbyDecor.planter(parent, pos)
 	return m
 end
 
+-- A detailed prop that exists only as a model in ServerStorage.LobbyAssets (Pine, BallRack, Bin).
+-- Returns nil, placing nothing, when the model isn't there (e.g. Rojo-only builds).
+function LobbyDecor.prop(parent, name, cf, scale)
+	local m = asset(name)
+	if not m then
+		return nil
+	end
+	if scale and scale ~= 1 then
+		m:ScaleTo(m:GetScale() * scale)
+	end
+	m:PivotTo(cf)
+	m.Parent = parent
+	return m
+end
+
 function LobbyDecor.lighting()
 	Lighting.ClockTime = 14.2
 	Lighting.Brightness = 2.6

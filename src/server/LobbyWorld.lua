@@ -252,7 +252,16 @@ local function buildPlaza(folder)
 	for k = 0, 7 do
 		local a = (k + 0.25) / 8 * math.pi * 2
 		local p = Vector3.new(math.cos(a) * 21, 0, math.sin(a) * 21)
-		LobbyDecor.bench(props, CFrame.lookAt(p, Vector3.new(0, 0, 0)) * CFrame.Angles(0, math.pi, 0))
+		local cf = CFrame.lookAt(p, Vector3.new(0, 0, 0)) * CFrame.Angles(0, math.pi, 0)
+		LobbyDecor.bench(props, cf)
+		if k % 2 == 0 then
+			-- A bin at the end of every other bench.
+			LobbyDecor.prop(props, "Bin", cf * CFrame.new(4.2, 0, 0))
+		end
+	end
+	-- Ball racks either side of the spawn, so the first thing you see says basketball.
+	for _, x in ipairs({ -9, 9 }) do
+		LobbyDecor.prop(props, "BallRack", CFrame.lookAt(Vector3.new(x, 0, 47), Vector3.new(0, 0, 40)))
 	end
 	-- Spawn on the south side of the plaza, facing the jumbotron.
 	local spawn = Instance.new("SpawnLocation")
@@ -352,7 +361,11 @@ local function scenery(folder)
 	-- The outer edge, in front of the hills.
 	for x = -300, 300, 24 do
 		for _, z in ipairs({ -232, 232 }) do
-			LobbyDecor.tree(trees, Vector3.new(x + rnd(-6, 6), 0, z + rnd(-8, 8)), rnd(1.1, 1.6))
+			-- Every other tree on the outer edge is a pine, when the pine model exists.
+			local pos = Vector3.new(x + rnd(-6, 6), 0, z + rnd(-8, 8))
+			if (x // 24) % 2 == 0 or not LobbyDecor.prop(trees, "Pine", CFrame.new(pos) * CFrame.Angles(0, rnd(0, 6.28), 0), rnd(1.0, 1.4)) then
+				LobbyDecor.tree(trees, pos, rnd(1.1, 1.6))
+			end
 		end
 	end
 	for z = -208, 208, 24 do
