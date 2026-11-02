@@ -1,14 +1,14 @@
 --!nonstrict
 -- Match demo: two generated teams playing possessions on the 3D court, side-on camera, a score
 -- bug, shot feedback text and the rim flash on dunks. It is the playtest bed for the match view.
--- Runs only in Studio playtests, or when workspace has the attribute MatchDemo = true.
+-- Runs only when workspace has the attribute MatchDemo = true (set it in Studio to playtest).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
-if not (RunService:IsStudio() or workspace:GetAttribute("MatchDemo")) then
+if not workspace:GetAttribute("MatchDemo") then
 	return
 end
 
