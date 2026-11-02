@@ -269,7 +269,7 @@ local function bundlePopup(pack)
 		if pr.discount > 0 then
 			table.insert(parts, { text = string.format("  -%d%%", math.floor(pr.discount * 100 + 0.5)), color = C.gold })
 		end
-		Theme.row(b, parts, { size = 18, z = 22, sz = UDim2.new(1, 0, 0.82, -2) })
+		Theme.row(b, parts, { size = 22, z = 22, sz = UDim2.new(1, 0, 0.82, -2) })
 		b.MouseButton1Click:Connect(function()
 			if buying then
 				return
@@ -956,7 +956,7 @@ function refreshBoard()
 		stroke(track, 1.5, C.black)
 		local fill = make("Frame", { Size = UDim2.new(math.clamp(q.progress / math.max(1, q.target), 0, 1), 0, 1, 0), BackgroundColor3 = done and C.green or C.gold, ZIndex = 4 }, track)
 		round(fill, 5)
-		local tag = text(row, { text = q.claimed and "done" or (done and "CLAIM!" or string.format("%d/%d", q.progress, q.target)), font = HEAD, size = 16, color = done and not q.claimed and C.green or C.muted, sz = UDim2.new(0, 56, 1, 0), pos = UDim2.new(1, -56, 0, 0), align = Enum.TextXAlignment.Right, z = 3 })
+		local tag = text(row, { text = q.claimed and "done" or (done and "CLAIM!" or string.format("%d/%d", q.progress, q.target)), font = HEAD, size = 16, color = done and not q.claimed and C.green or C.muted, sz = UDim2.new(0, 56, 0, 20), pos = UDim2.new(1, -56, 0, 15), align = Enum.TextXAlignment.Right, z = 3 })
 		make("UIStroke", { Thickness = 1.5, Color = C.black }, tag)
 	end
 	-- Something to claim: the board lights up.
