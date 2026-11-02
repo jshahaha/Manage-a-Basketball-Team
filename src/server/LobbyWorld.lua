@@ -194,23 +194,23 @@ local function buildPlaza(folder)
 	local plaza = Instance.new("Model")
 	plaza.Name = "Plaza"
 	-- Paving in rings: stone edge, warm tiles, a wood centre like a half court.
-	cylinder(plaza, "Edge", 1, PLAZA_R + 2, CFrame.new(0, -0.45, 0), Color3.fromRGB(150, 150, 158), Enum.Material.Cobblestone)
-	cylinder(plaza, "Paving", 1, PLAZA_R, CFrame.new(0, -0.4, 0), Color3.fromRGB(226, 220, 206), Enum.Material.Pavement)
-	cylinder(plaza, "Ring", 1, 30, CFrame.new(0, -0.36, 0), Color3.fromHex("2e6fd8"), Enum.Material.SmoothPlastic)
-	cylinder(plaza, "Center", 1, 27, CFrame.new(0, -0.33, 0), Color3.fromRGB(214, 160, 100), Enum.Material.WoodPlanks)
+	cylinder(plaza, "Edge", 1, PLAZA_R + 2, CFrame.new(0, -0.45, 0), Color3.fromRGB(170, 168, 160), Enum.Material.Concrete)
+	cylinder(plaza, "Paving", 1, PLAZA_R, CFrame.new(0, -0.4, 0), Color3.fromRGB(58, 60, 64), Enum.Material.Asphalt) -- blacktop
+	cylinder(plaza, "Ring", 1, 30, CFrame.new(0, -0.36, 0), Color3.fromHex("f5d33a"), Enum.Material.SmoothPlastic) -- painted court-yellow ring
+	cylinder(plaza, "Center", 1, 27, CFrame.new(0, -0.33, 0), Color3.fromRGB(66, 68, 72), Enum.Material.Asphalt)
 	plaza.Parent = folder
 	landmark(folder)
 	-- Wide walkways: north and south to the court rows, plus a path along each row.
 	local walks = Instance.new("Folder")
 	walks.Name = "Walkways"
 	walks.Parent = folder
-	local pave = Color3.fromRGB(205, 200, 190)
+	local pave = Color3.fromRGB(78, 80, 84)
 	for _, rowZ in ipairs({ ROW_Z.north, ROW_Z.south }) do
 		local wz = rowWalkZ(rowZ)
 		local s = wz < 0 and -1 or 1
 		local len = math.abs(wz) - PLAZA_R + 4
-		part(walks, { Name = "Walk", Size = Vector3.new(16, 1, len), Position = Vector3.new(0, -0.42, s * (PLAZA_R - 2 + len / 2)), Color = pave, Material = Enum.Material.Pavement })
-		part(walks, { Name = "RowWalk", Size = Vector3.new(500, 1, 12), Position = Vector3.new(0, -0.42, wz), Color = pave, Material = Enum.Material.Pavement })
+		part(walks, { Name = "Walk", Size = Vector3.new(16, 1, len), Position = Vector3.new(0, -0.42, s * (PLAZA_R - 2 + len / 2)), Color = pave, Material = Enum.Material.Asphalt })
+		part(walks, { Name = "RowWalk", Size = Vector3.new(500, 1, 12), Position = Vector3.new(0, -0.42, wz), Color = pave, Material = Enum.Material.Asphalt })
 	end
 	-- Storefronts, lamps between them, benches facing the fountain.
 	local stations = Instance.new("Folder")

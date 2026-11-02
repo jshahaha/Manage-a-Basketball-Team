@@ -51,14 +51,15 @@ local open = Instance.new("TextButton")
 open.Name = "OpenCodes"
 open.Size = UDim2.fromOffset(110, 46)
 open.Position = UDim2.new(0, 16, 1, -62)
-open.BackgroundColor3 = ORANGE
+open.BackgroundColor3 = Color3.fromHex("1c1d21")
 open.Text = "CODES"
 open.TextSize = 22
-open.Font = Enum.Font.FredokaOne
-open.TextColor3 = WHITE
+open.FontFace = Font.new("rbxasset://fonts/families/Oswald.json", Enum.FontWeight.Bold)
+open.TextColor3 = Color3.fromHex("f5d33a")
 open.Parent = gui
-round(open, 12)
+round(open, 4)
 stroke(open, 3)
+open:FindFirstChildOfClass("UIStroke").Color = Color3.fromHex("f5d33a")
 
 -- Panel -----------------------------------------------------------------------
 local panel = Instance.new("Frame")

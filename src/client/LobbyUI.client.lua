@@ -148,7 +148,7 @@ local profile = {}
 local function refreshBar()
 	coinsText.Text = comma(profile.coins)
 	gemsText.Text = comma(profile.gems)
-	eloText.Text = profile.elo and (comma(profile.elo) .. " " .. (profile.tier or "")) or "…"
+	eloText.Text = profile.elo and comma(profile.elo) or "…"
 end
 local function loadProfile()
 	local ok, data = call("getProfile")
@@ -302,7 +302,11 @@ function openShop()
 		local art = make("Frame", { Size = UDim2.new(1, -16, 0, 74), Position = UDim2.fromOffset(8, 8), BackgroundColor3 = best and rarityColor(best) or C.pink, ZIndex = 13 }, card)
 		round(art, 10)
 		make("UIGradient", { Rotation = 90, Transparency = NumberSequence.new(0, 0.35) }, art)
-		text(art, { text = pack.name:gsub(" Pack", ""):upper(), font = HEAD, size = 20, color = C.white, z = 14, scaled = true })
+		-- Spray-painted pack name, tilted like a tag on a wall.
+		local tag = text(art, { text = pack.name:gsub(" Pack", ""), font = MARK, size = 26, color = C.white, z = 14, scaled = true, rot = -5, sz = UDim2.new(1, -14, 1, -10), pos = UDim2.fromOffset(7, 5) })
+		tag.TextStrokeTransparency = 0
+		tag.TextStrokeColor3 = C.black
+		stroke(art, 3, C.black)
 		text(card, { text = pack.name, font = HEAD, size = 17, sz = UDim2.new(1, -12, 0, 22), pos = UDim2.fromOffset(6, 86), z = 13, scaled = true })
 		text(card, { text = KIND_TEXT[pack.kind] or "", size = 12, color = C.muted, sz = UDim2.new(1, -12, 0, 16), pos = UDim2.fromOffset(6, 108), z = 13 })
 		text(card, { text = comma(pack.prices[1].coins) .. " coins", font = HEAD, size = 18, color = C.gold, sz = UDim2.new(1, -12, 0, 22), pos = UDim2.fromOffset(6, 126), z = 13 })
