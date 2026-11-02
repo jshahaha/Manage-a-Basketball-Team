@@ -33,8 +33,15 @@ def radial(size, falloff):
     return img
 
 
-# Glow: wide soft falloff.
-save(radial(256, 2.2), "glow")
+# Glow: a solid middle that fades out over the outer half, so it shows around whatever sits on it.
+g = Image.new("RGBA", (256, 256), (255, 255, 255, 0))
+gp = g.load()
+for y in range(256):
+    for x in range(256):
+        d = math.hypot(x - 127.5, y - 127.5) / 127.5
+        t = min(1.0, max(0.0, (1 - d) / 0.5))
+        gp[x, y] = (255, 255, 255, int(255 * t * t * (3 - 2 * t)))
+save(g, "glow")
 
 # Wisp: a soft blob squashed a little, blurred.
 w = Image.new("RGBA", (128, 128), (255, 255, 255, 0))
