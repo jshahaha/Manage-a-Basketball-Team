@@ -230,13 +230,18 @@ end
 -- (js 2026-11-02: "make sure buttons are centred"), and only slides right as far as it must
 -- to clear the icon.
 function Theme.withIcon(b, name, scale, height)
+	-- js (2026-11-02): icons must sit inside their frame, the same way on every button. So the
+	-- icon is a fixed share of the button face (the face ends above the 3D lip), with equal
+	-- padding left, top and bottom. `scale` is kept for old callers but no longer pokes out.
 	local h = height or (b.Size.Y.Offset > 0 and b.Size.Y.Offset) or 50
-	local size = math.floor(h * (scale or 1.05))
-	local left = -math.floor(size * 0.18)
-	local ic = Theme.icon(b, name, UDim2.fromOffset(size, size), UDim2.new(0, left, 0.5, -math.floor(size * 0.55)), b.ZIndex + 1)
+	local face = math.floor(h * 0.84)
+	local size = math.floor(face * 0.86)
+	local pad = math.floor((face - size) / 2)
+	local left = pad + 4
+	local ic = Theme.icon(b, name, UDim2.fromOffset(size, size), UDim2.fromOffset(left, pad + 1), b.ZIndex + 1)
 	if ic then
 		local label = b.Label
-		local iconRight = left + size - math.floor(size * 0.12) -- the art has a little transparent margin
+		local iconRight = left + size
 		local function fit()
 			local w = b.AbsoluteSize.X
 			if w <= 0 then
@@ -303,9 +308,11 @@ function Theme.row(parent, parts, p)
 	return f
 end
 
--- The asphalt panel image behind a frame (9-slice). Returns true when the art is used.
+-- The panel image behind a frame (9-slice). Returns true when the art is used. The HD panel
+-- (512px, 72px margins) is preferred; it keeps corners smooth on big phone screens.
 function Theme.panelArt(frame, z)
-	if not IMG.panel then
+	local hd = IMG.panel_hd
+	if not hd and not IMG.panel then
 		return false
 	end
 	frame.BackgroundTransparency = 1
@@ -313,10 +320,29 @@ function Theme.panelArt(frame, z)
 		Name = "PanelArt",
 		BackgroundTransparency = 1,
 		Size = UDim2.fromScale(1, 1),
-		Image = IMG.panel,
+		Image = hd or IMG.panel,
 		ScaleType = Enum.ScaleType.Slice,
-		SliceCenter = Rect.new(36, 36, 220, 220),
-		SliceScale = 0.6,
+		SliceCenter = hd and Rect.new(72, 72, 440, 440) or Rect.new(36, 36, 220, 220),
+		SliceScale = hd and 0.3 or 0.6,
+		ZIndex = z or frame.ZIndex,
+	}, frame)
+	return true
+end
+
+-- The darker inner "stage" (pack opening, lists) with a soft vignette, when the art exists.
+function Theme.stageArt(frame, z)
+	if not IMG.stage_hd then
+		return false
+	end
+	frame.BackgroundTransparency = 1
+	make("ImageLabel", {
+		Name = "StageArt",
+		BackgroundTransparency = 1,
+		Size = UDim2.fromScale(1, 1),
+		Image = IMG.stage_hd,
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(72, 72, 440, 440),
+		SliceScale = 0.3,
 		ZIndex = z or frame.ZIndex,
 	}, frame)
 	return true

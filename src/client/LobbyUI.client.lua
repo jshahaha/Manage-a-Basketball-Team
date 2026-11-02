@@ -141,13 +141,14 @@ local function pill(tag, color, iconName, order)
 		round(f, 22)
 		stroke(f, 3, C.black)
 	end
-	local ic = Theme.icon(holder, iconName, UDim2.fromOffset(56, 56), UDim2.fromOffset(-22, -7), 4)
+	-- Icon inside the pill's left end, same size and padding on every pill.
+	local ic = Theme.icon(holder, iconName, UDim2.fromOffset(38, 38), UDim2.fromOffset(6, 3), 4)
 	if not ic then
 		local chip = make("Frame", { Size = UDim2.new(0, 42, 1, -10), Position = UDim2.fromOffset(6, 5), BackgroundColor3 = color, ZIndex = 3 }, f)
 		round(chip, 8)
 		text(chip, { text = tag, font = HEAD, size = 15, color = C.black, z = 4 })
 	end
-	local v = text(f, { text = "…", font = HEAD, size = 24, color = C.white, sz = UDim2.new(1, -50, 1, -6), pos = UDim2.fromOffset(38, 0), align = Enum.TextXAlignment.Left, z = 3, scaled = true })
+	local v = text(f, { text = "…", font = HEAD, size = 24, color = C.white, sz = UDim2.new(1, -62, 1, -10), pos = UDim2.fromOffset(50, 2), align = Enum.TextXAlignment.Left, z = 3, scaled = true })
 	make("UIStroke", { Thickness = 2, Color = C.black, LineJoinMode = Enum.LineJoinMode.Round }, v)
 	return v
 end
@@ -181,6 +182,10 @@ make("UIListLayout", { Padding = UDim.new(0, 10) }, menu)
 
 -- Modal panel shared by every screen: asphalt with a sunset strip and a tape title.
 local shade = make("TextButton", { Text = "", AutoButtonColor = false, Size = UDim2.fromScale(1, 1), BackgroundColor3 = T.deep, BackgroundTransparency = 0.5, Visible = false, ZIndex = 10 }, gui)
+if Theme.IMG.backdrop then
+	-- Soft court backdrop with a vignette behind open screens.
+	make("ImageLabel", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), Image = Theme.IMG.backdrop, ScaleType = Enum.ScaleType.Crop, ImageTransparency = 0.25, ZIndex = 10 }, shade)
+end
 local panel = make("Frame", {
 	AnchorPoint = Vector2.new(0.5, 0.5),
 	Position = UDim2.fromScale(0.5, 0.53),
@@ -253,49 +258,6 @@ end
 local openShop, openPacks, openClub
 local refreshBoard
 
-local function bundlePopup(pack)
-	local pop = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(330, 250), BackgroundColor3 = C.panel, ZIndex = 20 }, body)
-	round(pop, 14)
-	if not Theme.panelArt(pop, 20) then
-		stroke(pop, 3)
-	end
-	text(pop, { text = "Buy " .. pack.name, font = HEAD, size = 22, sz = UDim2.new(1, -20, 0, 36), pos = UDim2.fromOffset(10, 8), z = 21 })
-	local buying = false
-	for i, pr in ipairs(pack.prices) do
-		local b = button(pop, "", i == 1 and C.blue or C.green, UDim2.new(1, -30, 0, 42), UDim2.fromOffset(15, 6 + i * 48))
-		b.ZIndex = 21
-		-- "5x  (coin) 1,000  -10%": the coin sticker instead of the word.
-		local parts = { { text = pr.size .. "x" }, { text = " " }, { icon = "coin" }, { text = comma(pr.coins) } }
-		if pr.discount > 0 then
-			table.insert(parts, { text = string.format("  -%d%%", math.floor(pr.discount * 100 + 0.5)), color = C.gold })
-		end
-		Theme.row(b, parts, { size = 22, z = 22, sz = UDim2.new(1, 0, 0.82, -2) })
-		b.MouseButton1Click:Connect(function()
-			if buying then
-				return
-			end
-			buying = true
-			local ok, res = call("buyPack", { pack = pack.id, size = pr.size })
-			buying = false
-			if ok then
-				-- Close first so a slow toast or sound never leaves the popup on screen.
-				pop:Destroy()
-				profile.coins = res.coins
-				refreshBar()
-				pcall(Audio.play, "CoinsSpend")
-				say(pr.size > 1 and string.format("%dx %s added to Packs", pr.size, pack.name) or pack.name .. " added to Packs")
-			else
-				say(res)
-			end
-		end)
-	end
-	local cancel = button(pop, "Cancel", C.muted, UDim2.new(1, -30, 0, 34), UDim2.new(0, 15, 1, -44))
-	cancel.ZIndex = 21
-	cancel.MouseButton1Click:Connect(function()
-		pop:Destroy()
-	end)
-end
-
 local KIND_TEXT = { players = "Players, badges, item", badges = "Badges only", coach = "One coach" }
 
 -- The shop has three tabs, like the bigger games: PACKS (coins), ROBUX and CODES.
@@ -314,6 +276,7 @@ local function packArt(card, pack, i)
 			Theme.glow(img, fancy[pack.id], 18, 0.5)
 			Theme.sparkles(img, Color3.new(1, 1, 1), 0.45, 15, 20)
 		end
+		return img
 	else
 		local best
 		for id in pairs(pack.odds or {}) do
@@ -328,34 +291,171 @@ local function packArt(card, pack, i)
 		local tag = text(box, { text = pack.name:gsub(" Pack", ""), font = MARK, size = 24, color = C.white, z = 14, scaled = true, rot = -6, sz = UDim2.new(1, -10, 0, 60), pos = UDim2.new(0, 5, 0.5, -30) })
 		tag.TextStrokeTransparency = 0
 		tag.TextStrokeColor3 = C.black
+		return box
 	end
+end
+
+-- Buy one bundle size of a pack (1x, 5x or 20x); a bundle is one item in My Packs.
+local buyingPack = false
+local function buyPackSize(pack, pr)
+	if buyingPack then
+		return
+	end
+	buyingPack = true
+	local ok, res = call("buyPack", { pack = pack.id, size = pr.size })
+	buyingPack = false
+	if ok then
+		profile.coins = res.coins
+		refreshBar()
+		pcall(Audio.play, "CoinsSpend")
+		say(pr.size > 1 and string.format("%dx %s added to Packs", pr.size, pack.name) or pack.name .. " added to Packs")
+	else
+		say(res)
+	end
+end
+
+-- Amount picker on the pack itself (js 2026-11-02): arrows either side flip between 1x, 5x
+-- and 20x; the art shows a stack of that many packs with an "x5" badge, and the price follows.
+local function qtyArrow(card, dir, onClick)
+	local art = Theme.IMG[dir < 0 and "icon_arrow_left" or "icon_arrow_right"]
+	local b = make("ImageButton", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(dir < 0 and 0 or 1, dir < 0 and 14 or -14, 0, 92),
+		Size = UDim2.fromOffset(36, 36),
+		BackgroundTransparency = art and 1 or 0,
+		BackgroundColor3 = C.white,
+		Image = art or "",
+		AutoButtonColor = false,
+		ZIndex = 17,
+	}, card)
+	if not art then
+		round(b, 18)
+		stroke(b, 2.5, C.black)
+		text(b, { text = dir < 0 and "<" or ">", font = HEAD, size = 24, color = C.black, z = 18 })
+	end
+	local sc = make("UIScale", {}, b)
+	b.MouseButton1Down:Connect(function()
+		TweenService:Create(sc, TweenInfo.new(0.07), { Scale = 0.85 }):Play()
+	end)
+	b.MouseButton1Up:Connect(function()
+		TweenService:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+	end)
+	b.MouseLeave:Connect(function()
+		TweenService:Create(sc, TweenInfo.new(0.15), { Scale = 1 }):Play()
+	end)
+	b.MouseButton1Click:Connect(onClick)
+	return b
 end
 
 local function packGrid(parent, packs, currency)
 	local s = scroller(parent)
-	make("UIGridLayout", { CellSize = UDim2.fromOffset(160, 262), CellPadding = UDim2.fromOffset(10, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
+	make("UIGridLayout", { CellSize = UDim2.fromOffset(170, 262), CellPadding = UDim2.fromOffset(8, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
 	for i, pack in ipairs(packs) do
 		local card = make("Frame", { BackgroundTransparency = 1, LayoutOrder = i, ZIndex = 12 }, s)
-		packArt(card, pack, i)
+		local img = packArt(card, pack, i)
 		local robux = (Config.Packs[pack.id] or {}).robux
 		local priceLabel = currency == "robux" and ("R$ " .. comma(robux or 0)) or ""
 		-- Price on a strip of tape under the pack, then the buy button.
 		local tape, priceText = Theme.tape(card, priceLabel, { anchor = Vector2.new(0.5, 0), pos = UDim2.new(0.5, 0, 0, 190), sz = UDim2.fromOffset(132, 28), rot = (i % 2 == 0) and 2 or -2, z = 14, font = HEAD, size = 17 })
 		priceText.TextColor3 = C.black
-		if currency ~= "robux" then
-			-- Coin sticker and the number, no "coins" word.
-			Theme.row(tape, { { icon = "coin", iconSize = 26 }, { text = comma(pack.prices[1].coins) } }, { size = 18, z = 15, color = C.black, outline = false, gap = 3 })
-		end
 		local buy = button(card, currency == "robux" and "BUY  R$" or "BUY", currency == "robux" and T.lime or C.orange, UDim2.new(1, -16, 0, 40), UDim2.new(0, 8, 1, -42))
 		buy.ZIndex = 13
-		buy.MouseButton1Click:Connect(function()
-			if currency == "robux" then
+		if currency == "robux" then
+			buy.MouseButton1Click:Connect(function()
 				-- Robux products aren't set up on Roblox yet, so nothing is charged.
 				Audio.play("UIError")
 				say("Robux buying opens at launch")
-			else
-				bundlePopup(pack)
+			end)
+			continue
+		end
+		local q = 1
+		local priceRow, stack, badge, off
+		local baseArt = img and img:IsA("ImageLabel") and img.Image or nil
+		local function show(animate)
+			local pr = pack.prices[q]
+			if priceRow then
+				priceRow:Destroy()
 			end
+			-- Coin sticker and the number, no "coins" word.
+			priceRow = Theme.row(tape, { { icon = "coin", iconSize = 26 }, { text = comma(pr.coins) } }, { size = 18, z = 15, color = C.black, outline = false, gap = 3 })
+			-- Pack art for this amount: a drawn stack when we have it, else copies fanned behind.
+			local qtyArt = Theme.IMG["packq_" .. pack.id .. "_x" .. pr.size]
+			if stack then
+				stack:Destroy()
+				stack = nil
+			end
+			if img and img:IsA("ImageLabel") then
+				img.Image = qtyArt or baseArt
+				if not qtyArt and pr.size > 1 then
+					stack = make("Frame", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), ZIndex = 12 }, card)
+					local n = pr.size >= 20 and 3 or 2
+					for k = n, 1, -1 do
+						local ghost = make("ImageLabel", {
+							AnchorPoint = Vector2.new(0.5, 0),
+							Position = UDim2.new(0.5, k * 9, 0, 4 + k * 2),
+							Size = UDim2.fromOffset(124, 186),
+							Rotation = k * 5,
+							BackgroundTransparency = 1,
+							Image = baseArt,
+							ImageColor3 = Color3.new(1, 1, 1):Lerp(C.black, 0.12 * k),
+							ScaleType = Enum.ScaleType.Fit,
+							ZIndex = 12,
+						}, stack)
+						if animate then
+							local from = ghost.Position
+							ghost.Position = UDim2.new(0.5, 0, 0, 4)
+							ghost.Rotation = 0
+							TweenService:Create(ghost, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = from, Rotation = k * 5 }):Play()
+						end
+					end
+				end
+			end
+			-- "x5" badge on the pack, and the saving on a red sticker.
+			if badge then
+				badge:Destroy()
+				badge = nil
+			end
+			if pr.size > 1 and not qtyArt then
+				badge = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -30, 0, 160), Size = UDim2.fromOffset(50, 50), BackgroundColor3 = C.gold, ZIndex = 16 }, card)
+				round(badge, 25)
+				stroke(badge, 3, C.black)
+				local bt = text(badge, { text = "x" .. pr.size, font = HEAD, size = 22, color = C.white, z = 17 })
+				make("UIStroke", { Thickness = 2, Color = C.black }, bt)
+				if animate then
+					local bs = make("UIScale", { Scale = 0.3 }, badge)
+					TweenService:Create(bs, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+				end
+			end
+			if off then
+				off:Destroy()
+				off = nil
+			end
+			if pr.discount > 0 then
+				off = Theme.tape(card, string.format("-%d%%", math.floor(pr.discount * 100 + 0.5)), { anchor = Vector2.new(0.5, 0.5), pos = UDim2.new(0, 34, 0, 18), sz = UDim2.fromOffset(62, 26), rot = -10, z = 16, font = HEAD, size = 17, color = C.red })
+			end
+			buy.Label.Text = pr.size > 1 and ("BUY x" .. pr.size) or "BUY"
+			if animate and img then
+				local ps = img:FindFirstChild("Pop") or make("UIScale", { Name = "Pop" }, img)
+				ps.Scale = 0.9
+				TweenService:Create(ps, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+			end
+		end
+		local function step(d)
+			q = (q - 1 + d) % #pack.prices + 1
+			pcall(Audio.play, "UIClick")
+			show(true)
+		end
+		if #pack.prices > 1 then
+			qtyArrow(card, -1, function()
+				step(-1)
+			end)
+			qtyArrow(card, 1, function()
+				step(1)
+			end)
+		end
+		show(false)
+		buy.MouseButton1Click:Connect(function()
+			buyPackSize(pack, pack.prices[q])
 		end)
 	end
 end
@@ -522,13 +622,14 @@ local function reveal(result)
 	-- A CanvasGroup so the spinning rays are clipped to the stage.
 	local stage = make("CanvasGroup", { Size = UDim2.new(1, 0, 1, -50), BackgroundColor3 = C.stage, ZIndex = 12 }, body)
 	round(stage, 12)
+	Theme.stageArt(stage, 12)
 	local count = text(body, { font = HEAD, size = 18, color = C.muted, sz = UDim2.new(0.5, 0, 0, 40), pos = UDim2.new(0, 4, 1, -42), align = Enum.TextXAlignment.Left, z = 12 })
 	local nextB = button(body, "NEXT", C.orange, UDim2.fromOffset(140, 40), UDim2.new(1, -140, 1, -42))
 	nextB.ZIndex = 12
 	local i = 0
 	local function step()
 		for _, c in ipairs(stage:GetChildren()) do
-			if not c:IsA("UICorner") then
+			if not c:IsA("UICorner") and c.Name ~= "StageArt" then
 				c:Destroy()
 			end
 		end
@@ -911,8 +1012,8 @@ round(board, 18)
 if not Theme.panelArt(board, 1) then
 	stroke(board, 3, C.black)
 end
-Theme.icon(board, "quests", UDim2.fromOffset(46, 46), UDim2.fromOffset(-10, -14), 3)
-local boardTitle = text(board, { text = "DAILY QUESTS", font = HEAD, size = 21, color = T.yellow, sz = UDim2.new(1, -60, 0, 30), pos = UDim2.fromOffset(42, 6), align = Enum.TextXAlignment.Left, z = 3 })
+Theme.icon(board, "quests", UDim2.fromOffset(30, 30), UDim2.fromOffset(12, 8), 3)
+local boardTitle = text(board, { text = "DAILY QUESTS", font = HEAD, size = 21, color = T.yellow, sz = UDim2.new(1, -60, 0, 30), pos = UDim2.fromOffset(48, 8), align = Enum.TextXAlignment.Left, z = 3 })
 make("UIStroke", { Thickness = 2, Color = C.black }, boardTitle)
 local boardRows = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, -28, 1, -50), Position = UDim2.fromOffset(14, 42), ZIndex = 2 }, board)
 make("UIListLayout", { Padding = UDim.new(0, 6) }, boardRows)
