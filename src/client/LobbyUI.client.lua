@@ -583,7 +583,9 @@ local function reveal(result)
 		nextB.Visible = false
 		count.Text = ""
 		local packRays = Theme.rays(stage, C.gold, 520, 13, 0.55)
-		Theme.wisps(stage, C.gold, 0.25, 13)
+		-- Wisps only while the pack is on screen: they live in a layer removed with it.
+		local packFx = make("Frame", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), ZIndex = 13 }, stage)
+		Theme.wisps(packFx, C.gold, 0.25, 13)
 		local p = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(170, 255), BackgroundTransparency = 1, Image = art, ZIndex = 14 }, stage)
 		local sc = make("UIScale", { Scale = 0.6 }, p)
 		TweenService:Create(sc, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
@@ -602,6 +604,7 @@ local function reveal(result)
 		if packRays then
 			packRays:Destroy()
 		end
+		packFx:Destroy()
 		TweenService:Create(flash, TweenInfo.new(0.35), { BackgroundTransparency = 1 }):Play()
 		task.delay(0.4, function()
 			flash:Destroy()
@@ -661,6 +664,7 @@ function openPacks()
 			if ok2 then
 				profile.coins = res.coins
 				refreshBar()
+				task.spawn(refreshBoard)
 				reveal(res)
 			else
 				b.Active = true
@@ -775,10 +779,11 @@ local function openQuests()
 	for i, q in ipairs(data.list) do
 		local done = q.progress >= q.target
 		-- A soft card per quest: sticker icon, title, a chunky progress bar and the reward.
-		local row = make("Frame", { Size = UDim2.new(1, 0, 0, 78), BackgroundColor3 = C.panel, ZIndex = 12 }, list)
+		-- White base: the UIGradient colours below multiply it, so they are the real colours.
+		local row = make("Frame", { Size = UDim2.new(1, 0, 0, 78), BackgroundColor3 = C.white, ZIndex = 12 }, list)
 		round(row, 16)
 		stroke(row, 2.5, C.black)
-		make("UIGradient", { Rotation = 90, Color = ColorSequence.new(Color3.fromHex("3b414e"), C.panel) }, row)
+		make("UIGradient", { Rotation = 90, Color = ColorSequence.new(Color3.fromHex("4b5160"), Color3.fromHex("3a3f4b")) }, row)
 		local chip = make("Frame", { Size = UDim2.fromOffset(58, 58), Position = UDim2.fromOffset(10, 10), BackgroundColor3 = tints[(i - 1) % #tints + 1], ZIndex = 13 }, row)
 		round(chip, 14)
 		stroke(chip, 2.5, C.black)
@@ -965,7 +970,7 @@ local playB = button(playHolder, "PLAY", C.gold, UDim2.fromScale(1, 1))
 playB.Rotation = 0 -- level, so the shine stays clipped inside it
 playB.Label.TextSize = 44
 Theme.withIcon(playB, "ball", 0.82, 92)
-Theme.glow(playB, C.gold, 26, 0.75)
+Theme.glow(playB, C.gold, 44, 0.95)
 Theme.shine(playB, 3)
 Theme.sparkles(playB, Color3.new(1, 1, 1), 0.6, 4, 18)
 local playing = false

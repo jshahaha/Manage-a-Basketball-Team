@@ -326,6 +326,19 @@ end
 -- ImageColor3 tints them. Every looping effect stops by itself once its frame is destroyed.
 local TweenService = game:GetService("TweenService")
 
+-- Fetch the effect sprites up front so the first pack opening already has its rays.
+task.spawn(function()
+	local list = {}
+	for _, k in ipairs({ "fx_glow", "fx_sparkle", "fx_wisp", "fx_shine", "fx_rays" }) do
+		if IMG[k] then
+			table.insert(list, IMG[k])
+		end
+	end
+	pcall(function()
+		game:GetService("ContentProvider"):PreloadAsync(list)
+	end)
+end)
+
 local function alive(o)
 	return o and o.Parent ~= nil and o:IsDescendantOf(game)
 end
