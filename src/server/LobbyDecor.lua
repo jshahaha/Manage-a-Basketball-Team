@@ -1,8 +1,8 @@
 --!nonstrict
 -- Lobby scenery: terrain (grass, rolling hills around the edge, a pond), trees, lamp posts,
 -- benches and the lighting setup. Kept apart from LobbyWorld so the gameplay pieces (stations,
--- plots) stay easy to read. When BlenderKit models are imported they replace the procedural
--- trees, lamps and benches here (look for a model of the same name in ServerStorage.LobbyAssets).
+-- plots) stay easy to read. Detailed meshes in ServerStorage.LobbyAssets (Tree, Lamp, Bench, Planter;
+-- pivot at the base centre) replace the procedural versions here.
 
 local Lighting = game:GetService("Lighting")
 local ServerStorage = game:GetService("ServerStorage")
@@ -82,7 +82,7 @@ function LobbyDecor.tree(parent, pos, size)
 	local m = asset("Tree")
 	if m then
 		m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, rnd(0, math.pi * 2), 0))
-		m:ScaleTo(size or 1)
+		m:ScaleTo(size or rnd(0.85, 1.25))
 		m.Parent = parent
 		return m
 	end
@@ -158,7 +158,13 @@ function LobbyDecor.bench(parent, cf)
 end
 
 function LobbyDecor.planter(parent, pos)
-	local m = Instance.new("Model")
+	local m = asset("Planter")
+	if m then
+		m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.floor(rnd(0, 4)) * math.pi / 2, 0))
+		m.Parent = parent
+		return m
+	end
+	m = Instance.new("Model")
 	m.Name = "Planter"
 	part(m, { Name = "Box", Size = Vector3.new(4, 2, 4), Position = pos + Vector3.new(0, 1, 0), Color = Color3.fromRGB(205, 200, 190), Material = Enum.Material.Concrete })
 	part(m, { Name = "Soil", Size = Vector3.new(3.4, 0.3, 3.4), Position = pos + Vector3.new(0, 2.05, 0), Color = Color3.fromRGB(80, 56, 40), Material = Enum.Material.Ground })
