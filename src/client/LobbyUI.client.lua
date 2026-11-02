@@ -178,14 +178,16 @@ local panel = make("Frame", {
 	ZIndex = 11,
 }, shade)
 make("UISizeConstraint", { MaxSize = Vector2.new(720, 480) }, panel)
-round(panel, 8)
-stroke(panel, 4, T.black)
-Theme.asphalt(panel)
-local strip = make("Frame", { Size = UDim2.new(1, 0, 0, 58), BackgroundColor3 = T.sunsetTop, ZIndex = 11, BorderSizePixel = 0 }, panel)
+if not Theme.panelArt(panel, 11) then
+	round(panel, 8)
+	stroke(panel, 4, T.black)
+	Theme.asphalt(panel)
+end
+local strip = make("Frame", { Position = UDim2.fromOffset(5, 5), Size = UDim2.new(1, -10, 0, 56), BackgroundColor3 = T.sunsetTop, ZIndex = 11, BorderSizePixel = 0 }, panel)
 round(strip, 8)
 Theme.sunset(strip)
--- Chain-link: thin diagonal lines over the sunset.
-for i = 0, 30 do
+-- Chain-link over the sunset (drawn tile, or thin lines as a fallback).
+for i = 0, (Theme.chainlink(strip, 11) and -1 or 30) do
 	for _, rot in ipairs({ 45, -45 }) do
 		make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0, i * 26, 0.5, 0), Size = UDim2.fromOffset(2, 84), Rotation = rot, BackgroundColor3 = T.black, BackgroundTransparency = 0.82, BorderSizePixel = 0, ZIndex = 11 }, strip)
 	end
@@ -194,8 +196,8 @@ strip.ClipsDescendants = true
 local titleTape, title = Theme.tape(panel, "", { pos = UDim2.fromOffset(16, 10), sz = UDim2.fromOffset(260, 40), rot = -2, z = 12, size = 24 })
 local close = button(panel, "X", C.red, UDim2.fromOffset(42, 42), UDim2.new(1, -54, 0, 8))
 close.ZIndex = 12
-close.FontFace = HEAD
-close.TextSize = 24
+close.Label.FontFace = HEAD
+close.Label.TextSize = 24
 local body = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, -76), Position = UDim2.fromOffset(12, 66), ZIndex = 12 }, panel)
 local panelScale = make("UIScale", {}, panel)
 
@@ -252,7 +254,7 @@ local function bundlePopup(pack)
 		end
 		local b = button(pop, label, i == 1 and C.blue or C.green, UDim2.new(1, -30, 0, 42), UDim2.fromOffset(15, 6 + i * 48))
 		b.ZIndex = 21
-		b.TextSize = 18
+		b.Label.TextSize = 18
 		b.MouseButton1Click:Connect(function()
 			local ok, res = call("buyPack", { pack = pack.id, size = pr.size })
 			if ok then
@@ -287,30 +289,34 @@ function openShop()
 		return
 	end
 	local s = scroller(body)
-	make("UIGridLayout", { CellSize = UDim2.fromOffset(160, 196), CellPadding = UDim2.fromOffset(10, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
+	make("UIGridLayout", { CellSize = UDim2.fromOffset(160, 262), CellPadding = UDim2.fromOffset(10, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
 	for i, pack in ipairs(data.packs) do
-		local card = make("Frame", { BackgroundColor3 = C.panel, LayoutOrder = i, ZIndex = 12 }, s)
-		round(card, 12)
-		stroke(card, 2)
-		-- Pack art: a coloured box in the colour of the best rarity it can drop.
-		local best
-		for id in pairs(pack.odds or {}) do
-			if not best or Config.RarityById[id].order > Config.RarityById[best].order then
-				best = id
+		local card = make("Frame", { BackgroundTransparency = 1, LayoutOrder = i, ZIndex = 12 }, s)
+		-- The pack itself: a rendered foil wrapper when we have one.
+		local art = Theme.IMG["pack_" .. pack.id]
+		if art then
+			local img = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 0), Size = UDim2.fromOffset(124, 186), BackgroundTransparency = 1, Image = art, ScaleType = Enum.ScaleType.Fit, ZIndex = 13 }, card)
+			-- Gentle bob so the shelf feels alive.
+			TweenService:Create(img, TweenInfo.new(1.6 + (i % 3) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = UDim2.new(0.5, 0, 0, 5) }):Play()
+		else
+			local best
+			for id in pairs(pack.odds or {}) do
+				if not best or Config.RarityById[id].order > Config.RarityById[best].order then
+					best = id
+				end
 			end
+			local box = make("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 4), Size = UDim2.fromOffset(116, 176), BackgroundColor3 = best and rarityColor(best) or C.pink, ZIndex = 13 }, card)
+			round(box, 6)
+			stroke(box, 3, C.black)
+			make("UIGradient", { Rotation = 70, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.5, 0.25), NumberSequenceKeypoint.new(1, 0) }) }, box)
+			local tag = text(box, { text = pack.name:gsub(" Pack", ""), font = MARK, size = 24, color = C.white, z = 14, scaled = true, rot = -6, sz = UDim2.new(1, -10, 0, 60), pos = UDim2.new(0, 5, 0.5, -30) })
+			tag.TextStrokeTransparency = 0
+			tag.TextStrokeColor3 = C.black
 		end
-		local art = make("Frame", { Size = UDim2.new(1, -16, 0, 74), Position = UDim2.fromOffset(8, 8), BackgroundColor3 = best and rarityColor(best) or C.pink, ZIndex = 13 }, card)
-		round(art, 10)
-		make("UIGradient", { Rotation = 90, Transparency = NumberSequence.new(0, 0.35) }, art)
-		-- Spray-painted pack name, tilted like a tag on a wall.
-		local tag = text(art, { text = pack.name:gsub(" Pack", ""), font = MARK, size = 26, color = C.white, z = 14, scaled = true, rot = -5, sz = UDim2.new(1, -14, 1, -10), pos = UDim2.fromOffset(7, 5) })
-		tag.TextStrokeTransparency = 0
-		tag.TextStrokeColor3 = C.black
-		stroke(art, 3, C.black)
-		text(card, { text = pack.name, font = HEAD, size = 17, sz = UDim2.new(1, -12, 0, 22), pos = UDim2.fromOffset(6, 86), z = 13, scaled = true })
-		text(card, { text = KIND_TEXT[pack.kind] or "", size = 12, color = C.muted, sz = UDim2.new(1, -12, 0, 16), pos = UDim2.fromOffset(6, 108), z = 13 })
-		text(card, { text = comma(pack.prices[1].coins) .. " coins", font = HEAD, size = 18, color = C.gold, sz = UDim2.new(1, -12, 0, 22), pos = UDim2.fromOffset(6, 126), z = 13 })
-		local buy = button(card, "BUY", C.orange, UDim2.new(1, -16, 0, 34), UDim2.new(0, 8, 1, -42))
+		-- Price on a strip of tape under the pack, then BUY.
+		local _, priceText = Theme.tape(card, comma(pack.prices[1].coins) .. " coins", { anchor = Vector2.new(0.5, 0), pos = UDim2.new(0.5, 0, 0, 190), sz = UDim2.fromOffset(132, 28), rot = (i % 2 == 0) and 2 or -2, z = 14, font = HEAD, size = 17 })
+		priceText.TextColor3 = C.black
+		local buy = button(card, "BUY", C.orange, UDim2.new(1, -16, 0, 40), UDim2.new(0, 8, 1, -42))
 		buy.ZIndex = 13
 		buy.MouseButton1Click:Connect(function()
 			bundlePopup(pack)
@@ -413,7 +419,7 @@ local function reveal(result)
 			Audio.play("Reveal" .. (c.rarity or "Common"))
 			TweenService:Create(f, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(150, 210), Position = UDim2.new() }):Play()
 			TweenService:Create(sc, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
-			nextB.Text = (i == #cards and #extras == 0) and "DONE" or "NEXT"
+			nextB.Label.Text = (i == #cards and #extras == 0) and "DONE" or "NEXT"
 		elseif i == #cards + 1 and #extras > 0 then
 			count.Text = "Also in the pack"
 			local list = make("Frame", { Size = UDim2.new(1, -24, 1, -24), Position = UDim2.fromOffset(12, 12), BackgroundTransparency = 1, ZIndex = 13 }, stage)
@@ -423,7 +429,7 @@ local function reveal(result)
 				round(row, 8)
 				text(row, { text = line, size = 16, sz = UDim2.new(1, -16, 1, 0), pos = UDim2.fromOffset(10, 0), align = Enum.TextXAlignment.Left, z = 14 })
 			end
-			nextB.Text = "DONE"
+			nextB.Label.Text = "DONE"
 		else
 			openPacks()
 		end
@@ -586,9 +592,9 @@ local function openQuests()
 		local done = q.progress >= q.target
 		local b = button(row, q.claimed and "CLAIMED" or (done and "CLAIM" or "IN PROGRESS"), q.claimed and C.muted or (done and C.green or C.stage), UDim2.fromOffset(140, 42), UDim2.new(1, -150, 0, 10))
 		b.ZIndex = 13
-		b.TextSize = 16
+		b.Label.TextSize = 16
 		if not done or q.claimed then
-			b.TextColor3 = q.claimed and C.white or C.muted
+			b.Label.TextColor3 = q.claimed and C.white or C.muted
 			b.AutoButtonColor = false
 		else
 			b.MouseButton1Click:Connect(function()
@@ -649,27 +655,13 @@ game:GetService("ProximityPromptService").PromptTriggered:Connect(function(promp
 end)
 
 -- Menu ---------------------------------------------------------------------------------------
--- Stencil slabs: dark fill, neon outline and neon lettering, each tilted a touch.
+-- Drawn sticker buttons, one neon each, tilted a touch.
 for i, m in ipairs({ { "SHOP", C.orange, openShop }, { "PACKS", C.green, openPacks }, { "CLUB", C.blue, openClub }, { "QUESTS", C.pink, openQuests } }) do
-	local holder = make("Frame", { Size = UDim2.fromOffset(140, 48), BackgroundTransparency = 1, LayoutOrder = i }, menu)
-	local b = make("TextButton", {
-		Text = m[1],
-		FontFace = HEAD,
-		TextSize = 24,
-		TextColor3 = m[2],
-		BackgroundColor3 = T.slate,
-		BackgroundTransparency = 0.1,
-		Size = UDim2.fromScale(1, 1),
-		Rotation = i % 2 == 0 and 1.5 or -1.5,
-		AutoButtonColor = true,
-		ZIndex = 2,
-	}, holder)
-	round(b, 4)
-	stroke(b, 3, m[2])
-	b.MouseButton1Click:Connect(function()
-		Audio.play("UIClick")
-		m[3]()
-	end)
+	local holder = make("Frame", { Size = UDim2.fromOffset(140, 50), BackgroundTransparency = 1, LayoutOrder = i }, menu)
+	local b = button(holder, m[1], m[2], UDim2.fromScale(1, 1))
+	b.Rotation = i % 2 == 0 and 1.5 or -1.5
+	b.Label.TextSize = 24
+	b.MouseButton1Click:Connect(m[3])
 end
 
 -- Quest board on the right: today's runs, written up like a court-side chalkboard.
@@ -717,37 +709,22 @@ function refreshBoard()
 	end
 end
 
--- PLAY: big court-yellow slab in the bottom right, where the thumb is.
-local playHolder = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -24), Size = UDim2.fromOffset(220, 74), BackgroundTransparency = 1 }, gui)
-local playShadow = make("Frame", { Position = UDim2.fromOffset(7, 7), Size = UDim2.fromScale(1, 1), BackgroundColor3 = C.orange, Rotation = -3 }, playHolder)
-round(playShadow, 6)
-local playB = make("TextButton", {
-	Text = "PLAY",
-	FontFace = HEAD,
-	TextSize = 44,
-	TextColor3 = C.black,
-	BackgroundColor3 = C.gold,
-	Size = UDim2.fromScale(1, 1),
-	Rotation = -3,
-	AutoButtonColor = true,
-	ZIndex = 2,
-}, playHolder)
-round(playB, 6)
-stroke(playB, 4, C.black)
-playB.MouseButton1Click:Connect(function()
-	Audio.play("UIClick")
-end)
+-- PLAY: big court-yellow sticker slab in the bottom right, where the thumb is.
+local playHolder = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -20), Size = UDim2.fromOffset(230, 92), BackgroundTransparency = 1 }, gui)
+local playB = button(playHolder, "PLAY", C.gold, UDim2.fromScale(1, 1))
+playB.Rotation = -3
+playB.Label.TextSize = 44
 local playing = false
 playB.MouseButton1Click:Connect(function()
 	if playing then
 		return
 	end
 	playing = true
-	playB.Text = "FINDING GAME..."
-	playB.TextSize = 24
+	playB.Label.Text = "FINDING GAME..."
+	playB.Label.TextSize = 24
 	local ok, data = call("playMatch")
-	playB.Text = "PLAY"
-	playB.TextSize = 44
+	playB.Label.Text = "PLAY"
+	playB.Label.TextSize = 44
 	if ok then
 		closePanel()
 		local ran, err = pcall(MatchView.run, data, gui)

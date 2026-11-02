@@ -99,24 +99,134 @@ function Theme.shadow(o, dx, dy, color)
 	return s
 end
 
--- Buttons: a solid neon slab with a black outline. `color` picks the neon; text colour follows.
+-- Drawn art (tools/ui/make_ui_art.py), uploaded to Roblox. Ids live in UIAssets; when one is
+-- missing the helpers fall back to plain frames so nothing breaks.
+local okAssets, IMG = pcall(require, script.Parent:WaitForChild("UIAssets", 2))
+if not okAssets or type(IMG) ~= "table" then
+	IMG = {}
+end
+Theme.IMG = IMG
+
+local BUTTON_ART = {
+	[C.yellow:ToHex()] = "yellow",
+	[C.orange:ToHex()] = "orange",
+	[C.lime:ToHex()] = "lime",
+	[C.sky:ToHex()] = "sky",
+	[C.pink:ToHex()] = "pink",
+	[C.red:ToHex()] = "red",
+	[C.slate:ToHex()] = "slate",
+	[C.deep:ToHex()] = "slate",
+	[C.muted:ToHex()] = "slate",
+	[C.asphalt:ToHex()] = "slate",
+}
+local BUTTON_TEXT = { yellow = C.black, orange = C.black, lime = C.black, sky = C.black, pink = C.black, red = C.white, slate = C.ink, purple = C.white }
+Theme.BUTTON_SLICE = Rect.new(24, 20, 136, 72) -- for the 160x96 button images
+
+-- Buttons: a chunky sticker slab drawn as a 9-slice image (outline, lip, gloss), with the label
+-- as a child TextLabel named "Label". Pressing swaps to the pressed art and nudges the label.
 function Theme.button(parent, label, color, sz, pos, onClick)
-	local b = make("TextButton", {
+	local art = BUTTON_ART[color:ToHex()] or "slate"
+	local up, down = IMG["btn_" .. art], IMG["btn_" .. art .. "_down"]
+	local b = make("ImageButton", {
+		Size = sz,
+		Position = pos or UDim2.new(),
+		BackgroundTransparency = 1,
+		Image = up or "",
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Theme.BUTTON_SLICE,
+		SliceScale = 0.5,
+		AutoButtonColor = false,
+	}, parent)
+	if not up then
+		b.BackgroundTransparency = 0
+		b.BackgroundColor3 = color
+		Theme.round(b, 6)
+		Theme.stroke(b, 3)
+	end
+	-- Smaller buttons get thinner borders so the slices fit.
+	local function fit()
+		local h = b.AbsoluteSize.Y
+		if h > 0 then
+			b.SliceScale = math.clamp(h / 110, 0.32, 0.9)
+		end
+	end
+	b:GetPropertyChangedSignal("AbsoluteSize"):Connect(fit)
+	task.defer(fit)
+	local t = make("TextLabel", {
+		Name = "Label",
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, -8, 0.82, -2),
+		Position = UDim2.fromOffset(4, 1),
 		Text = label,
 		FontFace = Theme.HEAD,
 		TextSize = 20,
-		TextColor3 = Theme.textOn(color),
-		BackgroundColor3 = color,
-		Size = sz,
-		Position = pos or UDim2.new(),
-		AutoButtonColor = true,
-	}, parent)
-	Theme.round(b, 6)
-	Theme.stroke(b, 3)
+		TextScaled = false,
+		TextWrapped = true,
+		TextColor3 = BUTTON_TEXT[art] or Theme.textOn(color),
+		ZIndex = b.ZIndex,
+	}, b)
+	b:GetPropertyChangedSignal("ZIndex"):Connect(function()
+		t.ZIndex = b.ZIndex
+	end)
+	local pressed = false
+	local function set(p)
+		pressed = p
+		if up then
+			b.Image = p and (down or up) or up
+		end
+		t.Position = p and UDim2.fromOffset(4, 4) or UDim2.fromOffset(4, 1)
+	end
+	b.MouseButton1Down:Connect(function()
+		set(true)
+	end)
+	b.MouseButton1Up:Connect(function()
+		set(false)
+	end)
+	b.MouseLeave:Connect(function()
+		if pressed then
+			set(false)
+		end
+	end)
 	if onClick then
 		b.MouseButton1Click:Connect(onClick)
 	end
-	return b
+	return b, t
+end
+
+-- The asphalt panel image behind a frame (9-slice). Returns true when the art is used.
+function Theme.panelArt(frame, z)
+	if not IMG.panel then
+		return false
+	end
+	frame.BackgroundTransparency = 1
+	make("ImageLabel", {
+		Name = "PanelArt",
+		BackgroundTransparency = 1,
+		Size = UDim2.fromScale(1, 1),
+		Image = IMG.panel,
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(32, 32, 224, 224),
+		SliceScale = 0.6,
+		ZIndex = z or frame.ZIndex,
+	}, frame)
+	return true
+end
+
+-- Tiled chain-link over a frame.
+function Theme.chainlink(frame, z)
+	if not IMG.chainlink then
+		return false
+	end
+	make("ImageLabel", {
+		Name = "Chainlink",
+		BackgroundTransparency = 1,
+		Size = UDim2.fromScale(1, 1),
+		Image = IMG.chainlink,
+		ScaleType = Enum.ScaleType.Tile,
+		TileSize = UDim2.fromOffset(36, 36),
+		ZIndex = z or frame.ZIndex,
+	}, frame)
+	return true
 end
 
 -- A strip of cream gaffer tape with marker writing, tilted a little.
@@ -130,10 +240,17 @@ function Theme.tape(parent, label, p)
 		BackgroundColor3 = p.color or C.tape,
 		ZIndex = p.z or 1,
 	}, parent)
-	Theme.round(f, 2)
-	-- Torn ends: two thin darker strips.
-	for _, x in ipairs({ 0, 1 }) do
-		make("Frame", { AnchorPoint = Vector2.new(x, 0), Position = UDim2.fromScale(x, 0), Size = UDim2.new(0, 3, 1, 0), BackgroundColor3 = C.black, BackgroundTransparency = 0.8, BorderSizePixel = 0, ZIndex = (p.z or 1) + 1 }, f)
+	local art = (p.color == C.yellow) and IMG.tape_yellow or IMG.tape_cream
+	if art and (p.color == nil or p.color == C.tape or p.color == C.yellow) then
+		-- Drawn tape: fibres, sheen and torn ends.
+		f.BackgroundTransparency = 1
+		make("ImageLabel", { Name = "TapeArt", BackgroundTransparency = 1, Size = UDim2.new(1, 10, 1, 6), Position = UDim2.fromOffset(-5, -3), Image = art, ZIndex = p.z or 1 }, f)
+	else
+		Theme.round(f, 2)
+		-- Torn ends: two thin darker strips.
+		for _, x in ipairs({ 0, 1 }) do
+			make("Frame", { AnchorPoint = Vector2.new(x, 0), Position = UDim2.fromScale(x, 0), Size = UDim2.new(0, 3, 1, 0), BackgroundColor3 = C.black, BackgroundTransparency = 0.8, BorderSizePixel = 0, ZIndex = (p.z or 1) + 1 }, f)
+		end
 	end
 	local t = Theme.text(f, { text = label, font = p.font or Theme.MARK, size = p.size or 20, color = C.black, z = (p.z or 1) + 1, sz = UDim2.new(1, -12, 1, 0), pos = UDim2.fromOffset(6, 0), scaled = true })
 	return f, t
