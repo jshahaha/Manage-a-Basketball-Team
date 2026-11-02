@@ -42,7 +42,7 @@ function LobbyDecor.terrain(bounds)
 	T:Clear()
 	local hx, hz = bounds.X, bounds.Z
 	-- Ground: grass with the top at y = 0.
-	T:FillBlock(CFrame.new(0, -7.2, 0), Vector3.new(hx * 2 + 200, 12, hz * 2 + 200), Enum.Material.Grass) -- top a little under y = 0 so floors and paving sit on it
+	T:FillBlock(CFrame.new(0, -9, 0), Vector3.new(hx * 2 + 200, 12, hz * 2 + 200), Enum.Material.Grass) -- top a little under y = 0 so floors and paving sit on it
 	-- Rolling hills around the edge, in two rings so they overlap into a soft wall.
 	for ring = 1, 2 do
 		local n = ring == 1 and 34 or 26
@@ -71,10 +71,10 @@ end
 -- Swap the grass under built areas for plain ground, so grass blades don't poke through
 -- paving, courts and floors.
 function LobbyDecor.clearGrassBlock(center, size)
-	workspace.Terrain:FillBlock(CFrame.new(center.X, -7.2, center.Z), Vector3.new(size.X, 12, size.Z), Enum.Material.Ground)
+	workspace.Terrain:FillBlock(CFrame.new(center.X, -9, center.Z), Vector3.new(size.X, 12, size.Z), Enum.Material.Ground)
 end
 function LobbyDecor.clearGrassDisc(center, radius)
-	workspace.Terrain:FillCylinder(CFrame.new(center.X, -7.2, center.Z), 12, radius, Enum.Material.Ground)
+	LobbyDecor.clearGrassBlock(center, Vector3.new(radius * 2, 0, radius * 2)) -- FillCylinder rounds the top up a whole voxel
 end
 
 -- A stylised tree: trunk and three stacked leaf balls in slightly different greens.
@@ -87,6 +87,7 @@ function LobbyDecor.tree(parent, pos, size)
 		return m
 	end
 	size = size or rnd(0.85, 1.25)
+	pos -= Vector3.new(0, 1.5, 0) -- root it into the ground, which sits a little under y = 0
 	m = Instance.new("Model")
 	m.Name = "Tree"
 	local h = 9 * size
