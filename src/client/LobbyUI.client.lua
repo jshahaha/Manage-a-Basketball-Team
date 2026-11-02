@@ -320,28 +320,33 @@ end
 
 -- Card reveal -------------------------------------------------------------------------------
 local function drawCard(parent, c, z)
-	local f = make("Frame", { Size = UDim2.fromOffset(150, 210), BackgroundColor3 = C.panel, ZIndex = z }, parent)
-	round(f, 12)
-	stroke(f, 4, rarityColor(c.rarity))
-	local band = make("Frame", { Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = rarityColor(c.rarity), ZIndex = z + 1 }, f)
-	round(band, 10)
-	text(band, { text = rarityName(c.rarity):upper(), font = HEAD, size = 15, color = C.white, z = z + 2 })
+	local f = make("Frame", { Size = UDim2.fromOffset(150, 210), BackgroundColor3 = T.tape, ZIndex = z }, parent)
+	round(f, 6)
+	stroke(f, 4, C.black)
+	-- Inner frame in the rarity colour, like the border of a street card.
+	local inner = make("Frame", { Size = UDim2.new(1, -10, 1, -10), Position = UDim2.fromOffset(5, 5), BackgroundTransparency = 1, ZIndex = z }, f)
+	round(inner, 4)
+	stroke(inner, 3, rarityColor(c.rarity))
+	local band = make("Frame", { Size = UDim2.new(1, -20, 0, 26), Position = UDim2.fromOffset(10, 8), Rotation = -2, BackgroundColor3 = rarityColor(c.rarity), ZIndex = z + 1 }, f)
+	round(band, 2)
+	stroke(band, 2, C.black)
+	text(band, { text = rarityName(c.rarity):upper(), font = HEAD, size = 15, color = Theme.textOn(rarityColor(c.rarity)), z = z + 2 })
 	if c.kind == "coach" then
-		text(f, { text = (c.side or "") .. " COACH", font = HEAD, size = 16, color = C.muted, sz = UDim2.new(1, 0, 0, 24), pos = UDim2.fromOffset(0, 40), z = z + 1 })
-		text(f, { text = c.name, font = HEAD, size = 20, sz = UDim2.new(1, -12, 0, 52), pos = UDim2.fromOffset(6, 74), z = z + 1, scaled = true })
+		text(f, { text = (c.side or "") .. " COACH", font = HEAD, size = 16, color = Color3.fromHex("5a5650"), sz = UDim2.new(1, 0, 0, 24), pos = UDim2.fromOffset(0, 40), z = z + 1 })
+		text(f, { color = C.black, text = c.name, font = HEAD, size = 20, sz = UDim2.new(1, -12, 0, 52), pos = UDim2.fromOffset(6, 74), z = z + 1, scaled = true })
 		local styles = {}
 		for _, st in ipairs(c.styles or {}) do
 			table.insert(styles, type(st) == "table" and (st.name or st.id) or tostring(st))
 		end
-		text(f, { text = table.concat(styles, ", "), size = 12, color = C.muted, sz = UDim2.new(1, -12, 0, 60), pos = UDim2.fromOffset(6, 132), z = z + 1 })
+		text(f, { text = table.concat(styles, ", "), size = 12, color = Color3.fromHex("5a5650"), sz = UDim2.new(1, -12, 0, 60), pos = UDim2.fromOffset(6, 132), z = z + 1 })
 		return f
 	end
-	text(f, { text = tostring(c.ovr), font = HEAD, size = 44, sz = UDim2.fromOffset(70, 50), pos = UDim2.fromOffset(6, 34), z = z + 1, align = Enum.TextXAlignment.Left })
-	text(f, { text = c.pos or "", font = HEAD, size = 22, color = C.blue, sz = UDim2.fromOffset(60, 30), pos = UDim2.new(1, -66, 0, 42), z = z + 1, align = Enum.TextXAlignment.Right })
-	text(f, { text = c.name, font = HEAD, size = 19, sz = UDim2.new(1, -12, 0, 48), pos = UDim2.fromOffset(6, 90), z = z + 1, scaled = true })
-	text(f, { text = c.archetype and Ratings.archetypeName(c.archetype) or "", size = 13, color = C.muted, sz = UDim2.new(1, -12, 0, 18), pos = UDim2.fromOffset(6, 140), z = z + 1 })
+	text(f, { color = C.black, text = tostring(c.ovr), font = HEAD, size = 44, sz = UDim2.fromOffset(70, 50), pos = UDim2.fromOffset(6, 34), z = z + 1, align = Enum.TextXAlignment.Left })
+	text(f, { text = c.pos or "", font = HEAD, size = 22, color = C.black, sz = UDim2.fromOffset(60, 30), pos = UDim2.new(1, -66, 0, 42), z = z + 1, align = Enum.TextXAlignment.Right })
+	text(f, { color = C.black, text = c.name, font = MARK, size = 20, sz = UDim2.new(1, -12, 0, 48), pos = UDim2.fromOffset(6, 90), z = z + 1, scaled = true })
+	text(f, { text = c.archetype and Ratings.archetypeName(c.archetype) or "", size = 13, color = Color3.fromHex("5a5650"), sz = UDim2.new(1, -12, 0, 18), pos = UDim2.fromOffset(6, 140), z = z + 1 })
 	local ft = c.height and string.format("%d'%d\"", math.floor(c.height / 12), c.height % 12) or ""
-	text(f, { text = ft .. (c.nation and ("  ·  " .. c.nation) or ""), size = 12, color = C.muted, sz = UDim2.new(1, -12, 0, 18), pos = UDim2.fromOffset(6, 162), z = z + 1 })
+	text(f, { text = ft .. (c.nation and ("  ·  " .. c.nation) or ""), size = 12, color = Color3.fromHex("5a5650"), sz = UDim2.new(1, -12, 0, 18), pos = UDim2.fromOffset(6, 162), z = z + 1 })
 	return f
 end
 

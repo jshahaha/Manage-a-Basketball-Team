@@ -143,7 +143,7 @@ end
 function Theme.asphalt(o)
 	make("UIGradient", {
 		Rotation = 90,
-		Color = ColorSequence.new(Color3.fromHex("33363b"), Color3.fromHex("25272b")),
+		Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(205, 205, 210)), -- multiplies the fill: lighter top, darker bottom
 	}, o)
 end
 
