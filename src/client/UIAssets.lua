@@ -1,8 +1,13 @@
 --!strict
 -- Uploaded UI art: buttons from tools/ui/make_ui_art.py, Blender-rendered panel and tape (same sizes),
--- pack renders, and icons from tools/ui/make_icons.py.
+-- pack renders, icons from tools/ui/make_icons.py, and effect sprites from tools/ui/make_fx.py.
 -- Theme falls back to plain frames for any id missing here.
 return {
+	fx_glow = "rbxassetid://98894174724010",
+	fx_rays = "rbxassetid://105287952057839",
+	fx_shine = "rbxassetid://74905296396610",
+	fx_sparkle = "rbxassetid://123928714102997",
+	fx_wisp = "rbxassetid://133989416959503",
 	btn_lime = "rbxassetid://108423894754049",
 	btn_lime_down = "rbxassetid://103476508040710",
 	btn_orange = "rbxassetid://79146611984964",
