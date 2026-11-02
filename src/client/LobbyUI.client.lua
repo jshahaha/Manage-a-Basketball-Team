@@ -117,32 +117,43 @@ local function say(msg)
 	end)
 end
 
--- Top bar: coins, gems and Elo written on strips of tape.
+-- Top bar: glossy currency bars, each with a big icon hanging off the left end.
 local bar = make("Frame", {
 	AnchorPoint = Vector2.new(0.5, 0),
-	Position = UDim2.new(0.5, 0, 0, 10),
-	Size = UDim2.fromOffset(480, 44),
+	Position = UDim2.new(0.5, 0, 0, 12),
+	Size = UDim2.fromOffset(540, 48),
 	BackgroundTransparency = 1,
 }, gui)
 make("UIListLayout", {
 	FillDirection = Enum.FillDirection.Horizontal,
 	HorizontalAlignment = Enum.HorizontalAlignment.Center,
 	VerticalAlignment = Enum.VerticalAlignment.Center,
-	Padding = UDim.new(0, 10),
+	Padding = UDim.new(0, 26),
 }, bar)
-local function pill(tag, color, rot, order)
+local function pill(tag, color, iconName, order)
 	local holder = make("Frame", { Size = UDim2.fromOffset(150, 44), BackgroundTransparency = 1, LayoutOrder = order }, bar)
-	local f = Theme.tape(holder, "", { sz = UDim2.fromScale(1, 1), rot = rot })
-	f:FindFirstChildOfClass("TextLabel"):Destroy()
-	-- Neon stencil tag on the left, the number in marker on the right.
-	local chip = make("Frame", { Size = UDim2.new(0, 42, 1, -10), Position = UDim2.fromOffset(6, 5), BackgroundColor3 = color, ZIndex = 3 }, f)
-	round(chip, 3)
-	text(chip, { text = tag, font = HEAD, size = 15, color = C.black, z = 4 })
-	return text(f, { text = "…", font = MARK, size = 20, color = C.black, sz = UDim2.new(1, -58, 1, 0), pos = UDim2.fromOffset(52, 0), align = Enum.TextXAlignment.Left, z = 3, scaled = true })
+	local back = Theme.IMG.icon_bar
+	local f
+	if back then
+		f = make("ImageLabel", { BackgroundTransparency = 1, Image = back, ScaleType = Enum.ScaleType.Slice, SliceCenter = Rect.new(44, 0, 196, 82), SliceScale = 0.5, Size = UDim2.fromScale(1, 1), ZIndex = 2 }, holder)
+	else
+		f = make("Frame", { BackgroundColor3 = T.slate, Size = UDim2.fromScale(1, 1), ZIndex = 2 }, holder)
+		round(f, 22)
+		stroke(f, 3, C.black)
+	end
+	local ic = Theme.icon(holder, iconName, UDim2.fromOffset(56, 56), UDim2.fromOffset(-22, -7), 4)
+	if not ic then
+		local chip = make("Frame", { Size = UDim2.new(0, 42, 1, -10), Position = UDim2.fromOffset(6, 5), BackgroundColor3 = color, ZIndex = 3 }, f)
+		round(chip, 8)
+		text(chip, { text = tag, font = HEAD, size = 15, color = C.black, z = 4 })
+	end
+	local v = text(f, { text = "…", font = HEAD, size = 24, color = C.white, sz = UDim2.new(1, -50, 1, -6), pos = UDim2.fromOffset(38, 0), align = Enum.TextXAlignment.Left, z = 3, scaled = true })
+	make("UIStroke", { Thickness = 2, Color = C.black, LineJoinMode = Enum.LineJoinMode.Round }, v)
+	return v
 end
-local coinsText = pill("COINS", C.gold, -2, 1)
-local gemsText = pill("GEMS", C.pink, 1.5, 2)
-local eloText = pill("ELO", C.blue, -1, 3)
+local coinsText = pill("COINS", C.gold, "coin", 1)
+local gemsText = pill("GEMS", C.pink, "gem", 2)
+local eloText = pill("ELO", C.blue, "trophy", 3)
 
 local profile = {}
 local function refreshBar()
@@ -807,11 +818,12 @@ end)
 
 -- Menu ---------------------------------------------------------------------------------------
 -- Drawn sticker buttons, one neon each, tilted a touch.
-for i, m in ipairs({ { "SHOP", C.orange, openShop }, { "PACKS", C.green, openPacks }, { "CLUB", C.blue, openClub }, { "QUESTS", C.pink, openQuests } }) do
+for i, m in ipairs({ { "SHOP", C.orange, openShop, "shop" }, { "PACKS", C.green, openPacks, "pack" }, { "CLUB", C.blue, openClub, "club" }, { "QUESTS", C.pink, openQuests, "quests" } }) do
 	local holder = make("Frame", { Size = UDim2.fromOffset(140, 50), BackgroundTransparency = 1, LayoutOrder = i }, menu)
-	local b = button(holder, m[1], m[2], UDim2.fromScale(1, 1))
+	local b = button(holder, m[1], m[2], UDim2.new(1, 0, 0, 50))
 	b.Rotation = 0
 	b.Label.TextSize = 24
+	Theme.withIcon(b, m[4], 1.15)
 	b.MouseButton1Click:Connect(m[3])
 end
 
@@ -865,6 +877,7 @@ local playHolder = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = U
 local playB = button(playHolder, "PLAY", C.gold, UDim2.fromScale(1, 1))
 playB.Rotation = -1.5
 playB.Label.TextSize = 44
+Theme.withIcon(playB, "ball", 0.82, 92)
 local playing = false
 playB.MouseButton1Click:Connect(function()
 	if playing then

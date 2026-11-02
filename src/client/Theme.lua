@@ -122,7 +122,7 @@ local BUTTON_ART = {
 	[C.muted:ToHex()] = "slate",
 	[C.asphalt:ToHex()] = "slate",
 }
-local BUTTON_TEXT = { yellow = C.black, orange = C.black, lime = C.black, sky = C.black, pink = C.black, red = C.white, slate = C.ink, purple = C.white }
+local BUTTON_TEXT = { yellow = C.white, orange = C.white, lime = C.white, sky = C.white, pink = C.white, red = C.white, slate = C.ink, purple = C.white }
 Theme.BUTTON_SLICE = Rect.new(28, 24, 132, 68) -- for the 160x96 button images
 
 -- Buttons: a chunky sticker slab drawn as a 9-slice image (outline, lip, gloss), with the label
@@ -168,6 +168,8 @@ function Theme.button(parent, label, color, sz, pos, onClick)
 		TextColor3 = BUTTON_TEXT[art] or Theme.textOn(color),
 		ZIndex = b.ZIndex,
 	}, b)
+	-- Charcoal outline around the label so white text pops on bright buttons.
+	make("UIStroke", { Thickness = 2.5, Color = C.black, LineJoinMode = Enum.LineJoinMode.Round, ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual }, t)
 	b:GetPropertyChangedSignal("ZIndex"):Connect(function()
 		t.ZIndex = b.ZIndex
 	end)
@@ -194,6 +196,38 @@ function Theme.button(parent, label, color, sz, pos, onClick)
 		b.MouseButton1Click:Connect(onClick)
 	end
 	return b, t
+end
+
+-- A drawn icon (tools/ui/make_icons.py): coin, gem, trophy, shop, pack, club, quests, ball, codes.
+function Theme.icon(parent, name, sz, pos, z)
+	local id = IMG["icon_" .. name]
+	if not id then
+		return nil
+	end
+	return make("ImageLabel", {
+		Name = "Icon",
+		BackgroundTransparency = 1,
+		Image = id,
+		Size = sz,
+		Position = pos or UDim2.new(),
+		ScaleType = Enum.ScaleType.Fit,
+		ZIndex = z or 1,
+	}, parent)
+end
+
+-- Put an icon on the left of a Theme.button and move its label over to make room.
+function Theme.withIcon(b, name, scale, height)
+	local h = height or (b.Size.Y.Offset > 0 and b.Size.Y.Offset) or 50
+	local size = math.floor(h * (scale or 1.05))
+	local ic = Theme.icon(b, name, UDim2.fromOffset(size, size), UDim2.new(0, -math.floor(size * 0.18), 0.5, -math.floor(size * 0.55)), b.ZIndex + 1)
+	if ic then
+		b.Label.Position = UDim2.fromOffset(math.floor(size * 0.7), 1)
+		b.Label.Size = UDim2.new(1, -math.floor(size * 0.7) - 6, 0.82, -2)
+		b:GetPropertyChangedSignal("ZIndex"):Connect(function()
+			ic.ZIndex = b.ZIndex + 1
+		end)
+	end
+	return ic
 end
 
 -- The asphalt panel image behind a frame (9-slice). Returns true when the art is used.
