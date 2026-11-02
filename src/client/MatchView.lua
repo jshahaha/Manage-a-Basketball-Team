@@ -155,6 +155,10 @@ function MatchView.run(data)
 			local kit = kits[side]
 			local body = PlayerModel.build(card, { jersey = kit, shorts = darker(kit, 0.85), trim = WHITE, number = NUMBERS[i] })
 			body.Name = (side == 1 and "Home" or "Away") .. i
+			local hum = body:FindFirstChildOfClass("Humanoid")
+			if hum then
+				hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+			end
 			body.Parent = folder
 			bodies[side][i] = body
 			S[side][i] = PoseSolver.setup(body)

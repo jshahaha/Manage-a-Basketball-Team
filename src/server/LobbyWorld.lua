@@ -117,7 +117,7 @@ local function buildPlaza(folder)
 	part(plaza, { Name = "BigBall", Shape = Enum.PartType.Ball, Size = Vector3.one * 8, Position = Vector3.new(0, 7, 0), Color = Color3.fromRGB(230, 110, 30), Material = Enum.Material.SmoothPlastic })
 	-- Walkways out to the two rows of courts.
 	for _, z in ipairs({ -1, 1 }) do
-		part(plaza, { Name = "Walk", Size = Vector3.new(420, 0.9, 10), Position = Vector3.new(0, -0.5, z * 40), Color = Color3.fromRGB(200, 205, 216), Material = Enum.Material.Concrete })
+		part(plaza, { Name = "Walk", Size = Vector3.new(420, 0.9, 10), Position = Vector3.new(0, -0.38, z * 40), Color = Color3.fromRGB(200, 205, 216), Material = Enum.Material.Concrete })
 	end
 	plaza.Parent = folder
 	local stations = Instance.new("Folder")
@@ -148,16 +148,15 @@ local function buildPlot(folder, i, center)
 	local court = Court.build({ home = NEUTRAL, away = NEUTRAL })
 	court:PivotTo(CFrame.new(center + Vector3.new(0, 0.5, 0)))
 	court.Parent = plot
-	-- Name board beside the court, facing the plaza.
-	-- North row: on the open apron side. South row: the stands face the plaza, so the board
-	-- goes up behind the top row.
-	local towardPlaza = center.Z < 0 and 1 or -1
-	local signPos = towardPlaza > 0 and center + Vector3.new(0, 7, Court.Width / 2 + 12) or center + Vector3.new(0, 13, -(Court.Width / 2 + 26))
-	local board = part(plot, { Name = "NameBoard", Size = Vector3.new(30, 6, 0.6), CFrame = CFrame.lookAt(signPos, signPos + Vector3.new(0, 0, towardPlaza)), Color = Color3.fromHex("1b2140") })
+	-- Name board up behind the stands, so it reads in the background of the match camera and
+	-- from the plaza. Text on both faces.
+	local signPos = center + Vector3.new(0, 14, -(Court.Width / 2 + 26))
+	local board = part(plot, { Name = "NameBoard", Size = Vector3.new(30, 6, 0.6), Position = signPos, Color = Color3.fromHex("1b2140") })
 	for _, x in ipairs({ -13, 13 }) do
 		local h = signPos.Y - center.Y
 		part(plot, { Name = "Post", Size = Vector3.new(0.6, h, 0.6), Position = Vector3.new(signPos.X + x, center.Y + h / 2, signPos.Z), Color = Color3.fromRGB(60, 66, 90) })
 	end
+	signText(board, Enum.NormalId.Back, "OPEN COURT").Name = "OwnerText"
 	local label = signText(board, Enum.NormalId.Front, "OPEN COURT")
 	label.Name = "OwnerText"
 	plot:SetAttribute("Index", i)
@@ -203,9 +202,11 @@ local function paint(plot, color, text)
 		end
 	end
 	local board = plot:FindFirstChild("NameBoard")
-	local label = board and board:FindFirstChildWhichIsA("SurfaceGui") and board:FindFirstChildWhichIsA("SurfaceGui"):FindFirstChild("OwnerText")
-	if label then
-		label.Text = text
+	for _, g in ipairs(board and board:GetChildren() or {}) do
+		local label = g:IsA("SurfaceGui") and g:FindFirstChild("OwnerText")
+		if label then
+			label.Text = text
+		end
 	end
 end
 
