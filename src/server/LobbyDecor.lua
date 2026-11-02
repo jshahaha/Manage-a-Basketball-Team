@@ -68,6 +68,15 @@ function LobbyDecor.terrain(bounds)
 	T.WaterWaveSpeed = 6
 end
 
+-- Swap the grass under built areas for plain ground, so grass blades don't poke through
+-- paving, courts and floors.
+function LobbyDecor.clearGrassBlock(center, size)
+	workspace.Terrain:FillBlock(CFrame.new(center.X, -6, center.Z), Vector3.new(size.X, 12, size.Z), Enum.Material.Ground)
+end
+function LobbyDecor.clearGrassDisc(center, radius)
+	workspace.Terrain:FillCylinder(CFrame.new(center.X, -6, center.Z), 12, radius, Enum.Material.Ground)
+end
+
 -- A stylised tree: trunk and three stacked leaf balls in slightly different greens.
 function LobbyDecor.tree(parent, pos, size)
 	local m = asset("Tree")

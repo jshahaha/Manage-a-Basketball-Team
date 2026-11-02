@@ -353,6 +353,16 @@ function LobbyWorld.build()
 	end
 	LobbyDecor.terrain({ X = 340, Z = 260, pond = Vector3.new(-135, 0, 45) })
 	LobbyDecor.lighting()
+	-- No grass under the plaza, storefronts, walkways and courts.
+	LobbyDecor.clearGrassDisc(Vector3.zero, SHOP_R + 16)
+	for _, rowZ in ipairs({ ROW_Z.north, ROW_Z.south }) do
+		local wz = rowWalkZ(rowZ)
+		LobbyDecor.clearGrassBlock(Vector3.new(0, 0, wz), Vector3.new(504, 0, 16))
+		LobbyDecor.clearGrassBlock(Vector3.new(0, 0, wz / 2), Vector3.new(20, 0, math.abs(wz)))
+	end
+	for _, c in ipairs(LobbyWorld.PlotCenters) do
+		LobbyDecor.clearGrassBlock(Vector3.new(c.X, 0, c.Z - 6), Vector3.new(116, 0, 88))
+	end
 	local folder = Instance.new("Folder")
 	folder.Name = "Lobby"
 	buildPlaza(folder)
