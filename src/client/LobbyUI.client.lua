@@ -3,7 +3,7 @@
 --   Shop  : every pack with Buy; Buy opens the 1x / 5x / 20x popup.
 --   Packs : the packs and bundles you own; Open plays the card reveal.
 --   Club  : your roster. Tap two players to swap them, then Save the matchday ten.
--- Colours follow the UI mockups (light theme).
+-- Look: the Blacktop theme (src/client/Theme.lua).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -20,22 +20,28 @@ local MatchView = require(script.Parent:WaitForChild("MatchView"))
 
 local player = Players.LocalPlayer
 
+local Theme = require(script.Parent:WaitForChild("Theme"))
+local T = Theme.C
+-- Old colour names mapped onto the Blacktop palette, so every screen picks up the new look.
 local C = {
-	bg = Color3.fromHex("f3f6fb"),
-	panel = Color3.new(1, 1, 1),
-	ink = Color3.fromHex("1b2140"),
-	muted = Color3.fromHex("5b6380"),
-	blue = Color3.fromHex("2e6fd8"),
-	orange = Color3.fromHex("e8650c"),
-	gold = Color3.fromHex("b98a00"),
-	green = Color3.fromHex("1f9e3f"),
-	rule = Color3.fromHex("d9dfeb"),
-	stage = Color3.fromHex("dfe6f1"),
-	pink = Color3.fromHex("e8456b"),
-	white = Color3.new(1, 1, 1),
+	bg = T.asphalt,
+	panel = T.slate,
+	ink = T.ink,
+	muted = T.muted,
+	blue = T.sky,
+	orange = T.orange,
+	gold = T.yellow,
+	green = T.lime,
+	rule = T.line,
+	stage = T.deep,
+	pink = T.pink,
+	white = T.white,
+	black = T.black,
+	red = T.red,
 }
-local HEAD = Enum.Font.FredokaOne
-local BODY = Enum.Font.GothamBold
+local HEAD = Theme.HEAD
+local BODY = Theme.BODY
+local MARK = Theme.MARK
 
 local function rarityColor(id)
 	local r = Config.RarityById[id]
@@ -57,54 +63,13 @@ local function comma(n)
 	return s
 end
 
--- Small UI helpers --------------------------------------------------------------------------
-local function make(class, props, parent)
-	local o = Instance.new(class)
-	for k, v in pairs(props) do
-		o[k] = v
-	end
-	o.Parent = parent
-	return o
-end
-local function round(o, r)
-	make("UICorner", { CornerRadius = UDim.new(0, r) }, o)
-end
-local function stroke(o, t, color)
-	make("UIStroke", { Thickness = t, Color = color or C.ink, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, o)
-end
-local function text(parent, props)
-	local l = make("TextLabel", {
-		BackgroundTransparency = 1,
-		Font = props.font or BODY,
-		TextSize = props.size or 16,
-		TextColor3 = props.color or C.ink,
-		Text = props.text or "",
-		TextWrapped = true,
-		TextScaled = props.scaled or false,
-		TextXAlignment = props.align or Enum.TextXAlignment.Center,
-		Size = props.sz or UDim2.fromScale(1, 1),
-		Position = props.pos or UDim2.new(),
-		AnchorPoint = props.anchor or Vector2.zero,
-		ZIndex = props.z or 1,
-	}, parent)
-	if props.scaled then
-		make("UITextSizeConstraint", { MaxTextSize = props.size or 16 }, l)
-	end
-	return l
-end
+-- Small UI helpers (from Theme) ----------------------------------------------------------------
+local make = Theme.make
+local round = Theme.round
+local stroke = Theme.stroke
+local text = Theme.text
 local function button(parent, label, color, sz, pos)
-	local b = make("TextButton", {
-		Text = label,
-		Font = HEAD,
-		TextSize = 20,
-		TextColor3 = C.white,
-		BackgroundColor3 = color,
-		Size = sz,
-		Position = pos or UDim2.new(),
-		AutoButtonColor = true,
-	}, parent)
-	round(b, 12)
-	stroke(b, 2)
+	local b = Theme.button(parent, label, color, sz, pos)
 	b.MouseButton1Click:Connect(function()
 		Audio.play("UIClick")
 	end)
@@ -136,24 +101,14 @@ end
 -- Screen ------------------------------------------------------------------------------------
 local gui = make("ScreenGui", { Name = "Lobby", ResetOnSpawn = false, ZIndexBehavior = Enum.ZIndexBehavior.Sibling, DisplayOrder = 5 }, player:WaitForChild("PlayerGui"))
 
--- Toast for errors and confirmations.
-local toast = make("TextLabel", {
-	AnchorPoint = Vector2.new(0.5, 1),
-	Position = UDim2.new(0.5, 0, 1, -90),
-	Size = UDim2.fromOffset(320, 42),
-	BackgroundColor3 = C.ink,
-	TextColor3 = C.white,
-	Font = BODY,
-	TextSize = 16,
-	Visible = false,
-	ZIndex = 50,
-}, gui)
-round(toast, 10)
+-- Toast for errors and confirmations: a strip of yellow tape.
+local toast, toastText = Theme.tape(gui, "", { anchor = Vector2.new(0.5, 1), pos = UDim2.new(0.5, 0, 1, -104), sz = UDim2.fromOffset(340, 40), color = T.yellow, rot = -1, z = 50, font = HEAD, size = 18 })
+toast.Visible = false
 local toastId = 0
 local function say(msg)
 	toastId += 1
 	local id = toastId
-	toast.Text = msg
+	toastText.Text = tostring(msg)
 	toast.Visible = true
 	task.delay(2.2, function()
 		if toastId == id then
@@ -162,43 +117,38 @@ local function say(msg)
 	end)
 end
 
--- Top bar: coins, gems, Elo.
+-- Top bar: coins, gems and Elo written on strips of tape.
 local bar = make("Frame", {
 	AnchorPoint = Vector2.new(0.5, 0),
-	Position = UDim2.new(0.5, 0, 0, 8),
-	Size = UDim2.fromOffset(420, 44),
+	Position = UDim2.new(0.5, 0, 0, 10),
+	Size = UDim2.fromOffset(480, 44),
 	BackgroundTransparency = 1,
 }, gui)
 make("UIListLayout", {
 	FillDirection = Enum.FillDirection.Horizontal,
 	HorizontalAlignment = Enum.HorizontalAlignment.Center,
-	Padding = UDim.new(0, 8),
+	VerticalAlignment = Enum.VerticalAlignment.Center,
+	Padding = UDim.new(0, 10),
 }, bar)
-local function pill(icon, color)
-	local f = make("Frame", { Size = UDim2.fromOffset(132, 40), BackgroundColor3 = C.panel }, bar)
-	round(f, 20)
-	stroke(f, 2)
-	local dot = make("TextLabel", {
-		Size = UDim2.fromOffset(30, 30),
-		Position = UDim2.fromOffset(5, 5),
-		BackgroundColor3 = color,
-		Text = icon,
-		Font = HEAD,
-		TextSize = 16,
-		TextColor3 = C.white,
-	}, f)
-	round(dot, 15)
-	return text(f, { text = "…", font = HEAD, size = 20, sz = UDim2.new(1, -44, 1, 0), pos = UDim2.fromOffset(40, 0), align = Enum.TextXAlignment.Left })
+local function pill(tag, color, rot, order)
+	local holder = make("Frame", { Size = UDim2.fromOffset(150, 44), BackgroundTransparency = 1, LayoutOrder = order }, bar)
+	local f = Theme.tape(holder, "", { sz = UDim2.fromScale(1, 1), rot = rot })
+	f:FindFirstChildOfClass("TextLabel"):Destroy()
+	-- Neon stencil tag on the left, the number in marker on the right.
+	local chip = make("Frame", { Size = UDim2.new(0, 42, 1, -10), Position = UDim2.fromOffset(6, 5), BackgroundColor3 = color, ZIndex = 3 }, f)
+	round(chip, 3)
+	text(chip, { text = tag, font = HEAD, size = 15, color = C.black, z = 4 })
+	return text(f, { text = "…", font = MARK, size = 20, color = C.black, sz = UDim2.new(1, -58, 1, 0), pos = UDim2.fromOffset(52, 0), align = Enum.TextXAlignment.Left, z = 3, scaled = true })
 end
-local coinsText = pill("C", C.gold)
-local gemsText = pill("G", C.pink)
-local eloText = pill("E", C.blue)
+local coinsText = pill("COINS", C.gold, -2, 1)
+local gemsText = pill("GEMS", C.pink, 1.5, 2)
+local eloText = pill("ELO", C.blue, -1, 3)
 
 local profile = {}
 local function refreshBar()
 	coinsText.Text = comma(profile.coins)
 	gemsText.Text = comma(profile.gems)
-	eloText.Text = profile.elo and (comma(profile.elo) .. "  " .. (profile.tier or "")) or "…"
+	eloText.Text = profile.elo and (comma(profile.elo) .. " " .. (profile.tier or "")) or "…"
 end
 local function loadProfile()
 	local ok, data = call("getProfile")
@@ -209,17 +159,17 @@ local function loadProfile()
 	return ok
 end
 
--- Menu buttons down the right side.
+-- Menu: stencil buttons down the left side, each with its own neon.
 local menu = make("Frame", {
-	AnchorPoint = Vector2.new(1, 0.5),
-	Position = UDim2.new(1, -12, 0.5, 0),
-	Size = UDim2.fromOffset(120, 4 * 54),
+	AnchorPoint = Vector2.new(0, 0.5),
+	Position = UDim2.new(0, 14, 0.5, -10),
+	Size = UDim2.fromOffset(140, 4 * 58),
 	BackgroundTransparency = 1,
 }, gui)
-make("UIListLayout", { Padding = UDim.new(0, 8) }, menu)
+make("UIListLayout", { Padding = UDim.new(0, 10) }, menu)
 
--- Modal panel shared by every screen.
-local shade = make("TextButton", { Text = "", AutoButtonColor = false, Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.45, Visible = false, ZIndex = 10 }, gui)
+-- Modal panel shared by every screen: asphalt with a sunset strip and a tape title.
+local shade = make("TextButton", { Text = "", AutoButtonColor = false, Size = UDim2.fromScale(1, 1), BackgroundColor3 = T.deep, BackgroundTransparency = 0.35, Visible = false, ZIndex = 10 }, gui)
 local panel = make("Frame", {
 	AnchorPoint = Vector2.new(0.5, 0.5),
 	Position = UDim2.fromScale(0.5, 0.53),
@@ -228,12 +178,25 @@ local panel = make("Frame", {
 	ZIndex = 11,
 }, shade)
 make("UISizeConstraint", { MaxSize = Vector2.new(720, 480) }, panel)
-round(panel, 16)
-stroke(panel, 3)
-local title = text(panel, { font = HEAD, size = 26, sz = UDim2.new(1, -120, 0, 44), pos = UDim2.fromOffset(18, 6), align = Enum.TextXAlignment.Left, z = 12 })
-local close = button(panel, "X", C.pink, UDim2.fromOffset(40, 40), UDim2.new(1, -50, 0, 8))
+round(panel, 8)
+stroke(panel, 4, T.black)
+Theme.asphalt(panel)
+local strip = make("Frame", { Size = UDim2.new(1, 0, 0, 58), BackgroundColor3 = T.sunsetTop, ZIndex = 11, BorderSizePixel = 0 }, panel)
+round(strip, 8)
+Theme.sunset(strip)
+-- Chain-link: thin diagonal lines over the sunset.
+for i = 0, 30 do
+	for _, rot in ipairs({ 45, -45 }) do
+		make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0, i * 26, 0.5, 0), Size = UDim2.fromOffset(2, 84), Rotation = rot, BackgroundColor3 = T.black, BackgroundTransparency = 0.82, BorderSizePixel = 0, ZIndex = 11 }, strip)
+	end
+end
+strip.ClipsDescendants = true
+local titleTape, title = Theme.tape(panel, "", { pos = UDim2.fromOffset(16, 10), sz = UDim2.fromOffset(260, 40), rot = -2, z = 12, size = 24 })
+local close = button(panel, "X", C.red, UDim2.fromOffset(42, 42), UDim2.new(1, -54, 0, 8))
 close.ZIndex = 12
-local body = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, -64), Position = UDim2.fromOffset(12, 54), ZIndex = 12 }, panel)
+close.FontFace = HEAD
+close.TextSize = 24
+local body = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, -76), Position = UDim2.fromOffset(12, 66), ZIndex = 12 }, panel)
 local panelScale = make("UIScale", {}, panel)
 
 local function clearBody()
@@ -243,6 +206,7 @@ local function clearBody()
 end
 local function openPanel(name)
 	title.Text = name
+	titleTape.Size = UDim2.fromOffset(math.clamp(#name * 17 + 40, 160, 420), 40)
 	clearBody()
 	text(body, { text = "Loading...", font = HEAD, size = 20, color = C.muted, z = 12 }).Name = "Loading"
 	if not shade.Visible then
@@ -274,6 +238,7 @@ end
 
 -- Shop ---------------------------------------------------------------------------------------
 local openShop, openPacks, openClub
+local refreshBoard
 
 local function bundlePopup(pack)
 	local pop = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(330, 250), BackgroundColor3 = C.panel, ZIndex = 20 }, body)
@@ -542,7 +507,7 @@ function openClub()
 				Text = "",
 				AutoButtonColor = true,
 				Size = UDim2.new(1, -10, 0, 40),
-				BackgroundColor3 = picked == i and Color3.fromHex("fff1c4") or C.panel,
+				BackgroundColor3 = picked == i and Color3.fromHex("4a4228") or C.panel,
 				LayoutOrder = i <= 5 and i or (i <= 10 and 50 + i or 100 + i),
 				ZIndex = 12,
 			}, s)
@@ -624,6 +589,7 @@ local function openQuests()
 					refreshBar()
 					Audio.play("CoinsGainM")
 					openQuests()
+					task.spawn(refreshBoard)
 				else
 					say(res)
 				end
@@ -674,15 +640,94 @@ game:GetService("ProximityPromptService").PromptTriggered:Connect(function(promp
 end)
 
 -- Menu ---------------------------------------------------------------------------------------
-for _, m in ipairs({ { "SHOP", C.orange, openShop }, { "PACKS", C.green, openPacks }, { "CLUB", C.blue, openClub }, { "QUESTS", C.pink, openQuests } }) do
-	local b = button(menu, m[1], m[2], UDim2.fromOffset(120, 46))
-	b.TextSize = 22
-	b.MouseButton1Click:Connect(m[3])
+-- Stencil slabs: dark fill, neon outline and neon lettering, each tilted a touch.
+for i, m in ipairs({ { "SHOP", C.orange, openShop }, { "PACKS", C.green, openPacks }, { "CLUB", C.blue, openClub }, { "QUESTS", C.pink, openQuests } }) do
+	local holder = make("Frame", { Size = UDim2.fromOffset(140, 48), BackgroundTransparency = 1, LayoutOrder = i }, menu)
+	local b = make("TextButton", {
+		Text = m[1],
+		FontFace = HEAD,
+		TextSize = 24,
+		TextColor3 = m[2],
+		BackgroundColor3 = T.slate,
+		BackgroundTransparency = 0.1,
+		Size = UDim2.fromScale(1, 1),
+		Rotation = i % 2 == 0 and 1.5 or -1.5,
+		AutoButtonColor = true,
+		ZIndex = 2,
+	}, holder)
+	round(b, 4)
+	stroke(b, 3, m[2])
+	b.MouseButton1Click:Connect(function()
+		Audio.play("UIClick")
+		m[3]()
+	end)
 end
 
--- PLAY: the big button at the bottom. The server plays the game; the match screen acts it out.
-local playB = button(gui, "PLAY", C.green, UDim2.fromOffset(200, 60), UDim2.new(0.5, -100, 1, -84))
-playB.TextSize = 32
+-- Quest board on the right: today's runs, written up like a court-side chalkboard.
+local board = make("TextButton", {
+	Text = "",
+	AutoButtonColor = false,
+	AnchorPoint = Vector2.new(1, 0),
+	Position = UDim2.new(1, -16, 0, 74),
+	Size = UDim2.fromOffset(240, 150),
+	BackgroundColor3 = T.slate,
+	BackgroundTransparency = 0.08,
+	Rotation = 1,
+}, gui)
+round(board, 4)
+stroke(board, 3, T.tape)
+text(board, { text = "today's runs", font = MARK, size = 22, color = T.yellow, sz = UDim2.new(1, -20, 0, 32), pos = UDim2.fromOffset(12, 6), align = Enum.TextXAlignment.Left, z = 2 })
+local boardRows = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, -46), Position = UDim2.fromOffset(12, 40), ZIndex = 2 }, board)
+make("UIListLayout", { Padding = UDim.new(0, 4) }, boardRows)
+board.MouseButton1Click:Connect(function()
+	Audio.play("UIClick")
+	openQuests()
+end)
+function refreshBoard()
+	local ok, data = call("getQuests")
+	if not ok then
+		return
+	end
+	for _, c in ipairs(boardRows:GetChildren()) do
+		if c:IsA("GuiObject") then
+			c:Destroy()
+		end
+	end
+	for i, q in ipairs(data.list) do
+		if i > 3 then
+			break
+		end
+		local done = q.progress >= q.target
+		local row = make("Frame", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, ZIndex = 2 }, boardRows)
+		local name = text(row, { text = q.text, font = BODY, size = 14, color = (done or q.claimed) and C.muted or C.ink, sz = UDim2.new(1, -56, 1, 0), align = Enum.TextXAlignment.Left, z = 3, scaled = true })
+		if q.claimed then
+			-- Crossed out once claimed.
+			make("Frame", { AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.fromScale(0, 0.5), Size = UDim2.new(0.8, 0, 0, 2), BackgroundColor3 = C.muted, BorderSizePixel = 0, ZIndex = 4 }, name)
+		end
+		text(row, { text = q.claimed and "done" or (done and "CLAIM!" or string.format("%d/%d", q.progress, q.target)), font = done and not q.claimed and HEAD or MARK, size = 16, color = done and not q.claimed and C.green or C.muted, sz = UDim2.new(0, 54, 1, 0), pos = UDim2.new(1, -54, 0, 0), align = Enum.TextXAlignment.Right, z = 3 })
+	end
+end
+
+-- PLAY: big court-yellow slab in the bottom right, where the thumb is.
+local playHolder = make("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -24), Size = UDim2.fromOffset(220, 74), BackgroundTransparency = 1 }, gui)
+local playShadow = make("Frame", { Position = UDim2.fromOffset(7, 7), Size = UDim2.fromScale(1, 1), BackgroundColor3 = C.orange, Rotation = -3 }, playHolder)
+round(playShadow, 6)
+local playB = make("TextButton", {
+	Text = "PLAY",
+	FontFace = HEAD,
+	TextSize = 44,
+	TextColor3 = C.black,
+	BackgroundColor3 = C.gold,
+	Size = UDim2.fromScale(1, 1),
+	Rotation = -3,
+	AutoButtonColor = true,
+	ZIndex = 2,
+}, playHolder)
+round(playB, 6)
+stroke(playB, 4, C.black)
+playB.MouseButton1Click:Connect(function()
+	Audio.play("UIClick")
+end)
 local playing = false
 playB.MouseButton1Click:Connect(function()
 	if playing then
@@ -690,10 +735,10 @@ playB.MouseButton1Click:Connect(function()
 	end
 	playing = true
 	playB.Text = "FINDING GAME..."
-	playB.TextSize = 20
+	playB.TextSize = 24
 	local ok, data = call("playMatch")
 	playB.Text = "PLAY"
-	playB.TextSize = 32
+	playB.TextSize = 44
 	if ok then
 		closePanel()
 		local ran, err = pcall(MatchView.run, data, gui)
@@ -710,6 +755,7 @@ playB.MouseButton1Click:Connect(function()
 			say(data.rewards.won and "You won! Rewards added." or "Game over. Rewards added.")
 		end
 		loadProfile()
+		refreshBoard()
 	else
 		say(data)
 	end
@@ -724,10 +770,12 @@ task.spawn(function()
 		end
 		task.wait(1)
 	end
+	refreshBoard()
 	while gui.Parent do
 		task.wait(20)
 		if not shade.Visible then
 			loadProfile()
+			refreshBoard()
 		end
 	end
 end)
