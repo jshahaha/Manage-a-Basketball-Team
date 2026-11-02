@@ -37,6 +37,19 @@ Template:
 - What: Paint your floor in your team colors, with a center-court emblem and banners. Meshes would be made in Blender.
 - Size: M
 
+### Player badges
+- Status: inbox (idea)
+- Added by / date: js via Claude, 2026-11-01
+- What: Badges you put on players who meet their rating requirements. A badge gives a boost when your team runs a matching play style. Examples:
+  - **Deadeye** (3PT 85+): +3PT% in 5-Out and Pace & Space.
+  - **Lob Threat** (Driving Dunk 85+, Vertical 85+): more lobs and dunks in Pick & Roll.
+  - **Paint Wall** (Block 80+, Interior D 80+): stronger 2-3 Zone and Drop Coverage.
+  - **Pickpocket** (Steal 80+): more turnovers forced in Full-Court Press.
+  - **Floor Raiser** (Passing 85+): more assists and fewer turnovers in Motion.
+
+  Each player has 1 to 3 badge slots by rarity. Badges come from achievements or as pack drops.
+- Size: M
+
 ### Ranked seasons
 - Status: inbox (idea only, not planned)
 - Added by / date: js via Claude, 2026-11-01

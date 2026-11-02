@@ -26,7 +26,14 @@ Every rating runs from 1 to 99. There are 20 ratings in 6 groups.
 - **PF:** Close Shot, Post Moves, Interior Defense, Rebounding and Strength count most.
 - **C:** Standing Dunk, Block, Interior Defense, Rebounding and Strength count most.
 
-**Physicals:** height and wingspan are shown on the card, such as 6'9" with a 7'1" wingspan. Players have no rating for them, but they nudge blocks, rebounds and contested shots.
+**Player info** on the card and detail panel:
+- **Nationality**, shown as a flag. Nations are picked with weights, so most players are from the US with plenty from around the world.
+- **Height, wingspan and weight**, such as 6'9", 7'1" wingspan, 228 lb. Players have no rating for these, but they nudge blocks, rebounds, contested shots and post-ups.
+- **Positions:** anyone can play any position. Each player has a main position, and some list one or two more they can play with no downside (for example SG with PG, SF).
+  - At an unlisted position the player loses OVR depending on how far it is on the PG–SG–SF–PF–C line: −3 for one step, −6 for two, −10 for three, −15 for four. Their ratings are also weighted for the new position, so a center at point guard is judged on ball handling and passing.
+  - A few Epic or better players are **Positionless** (about 5%): no penalty anywhere.
+  - The Rotation screen shows each player's OVR at the slot they're in, with a red arrow when they're out of position.
+- **Club:** the card shows the club that owns it, with your club's name and badge. When the player is traded or sold, the badge changes to the new owner's club. A new pull shows "Free Agent" until you keep it. **No real NBA or college teams appear anywhere.**
 
 **Archetypes** come from the ratings. For example, high 3PT gives Sniper, high Driving Dunk plus Speed gives Slasher, high Block plus Interior Defense gives Rim Protector, and high Passing plus Ball Handling gives Floor General. Chemistry uses archetypes.
 
@@ -77,6 +84,23 @@ Every rating runs from 1 to 99. There are 20 ratings in 6 groups.
   - High-Stamina players can carry 38 or more minutes well.
 - **Minutes presets** are saved along with each lineup preset.
 
+## 4b. Go-To Player & shot tendencies
+
+These are set on the Rotation screen. You can also change them at a timeout or quarter break.
+
+- **Go-To Player (star):** mark one player with a ⭐.
+  - They get about 25% more touches and shots.
+  - When the Clutch Timeout calls Isolation, they take the last shot.
+  - Their energy drains about 10% faster, because carrying the team is tiring.
+  - You can mark a **Second Option** (☆) for a smaller boost.
+- **Shot share bar:** this sets who tries to score the most.
+  - Each of the five on the floor gets a share of the team's shots, shown as one stacked color bar that adds up to 100%. For example: Deuce 30%, Rafael 24%, Moe 18%, Arlo 16%, Nico 12%.
+  - Drag the dividers to move shots from one player to another. **Auto** sets shares from each player's scoring ratings.
+  - When subs come in, each bench player keeps the share you gave them, and the shares are scaled again to add up to 100%.
+  - Giving a weak shooter a big share lowers team efficiency. Starving a star wastes him. The Go-To Player ⭐ starts with the biggest share.
+  - The **box score** shows each player's real share (usage), so you can compare it to your plan.
+- **Shot type** still comes from each player's ratings (a Sniper shoots threes, a big posts up) and from the play style.
+
 ## 5. Coaching staff: Offensive Coach + Defensive Coach
 
 Your avatar is the **Head Coach**. You hire **two coaches**, and they decide **how your team plays**. Both stand on your bench during games.
@@ -108,10 +132,32 @@ Each coach knows **one main play style** and sometimes a second one. Your team c
 - "Strong vs" is a small edge, not a guaranteed win. Under [General Rules](GENERAL_RULES.md), no style should win more than about 60% of the time.
 - **Switching during a game:** between quarters, or at a timeout, you can change to any other style your coaches know.
 
+### Playbook (plays and diagrams)
+Each offensive style unlocks a set of plays. These are what you pick under **Next play** at a timeout, and what Coach's Calls offer. Your Offensive Coach knows as many of them as their rarity allows (table below), in the order listed. Every play and defense has a small **court diagram** (on the UI page): circles are your players, arrows are cuts, dashed lines are passes, zigzags are dribbles and a T is a screen.
+
+| Style | Plays it unlocks, in order |
+|---|---|
+| 5-Out | Drive & Kick, Floppy, Spain Pick & Roll |
+| Pace & Space | Early Drag Three, Drive & Kick, Lob |
+| Inside Out | Post Up, Horns Flare, Backdoor Cut |
+| Pick & Roll | Pick & Roll, Lob, Spain Pick & Roll |
+| Motion | Backdoor Cut, Horns Flare, Floppy |
+| Iso Star | Isolation, Pick & Roll, Post Up |
+
+Defensive styles each get a diagram that shows where the five stand and who covers which area.
+
 ### Coach cards
 - **What a coach has:**
   - A rarity from Common to Hall of Fame.
-  - A **Coaching rating** from 1 to 99. A higher rating makes their style stronger.
+  - **No rating.** Rarity is what makes a coach better:
+
+    | Rarity | Play style strength | Styles known | Plays known | Play success bonus |
+    |---|---|---|---|---|
+    | Common | normal | 1 | 2 | — |
+    | Rare | +10% | 1 | 3 | +2% |
+    | Epic | +20% | 2 | 4 | +4% |
+    | Legendary | +30% | 2 | 5 | +6% |
+    | Hall of Fame (Elite Coach Pack only) | +40% | 3 | 6 | +8% |
   - Their play style or styles.
   - One **trait**. For example:
     - Three-Point Guru gives +3PT inside their system.
@@ -121,9 +167,60 @@ Each coach knows **one main play style** and sometimes a second one. Your team c
 - **Fit:** when your roster's archetypes match the coach's system, your team gets bonus chemistry. For example, four Snipers with a 5-Out coach.
 - **How you get coaches:**
   - Hire them at the **Coaching Office** in the plaza, which shows 3 coaches and refreshes every few hours. You pay with coins.
-  - Rare coaches can also drop from higher-tier packs.
+  - Or open a **Coach Pack** (6,000 coins) or an **Elite Coach Pack** (25,000 coins, better odds and the only way to get Hall of Fame coaches).
   - You can sell coaches on the market.
 - **Free coaches:** every new club starts with a free Common coach for each side, one running Motion and one running Man-to-Man.
+
+## 4c. Badges
+
+Badges are perks that sit in a player's **badge slots**. They come from packs (every player pack has 2 or 3, and the Badge Pack has 4), so packs give fewer players and the roster doesn't fill with junk. Code: `src/shared/Badges.lua`.
+
+**Tiers.** A badge card has one tier. To equip it, the player needs the stat bar for that tier. **Equipping is free, but taking a badge off costs coins** (the tier's price below), so where you put a badge is a real choice. The badge adds rating points to its stats, but only in the situations it covers (for example Laser only on catch-and-shoot threes).
+
+| Tier | Main stat needs | Second stat needs | Take-off cost | Boost |
+|---|---|---|---|---|
+| Bronze | 60 | 52 | 250 coins | +2 |
+| Silver | 68 | 60 | 1,000 coins | +4 |
+| Gold | 76 | 68 | 2,500 coins | +6 |
+| Diamond | 84 | 76 | 6,000 coins | +8 |
+| Hall of Fame | 90 | 82 | 15,000 coins | +10 |
+
+**Icons.** Every badge has its own icon in a hexagon frame colored by tier (`assets/icons/badges/<Badge>_<Tier>.png`, 100 images ready to upload). The badge card shows only the icon, the name and the tier. Tap it to flip it over: the back says what it does, the stats it needs, the take-off cost and the boost.
+
+**Equipping (the Badge Applier).** Badges live in the inventory. Two ways in:
+1. **Badge first:** Inventory → Badges → tap a badge → **Use**. The Badge Applier lists your players. Players who can take it are highlighted green with their stat (for example "Can equip · Three-Point 84"), and the rest are greyed out with the reason ("Needs Three-Point 76 (has 58)", "No free slot", "Already has Diamond Laser").
+2. **Player first:** Inventory → Players → tap a player → tap an empty **+** slot. The badges that fit are highlighted at the top of the list.
+
+Both end on a confirm popup with the coin cost. Equipping a higher tier of a badge the player already has shows "Upgrade from Silver" and replaces it in the same slot.
+
+**Slots by rarity:** Common 1, Rare 2, Epic 3, Legendary 4, Hall of Fame 5. A player can't hold the same badge twice. A badge that's on **can't be upgraded in place**: take it off (and pay), then put on the higher tier. Taking a badge off returns the card to your inventory.
+
+**The 20 badges** (main stat first):
+
+| Group | Badge | Stats | What it does |
+|---|---|---|---|
+| Shooting | Laser | Three-Point | Catch-and-shoot threes go in more |
+| Shooting | Deep Range | Three-Point, Strength | No penalty on threes from way past the line |
+| Shooting | Pull-Up Pro | Mid-Range, Ball Handling | Better pull-up jumpers off the dribble |
+| Shooting | Ice Water | Free Throw | Free throws and clutch shots ignore crowd noise and pressure |
+| Finishing | Rim Rattler | Driving Dunk, Vertical | More dunks in traffic and more and-ones |
+| Finishing | Soft Touch | Layup, Close Shot | Better layups and floaters |
+| Finishing | Bully Ball | Post Moves, Strength | Wins post-ups against smaller defenders |
+| Finishing | Glide | Layup, Speed | Finishes through contact on drives |
+| Playmaking | Dime Dropper | Passing | Passes lead to better shots |
+| Playmaking | Tight Handles | Ball Handling | Fewer turnovers against pressure |
+| Playmaking | Lob Thrower | Passing, Vertical | Lob plays succeed more often |
+| Defense | Lockdown | Perimeter Defense | The player you guard shoots worse |
+| Defense | Paint Wall | Interior Defense, Strength | Shots at the rim get harder |
+| Defense | Ball Hawk | Steal | More steals in passing lanes |
+| Defense | Swat | Block, Vertical | More blocks, and blocks stay in play |
+| Rebounding | Glass Eater | Defensive Rebound, Strength | Wins more defensive rebounds |
+| Rebounding | Putback | Offensive Rebound, Vertical | More offensive rebounds and putbacks |
+| Athleticism | Motor | Stamina | Energy drains slower |
+| Athleticism | Jets | Speed | More fast-break points |
+| Athleticism | Anchor | Strength | Holds position on screens and box-outs |
+
+So a Hall of Fame badge needs a player who is truly elite at that skill, and a Common player (1 slot) picks their one best badge.
 
 ## 6. What this means for the sim code
 
@@ -131,4 +228,4 @@ The existing `MatchSim` already handles possessions, fatigue, fouls and rotation
 - Swap its 6 stats for the 20 ratings above.
 - Pick the shot type (3PT, mid-range, layup, dunk, close shot or post-up) from the players' ratings, then use the matching rating for the make %.
 - Track energy for each player and follow the minutes targets when making subs.
-- Replace the 3-and-3 tactic matchups with the style table above, and apply the coach's rating and trait.
+- Replace the 3-and-3 tactic matchups with the style table above, and apply the coach's rarity boost and trait.

@@ -27,6 +27,42 @@ We **don't** copy its name, logo, art, models, map, UI layout or wording. We als
 
 Meta goals: climb the **rating ladder**, finish **daily quests**, complete your **collection**, and raise your **fan count**, which pays you passive income.
 
+## 0. First-time tutorial
+
+A new club starts with **250 coins, 10 gems and 10 free Common players**. Then **Coach Dee**, your assistant coach, walks you through the game one step at a time (`src/shared/Tutorial.lua`). Each step highlights one button and finishes when you actually do the thing, using the same events as daily quests, so you learn by playing.
+
+| # | Step | You do | You get |
+|---|---|---|---|
+| 1 | Make your club | name, colors, logo | |
+| 2 | Open your first pack | open the free Rookie Pack | the Rookie Pack (given when the step starts) |
+| 3 | Set your starting five | drag your new player into the five | |
+| 4 | Put on a badge | equip the badge you pulled (equipping is always free; taking off costs coins) | |
+| 5 | Share the minutes | tap Auto Minutes on the Rotation screen | |
+| 6 | Play your first game | a warm-up game vs a bot club, no Elo; call a timeout and a Coach's Call when prompted | 250 coins |
+| 7 | Start training | put a player in a training slot | |
+| 8 | Meet your scouts | open the Scouting Report | |
+| 9 | Daily quests | open the quest board | |
+| | **Finish** | | **250 coins, 20 gems and a Blacktop Pack** |
+
+**In-game lessons (the warm-up game in step 6).** The warm-up is scripted, so each mechanic happens on cue. When it does, the game **freezes** (clock and play), the rest of the screen **fades out**, a pulsing **box** and a bobbing **arrow** point at the one thing to use, and Coach Dee says what it does. Play only continues once you do it (`src/client/TutorialOverlay.lua`, lessons in `Tutorial.MatchLessons`):
+
+| # | Moment | Spotlight on | You do |
+|---|---|---|---|
+| 1 | Tip-off | the ball-handler tag | read, Got it (you coach, you don't control players) |
+| 2 | They double your star | the Coach's Call | pick Kick it out or Force it |
+| 3 | Your star makes 3 in a row | Feed him | tap it |
+| 4 | Their guard gets hot | the Matchups panel | move your best defender onto him |
+| 5 | They go on an 8–0 run | TIMEOUT | tap it |
+| 6 | The timeout screen | the whole panel | read: subs, play style, next play, team talk |
+| 7 | Quarter break, a tired starter | his red energy bar and the bench | sub him out |
+| 8 | Down 1, last shot | the clutch meter | stop it in the green |
+
+Things that don't come up in the warm-up get a **one-time tip** the first time they happen in a real game (`Tutorial.Tips`): a box and arrow with one line, no freeze, gone after a few seconds. They cover play-style counters, a cold player, the coach's challenge, the Clutch Timeout, the home crowd on away free throws, your first badge card and your first new player (who starts on the bench). A **How to play** button replays the lessons in the next warm-up.
+
+Why: the genre reference game has almost no tutorial, and its fan guides warn about the same things (new players don't join the lineup on their own, and you can't always tell what happened in a match). We teach one idea at a time, by doing, at the moment it matters.
+
+The 20 gems plus the 10 you start with are exactly enough for one Common cosmetic, so the gem shop makes sense from day one. You can **skip** the tutorial at any time from the guide button. You keep what you already got, but you give up the finish reward.
+
 ## 1. The lobby (hangout world)
 
 - A server holds up to **8 managers**. Each manager claims a **Home Court** plot around a central plaza.
@@ -37,7 +73,7 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
   - **Scout Office:** send scouts out on timed trips.
   - **Quest Board:** daily and weekly quests.
   - **Hall of Fame:** leaderboards for rating, fans and collection value.
-- **The Traveling Scout:** a van parks somewhere in the plaza for 5 minutes, roughly every 40 minutes, and sells one Hall of Fame tier player. A server-wide alert announces it and everyone runs to it. (This is our take on the "roaming merchant" convention.)
+- **The Traveling Scout:** a van parks somewhere in the plaza for 5 minutes, roughly every 40 minutes, and sells one Hall of Fame player. A server-wide alert announces it and everyone runs to it. (This is our take on the "roaming merchant" convention.)
 - **First session:** create your club by picking a badge shape, two colors and a name. Your colors paint your Home Court, kits and bench.
 - You start with a free player package. You walk your avatar around, emote, and stand courtside at your own games.
 
@@ -48,9 +84,9 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
   - Their AI coach calls their timeouts.
   - Every club's snapshot is saved whenever its lineup or coaches change. The owner gets a notification like "Copper Ridge beat your team 88–81 while you were away", which shows their Elo change and a Rematch button.
 - **Live games happen only through server challenges** (below).
-- **VS screen:** both managers' avatars, club badges, team OVR, chemistry and rating.
+- **VS screen:** both managers' avatars, club badges, team OVR, chemistry and Elo, plus a **projected scoreline** like "104 – 99 · 62% to win". The projection comes from both teams' minutes-weighted ratings and both play styles. Even teams project around 105–110 points each, fast styles push the totals up, and slow styles bring them down.
 - **Server challenge:** walk up to any manager in your server, or tap their name, and challenge them. If they accept, it's a **live game** played on the challenger's Home Court, so the rest of the server can come and watch.
-  - It's **longer** than a queued game: 4 quarters of about 75 seconds each, so **about 5 to 6 minutes** in total.
+  - It's **longer** than a queued game: 4 quarters of about 75 seconds each, so **about 6 to 7 minutes** in total with stops.
   - **Both coaches call their own timeouts** (4 each), make subs and switch styles in real time. The game only pauses while a timeout is running.
   - It's unranked by default, so it doesn't change Elo.
 - **Elo rating:** every club has an Elo number, shown on its badge, on the Match Found screen and on leaderboards.
@@ -84,16 +120,24 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
   | Mode | Quarters | Real time |
   |---|---|---|
-  | Queued (PLAY) | 4 × about 35 s, plus breaks | **about 2.5 to 3 min** |
-  | Server challenge (live) | 4 × about 75 s, plus breaks | **about 5 to 6 min** |
+  | Queued (PLAY) | 4 × about 45 s, plus breaks | **about 4 to 4.5 min** |
+  | Server challenge (live) | 4 × about 75 s, plus breaks | **about 6 to 7 min** |
 
-  The game clock always shows 12-minute quarters (48 minutes in all), and it runs fast. A timeout pauses the game for up to 15 seconds.
+  The game clock always shows 12-minute quarters (48 minutes in all), and it runs fast. A timeout pauses the game for up to 15 seconds, and each team has 4. Quarter breaks last about 12 seconds. Quarters were lengthened from 35 s because the interactive moments (timeouts, quarter breaks, Coach's Calls) add about a minute of stops.
 - **The court is watched from the side.** The camera sits on the sideline and the court runs left to right across the screen, like a TV broadcast. Your coach avatar stands at the bench in the foreground under a HEAD COACH tag and can use emotes. The camera pans left and right to follow the ball.
 - The game is played **on the home team's Home Court in the lobby world**, so other managers can walk over and watch.
+- **Who is home:** in a queued game you are always home, since it's your Home Court and your crowd, and the saved team visits. In a server challenge the challenger is home.
+- **Home court edge** is small on purpose. Home teams should win about 54% of even games.
+  - **Shaky free throws:** when the away team shoots a free throw, the home crowd waves and yells, and the camera wobbles slightly. Away free throws drop by 3 percentage points, and by 6 in the last 2 game-minutes of a close game.
+  - **Crowd energy:** the crowd gets louder on home runs, and home makes get bigger cheers. The away team's makes get a quieter reaction.
+  - Home players recover energy on the bench 5% faster.
+  - The home coach gets 1 extra second to answer Coach's Calls.
+  - About +1 point in the projected scoreline.
 - **Ball-handler tag:** a floating name tag marks whoever has the ball. Jerseys show names and numbers.
 - After big plays a **REPLAY** shows a close-up from a new angle with a name lower third, and you can tap to skip.
 - **Highlight moments:** big banners appear (AND-ONE!, FROM DOWNTOWN!, BIG BLOCK!, BUZZER BEATER!), dunks play as a letterboxed **slow-motion HIGHLIGHT**, and the game ends with a **VICTORY!** celebration in front of the bench. You can tap to skip.
 - **Coach controls during the game:**
+  - **Quarter breaks:** after every quarter, both coaches get a free break (the same screen as a timeout, without using one) to make subs, change the minutes plan, switch play style or give a team talk.
   - Switch **play style** between quarters, choosing only from the styles your Offensive Coach and Defensive Coach know (for example 5-Out, Pick & Roll, Motion, 2-3 Zone, Switch Everything or Full-Court Press). Each style counters some styles and is weak to others.
   - **Timeouts** (4 per game): the game pauses, and you have 15 seconds to:
     - make subs
@@ -102,8 +146,16 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
     - give a team talk: Fire Up, Calm Down or Lock In, which lasts 2 minutes
 
     The five players on the floor get +15% energy, and the opponent's run resets. If you don't pick in time, your coaches decide.
+  - **Interactive moments:** quick taps during play. You still coach and never control players directly.
+    - **Coach's Calls:** 2 to 3 times a quarter, a 3-second choice pops up, for example "They're doubling Deuce!" with **Kick it out** or **Force it**. The right read for that situation (based on ratings and styles) gives a better chance on that possession. If you don't pick, your coaches choose.
+    - **Heat check 🔥:** a player who makes 3 shots in a row catches fire, with a flame on his tag and a small make% boost. Tap **Feed him** to double his shot share for about a minute of game time. A cold player (missed 4 in a row) gets a ❄ and you can tap **Sit him**.
+    - **Defensive assignments:** the Matchups panel shows who guards who. It's set automatically by position, and you can change it **any time** during the game. Drag your defender onto an opponent, and the swap takes effect at the next dead ball. In a zone, the panel shows zone spots instead (who guards the paint, the wings and the top).
+      - **Lock him up** is a shortcut: when an opponent catches fire, tap him to move your best Perimeter D (or Interior D for a big) onto him.
+    - **Clutch shot meter:** on the final shot of a close game (within 3 points, last 24 seconds), you time a release meter for the shooter. Ratings decide most of it. Perfect timing adds up to +6% and a bad release takes off up to −6%. In live challenges both coaches get one. On saved teams the AI coach times it at a random, average skill.
+    - **Coach's challenge:** once a game, challenge a foul call. A slow-mo replay plays, and about 40% of calls get overturned. A failed challenge costs a timeout.
   - **Clutch Timeout** (our signature feature): in the last minute of a close game, you pick the final play yourself: Isolation, Pick & Roll or Kick-Out Three.
-- Afterward you see the score, an MVP card, coins, fans and rating change, and progress on your quests.
+- Afterward you see the score, a **box score** for both teams (MIN, PTS, FG, 3PT, FT, REB, AST, STL, BLK, TO), an MVP card, coins, fans, your Elo change and progress on your quests.
+- **Team stats** page: W–L, PPG, opponent PPG, point differential, FG%, 3P%, FT%, RPG, APG, SPG, BPG and turnovers per game. Each player's card has the same stats for their career.
 
 ## 4. Players & collection
 
@@ -125,27 +177,81 @@ Meta goals: climb the **rating ladder**, finish **daily quests**, complete your 
 
 ## 5. Packs
 
-| Pack | Price | Common / Rare / Epic / Legendary / HoF |
-|---|---|---|
-| Blacktop Pack | 5,000 coins · R$ 29 | 70 / 24 / 5 / 0.9 / 0.1 % |
-| Pro Pack | 40,000 coins · R$ 99 | 35 / 40 / 19 / 5.5 / 0.5 % |
-| All-Star Pack | 250,000 coins · R$ 399 | — / 40 / 42 / 16 / 2 % |
-| Coach Pack (1 coach) | 60,000 coins · R$ 149 | 55 / 30 / 12 / 2.7 / 0.3 % |
-| Event pack (e.g. Holiday Hoops, limited) | R$ 499 | Epic+ only: — / — / 78 / 19 / 3 % |
+Packs climb a ladder. Each rarity only drops from at most three packs next to each other, and **Hall of Famers only drop from the top two**. The shop shows rarity odds per card. It doesn't show odds by OVR.
 
-Every player pack gives **3 players**. The shop shows odds both by rarity and by OVR range.
+| Pack | Coins · Robux | Contents | Player Common / Rare / Epic / Legendary / Hall of Fame % | Badge Bronze / Silver / Gold / Diamond / Hall of Fame % |
+|---|---|---|---|---|
+| Rookie Pack | 250 · R$ 19 | 1 player, 1–2 badges, 1 item | 85 / 15 / — / — / — | 80 / 20 / — / — / — |
+| Blacktop Pack | 1,000 · R$ 49 | 1 player, 1–2 badges, 1 item | 60 / 33 / 7 / — / — | 55 / 38 / 7 / — / — |
+| Pro Pack | 4,000 · R$ 99 | 1–2 players (35% for a 2nd), 1–2 badges, 1 item | — / 60 / 33 / 7 / — | — / 55 / 38 / 7 / — |
+| All-Star Pack | 15,000 · R$ 249 | 1–2 players (50% for a 2nd), 2–3 badges, 1 item | — / — / 70 / 27 / 3 | — / — / 70 / 27 / 3 |
+| Hall of Fame Pack | 50,000 · R$ 599 | 2 players, 2–3 badges, 1 item | — / — / — / 88 / 12 | — / — / — / 88 / 12 |
+| Badge Pack | 2,000 · R$ 59 | 3–4 badges | — | 50 / 35 / 13 / 2 / — |
+| Coach Pack | 6,000 · R$ 149 | 1 coach | 60 / 30 / 9 / 1 / — | — |
+| Elite Coach Pack | 25,000 · R$ 399 | 1 coach | — / 45 / 40 / 13 / 2 | — |
 
+**The item.** Every player pack ends its reveal with one useful item instead of a filler player: a **Cosmetic** (35%, a jersey, court floor, ball or celebration), a **Coin Pouch** (30%, 10–30% of the pack's coin price back), a **Badge Upgrade** (20%) or a **Scout Ticket** (15%, one free Scouting Report refresh). Badge Upgrades have their own rarity, and the rarity decides which tier they work on: **Bronze → Silver** (60% of upgrades), **Silver → Gold** (28%), **Gold → Diamond** (10%) and **Diamond → Hall of Fame** (2%). The player still needs the stats for the new tier. Stamina only exists inside a match, so there are no energy items.
+
+**OVR ranges for now:** Common 50–64, Rare 65–72, Epic 73–79, Legendary 80–86 and Hall of Fame 87–91. **No card goes above 93**, including Finishes and training. Stronger cards come in a later update, when we raise the cap.
+
+- **A fixed card list.** Every player and coach in the game is on one list (`src/shared/Catalog.lua`): 216 players (80 Common, 60 Rare, 40 Epic, 24 Legendary, 12 Hall of Fame) and 28 coaches. Each card has a set name, position and ratings, so everyone pulls the same "Deuce Reyes". Duplicates raise the card's star level.
+- **See what's inside:** every pack has a **Contents** button (the list icon next to it). It opens a grid of every card that pack can give, best first, with rarity, OVR, position, face, and the chance of each card. A filter switches between rarities, and cards you already own are ticked. A **Collection book** in the menu shows all 216 players and 28 coaches, with the ones you haven't found shown as silhouettes.
+- **Bundles:** the shop keeps one card per pack. Pressing **Buy** opens a small popup to pick **1×, 5× or 20×**. 5 packs cost 10% less and 20 cost 20% less (for example 5 Pro Packs for 18,000 coins instead of 20,000). The popup then offers **Open now** or **Keep**.
+- **A bundle is its own item.** A kept 5× or 20× bundle sits in the inventory as one box ("Pro Pack Bundle ×5"), not as 5 loose packs. Opening it plays the first pack in full, then offers **Open all**, which flips the rest fast and ends on a summary of the best pulls. In code, an inventory entry is `{ kind = "pack", pack = "Pro" }` or `{ kind = "bundle", pack = "Pro", size = 5 }`.
+- **Robux:** every pack and bundle can also be bought with Robux. Game passes come later.
+- **Fewer players, plus badges and an item.** Packs give **1–2 players, 1–3 badges and 1 item** (see Badges in `PLAYERS_AND_COACHING.md`), so the bench doesn't fill with junk cards. The item flips first, then badges, then players, with the best player last. Tapping a flipped badge flips it again to show what it does and the stats it needs.
 - Odds are always shown in-game, and Robux packs follow Roblox's rules on paid random items.
-- **Reveal:** the pack slams on the floor, the jerseys flip one by one, and the rarity color and an announcer line ("FROM DOWNTOWN!") play. On a Legendary or better, the whole server gets an alert.
+- **Reveal:** the pack slams on the floor and shakes, glowing in the best card's rarity color, then rips open. The cards fly out face-down, and you tap each one to flip it. Each flip plays its rarity color, sound and an announcer line. On a Legendary or better, the whole server gets an alert.
+- **Hover on good cards:** hovering (or holding on mobile) over an Epic or better card tilts it toward the cursor with a moving holo shine in its rarity color. Legendary and Hall of Fame cards also give off sparks, and Finish cards show their Finish pattern.
+- **Walkout cutscene (Legendary and Hall of Fame):** instead of flipping, the card plays a short cutscene on your Home Court. You can tap to skip it after the first time.
+  1. The arena lights go out, and a spotlight hits the tunnel with smoke.
+  2. **Clues** appear one at a time, each in a different spot on the screen: the flag of the player's nation (top left), then their position (right), then the archetype (bottom, for example "Rim Protector").
+  3. The player's **real 3D model**, blacked out with a rim light in the rarity color, walks out of the tunnel and does a move that fits the archetype: a jump shot (Sniper), a dunk (Slasher, Post Scorer), a dribble combo (Floor General, All-Around) or a block (Rim Protector, Lockdown, Glass Cleaner). Sounds come from the animation's own timeline, so they land on the bounce, the slam or the swat. The **OVR** slams onto the screen in the rarity color. See `docs/ANIMATIONS.md`.
+  4. The lights come up on the 3D player doing a signature celebration, with the name, the card and confetti.
+  5. A Hall of Fame walkout adds a drumroll, an air horn and a gold spotlight, and the whole server sees a "HALL OF FAMER PULLED" alert.
 
 ## 6. Training, scouting & chemistry
 
-- **Training:** **3 timed slots.** You pick a player and a focus (Shooting, Finishing, Playmaking, Defense, Rebounding, Athleticism, or All). A session lasts about 1 hour and keeps running while you're offline. Progress stops at the player's potential, and star levels raise that cap.
-- **Scout Office:** send a scout on a 5-minute, 30-minute or 2-hour trip, and they come back with a player card. Longer trips find better odds. You start with 1 scout slot and can get more through progression or a game pass. This gives players a reason to come back.
+- **Training:** **3 timed slots**, up to **5** with gems (150, then 400). You pick a player and a focus (Shooting, Finishing, Playmaking, Defense, Rebounding, Athleticism, or All). A session lasts about 1 hour and keeps running while you're offline. Progress stops at the player's potential, and star levels raise that cap.
+- **Scouting Report:** your scouts bring back a report of **3 players**, up to **6** with gems (100, 250, then 650 gems for each extra slot). You see some of each player's info, **never their OVR**, and sign the one you want for coins. The price scales with the player's OVR but is overpriced next to packs (x1.3 to x1.8 a fair value, rolled per player), so prices overlap and can't be read as an OVR. Each scout level takes 4% off. A new report comes every few hours. You can refresh early for coins, or for free with a **Scout Ticket** (a pack item).
+- **Scout team levels** (upgraded with gems). Each level reveals more, so a better scout team means better guesses:
+
+  | Level | Reveals |
+  |---|---|
+  | 0 | the player's best stat |
+  | 1 | + position |
+  | 2 | + 2nd best stat |
+  | 3 | + archetype and nationality |
+  | 4 | + 3rd best stat |
+  | 5 | + rarity |
+
+  Levels also shorten the refresh time a little. Odds stay the same, so upgrades buy information, not better players.
 - **Chemistry (0–100%)** gives a flat bonus to every stat in matches (up to about +10%). It goes up when:
   - your lineup's archetypes complement each other (a Floor General plus two Snipers, a Slasher plus a Glass Cleaner)
   - players fit their positions
   - the same five play games together
+
+## 6a. Facilities (Arena and Training Facility)
+
+Club buildings, upgraded with **coins** over a build timer (`src/shared/Facilities.lua`). **Gems only skip the timer** (15 gems an hour), so Robux can speed you up but can't buy the upgrade.
+
+| Building | Each level (max 10) | At level 10 | Level 1 cost, then x1.8 | Build time |
+|---|---|---|---|---|
+| **Arena** | +4% coins from every game, win or loss, and +0.2 OVR to your players at home | +40% coins, +2 OVR at home | 2,000 | level x 2 hours |
+| **Training Facility** | sessions 5% shorter and gains 3% bigger | 50% shorter, +30% gains | 1,500 | level x 1.5 hours |
+
+Arena looks (lights, scoreboard, seat colors) are separate and bought with gems, because they're cosmetic.
+
+## 6b. Cosmetics
+
+Looks only, never stats. They come from the Cosmetic pack item, the gem shop, achievements and events. Each goes in one of **15 slots** and a club equips one per slot (`src/shared/Cosmetics.lua`, 76 items):
+
+- **Team look:** Jersey, Shoes, Accessory (headband, sleeves, goggles, face paint), Coach Outfit
+- **Home court (visitors see it):** Court floor (Park Blacktop, Rooftop, Boardwalk, Neon Night, Zero-G Arena...), Ball, Mascot, Walk-in Music
+- **Moments:** Shot Trail behind made shots, Score Effect at the rim after a make, Dunk Effect on the rim, Celebration after big plays, Walkout Effect for Legendary and Hall of Fame pulls
+- **Profile:** Card Frame, Club Banner
+
+Rarity inside the Cosmetic pack item: Common 60%, Rare 28%, Epic 10%, Legendary 2%. Gem shop prices: 30 / 80 / 200 / 500 gems.
 
 ## 7. Market (Trade Board)
 
@@ -161,11 +267,13 @@ Every player pack gives **3 players**. The shop shows odds both by rarity and by
 
 ## 9. Economy & progression
 
-- **Coins** are the main currency, with big numbers and fast growth.
+- **Coins** are the main currency, with big numbers and fast growth. They buy packs, taking badges off, market buys, scouted players and early report refreshes.
+- **Gems** are the premium currency. Free players earn them slowly from daily quests, achievements and Elo milestones, and they can also be bought with Robux. Gems buy **scout team upgrades, extra scout and training slots, cosmetics (including arena looks), the Gem Pack, and skipping timers** (training sessions and facility builds). Possible later: a second saved lineup, renaming the club. They never buy players or badges directly, so the market stays coin-based.
 - **Fans** grow with wins and pay passive income every minute you're online. Upgrading your Home Court (seats, scoreboard, lights) raises how much each fan pays.
-- **Daily quests:** for example, play 3 matches, score 60 points with threes, or win 2 games. **Weekly quests** are larger.
-- There's also a login streak and codes (`TIPOFF`, `FASTBREAK`).
-- **Robux (later):** VIP (2× coins), an extra scout slot, Robux packs with shown odds, and court cosmetics. Nothing is pay-to-win only.
+- **Daily quests:** 3 a day, drawn from a pool and reset at 00:00 UTC. Each pays coins, from 100 to 400. Examples: win 2 games, make 15 threes, throw down 8 dunks, open a pack, call 3 timeouts, or play a server challenge.
+- **Achievements:** lifetime goals with tiers that each pay once. The big tiers pay packs. Examples: Winner (1 / 10 / 50 / 250 / 1,000 wins), From Downtown (threes), Posterizer (dunks), Pack Rat, Collector, Climber (reach each Elo tier), Hot Streak, Clipboard Coach (timeouts), Challenger and Legend Hunter (pull Hall of Fame players).
+- There's also a login streak and **redeem codes**. The owner makes codes in `src/server/Codes.lua`, or live from chat with `!makecode` (see the README).
+- **Robux (later):** VIP (2× coins), gem bundles, Robux packs with shown odds, and court cosmetics. Nothing is pay-to-win only.
 
 ## 10. Look & feel
 
