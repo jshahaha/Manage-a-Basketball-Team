@@ -14,6 +14,7 @@ local PlayerModel = require("../src/shared/PlayerModel")
 local AnimSets = require("../src/shared/AnimSets")
 local Possession = require("../src/shared/Possession")
 local ShotFeel = require("../src/shared/ShotFeel")
+local Store = require("../src/shared/Store")
 local Scouting = require("../src/shared/Scouting")
 local Cosmetics = require("../src/shared/Cosmetics")
 local Facilities = require("../src/shared/Facilities")
@@ -956,6 +957,38 @@ test("a missed dunk is a block by the help big", function()
 			end
 		end
 	end
+end)
+
+test("buying and opening packs", function()
+	local profile = { coins = 300, players = {}, packs = {}, coaches = {} }
+	local ok, err = Store.buy(profile, "Pro", 1)
+	assert(not ok and err == "Not enough coins." and profile.coins == 300, "can't afford")
+	assert(not Store.buy(profile, "Nope", 1) and not Store.buy(profile, "Rookie", 3), "bad pack or size")
+	profile.coins = 1e6
+	local before = profile.coins
+	assert(Store.buy(profile, "Pro", 5), "buy bundle")
+	assert(profile.coins == before - Store.price("Pro", 5) and profile.packs["Pro x5"] == 1, "bundle kept as one item")
+	assert(Store.price("Pro", 5) < Store.price("Pro", 1) * 5, "bundles are cheaper per pack")
+	local rng = Rng.new(11)
+	local ok2, res = Store.open(profile, "Pro x5", rng)
+	assert(ok2 and #res.packs == 5 and profile.packs["Pro x5"] == nil, "opens all five")
+	local n = 0
+	for _, pk in ipairs(res.packs) do
+		assert(#pk.cards >= 1 and #pk.cards <= 2 and #pk.badges >= 1 and #pk.items == 1, "pack contents")
+		for _, c in ipairs(pk.cards) do
+			n += 1
+			assert(c.templateId and c.id ~= c.templateId and c.anims and c.career, "owned copy")
+			local v = Store.cardView(c)
+			assert(v.ovr and v.ovr <= Config.MaxOvr and v.pos and not v.career, "card view")
+		end
+	end
+	assert(#profile.players == n, "players added")
+	local ids = {}
+	for _, p in ipairs(profile.players) do
+		assert(not ids[p.id], "unique ids")
+		ids[p.id] = true
+	end
+	assert(not Store.open(profile, "Pro x5", rng), "can't open twice")
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))
