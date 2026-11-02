@@ -435,6 +435,32 @@ local function reveal(result)
 		end
 	end
 	nextB.MouseButton1Click:Connect(step)
+	-- The pack first: it shakes, flashes and bursts, then the cards come out.
+	local art = Theme.IMG["pack_" .. tostring(result.pack)]
+	if art then
+		nextB.Visible = false
+		count.Text = ""
+		local p = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(170, 255), BackgroundTransparency = 1, Image = art, ZIndex = 14 }, stage)
+		local sc = make("UIScale", { Scale = 0.6 }, p)
+		TweenService:Create(sc, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		task.wait(0.4)
+		for k = 1, 6 do
+			Audio.play("UIClick")
+			TweenService:Create(p, TweenInfo.new(0.07), { Rotation = (k % 2 == 0) and 7 or -7 }):Play()
+			task.wait(0.09 + k * 0.01)
+		end
+		local flash = make("Frame", { Size = UDim2.new(1, 0, 1, -50), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ZIndex = 20 }, body)
+		round(flash, 12)
+		TweenService:Create(flash, TweenInfo.new(0.15), { BackgroundTransparency = 0 }):Play()
+		TweenService:Create(sc, TweenInfo.new(0.2), { Scale = 1.5 }):Play()
+		task.wait(0.18)
+		p:Destroy()
+		TweenService:Create(flash, TweenInfo.new(0.35), { BackgroundTransparency = 1 }):Play()
+		task.delay(0.4, function()
+			flash:Destroy()
+		end)
+		nextB.Visible = true
+	end
 	step()
 end
 
@@ -457,18 +483,32 @@ function openPacks()
 		go.MouseButton1Click:Connect(openShop)
 		return
 	end
+	-- A shelf of your packs: the wrapper, how many you have, and OPEN.
 	local s = scroller(body)
-	make("UIListLayout", { Padding = UDim.new(0, 8) }, s)
-	for _, it in ipairs(data.items) do
-		local row = make("Frame", { Size = UDim2.new(1, -10, 0, 56), BackgroundColor3 = C.panel, ZIndex = 12 }, s)
-		round(row, 10)
-		stroke(row, 2, C.rule)
-		local name = it.size > 1 and string.format("%dx %s Bundle", it.size, it.name:gsub(" Pack", "")) or it.name
-		text(row, { text = name, font = HEAD, size = 20, sz = UDim2.new(1, -170, 1, 0), pos = UDim2.fromOffset(14, 0), align = Enum.TextXAlignment.Left, z = 13 })
-		text(row, { text = "x" .. it.count, font = HEAD, size = 20, color = C.muted, sz = UDim2.fromOffset(40, 56), pos = UDim2.new(1, -160, 0, 0), z = 13 })
-		local b = button(row, "OPEN", C.green, UDim2.fromOffset(100, 40), UDim2.new(1, -110, 0, 8))
-		b.ZIndex = 13
+	make("UIGridLayout", { CellSize = UDim2.fromOffset(150, 258), CellPadding = UDim2.fromOffset(12, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
+	for i, it in ipairs(data.items) do
+		local cell = make("Frame", { BackgroundTransparency = 1, LayoutOrder = i, ZIndex = 12 }, s)
+		local art = Theme.IMG["pack_" .. tostring(it.pack)]
+		local copies = it.size > 1 and 3 or (it.count > 1 and 2 or 1)
+		for k = copies, 1, -1 do
+			-- Bundles and stacks show a few wrappers fanned behind the front one.
+			local off = (k - 1) * 9
+			if art then
+				make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, off, 0, 4 - off * 0.4), Size = UDim2.fromOffset(118, 177), Rotation = (k - 1) * 5, BackgroundTransparency = 1, Image = art, ImageColor3 = k > 1 and Color3.fromRGB(150, 150, 150) or Color3.new(1, 1, 1), ZIndex = 13 + copies - k }, cell)
+			else
+				local box = make("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, off, 0, 4), Size = UDim2.fromOffset(110, 170), BackgroundColor3 = C.orange, ZIndex = 13 + copies - k }, cell)
+				round(box, 6)
+				stroke(box, 3, C.black)
+			end
+		end
+		local label = it.size > 1 and string.format("%dx BUNDLE", it.size) or ("x" .. it.count)
+		Theme.tape(cell, label, { anchor = Vector2.new(0.5, 0), pos = UDim2.new(0.5, 0, 0, 184), sz = UDim2.fromOffset(110, 28), rot = (i % 2 == 0) and 2 or -2, z = 18, font = HEAD, size = 17 })
+		local b = button(cell, "OPEN", C.green, UDim2.new(1, -12, 0, 42), UDim2.new(0, 6, 1, -44))
+		b.ZIndex = 18
 		b.MouseButton1Click:Connect(function()
+			if not b.Active then
+				return
+			end
 			b.Active = false
 			local ok2, res = call("openPack", it.key)
 			if ok2 then
@@ -476,6 +516,7 @@ function openPacks()
 				refreshBar()
 				reveal(res)
 			else
+				b.Active = true
 				say(res)
 			end
 		end)
