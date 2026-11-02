@@ -22,5 +22,13 @@ return {
 	panel = "rbxassetid://126459760260398",
 	tape_cream = "rbxassetid://101379222779103",
 	tape_yellow = "rbxassetid://119741074279418",
-	-- pack_<id> = "rbxassetid://...", added when the pack renders are uploaded
+	-- Pack wrappers (Blender renders, 512x768)
+	pack_Rookie = "rbxassetid://123506482475192",
+	pack_Blacktop = "rbxassetid://92899649912892",
+	pack_AllStar = "rbxassetid://128122450482899",
+	pack_Pro = "rbxassetid://137440513599885",
+	pack_Coach = "rbxassetid://107526410202142",
+	pack_HallOfFame = "rbxassetid://82724775338723",
+	pack_Badge = "rbxassetid://75640816150667",
+	pack_EliteCoach = "rbxassetid://93722016632148",
 }
