@@ -1,6 +1,5 @@
 --!nonstrict
--- CODES button and redeem panel, plus pop-up notices (admin replies, quest done).
--- Built in code for now; the full HUD will replace the button placement later.
+-- Pop-up notices (admin replies, quest done). Code redeeming lives in the shop's CODES tab.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -47,100 +46,8 @@ gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- Button ----------------------------------------------------------------------
+-- Codes are redeemed in the shop's CODES tab now (LobbyUI); this script keeps the notices.
 local T = Theme.C
-local open = Theme.button(gui, "CODES", T.slate, UDim2.fromOffset(120, 50), UDim2.new(0, 16, 1, -66))
-open.Name = "OpenCodes"
-open.Label.TextColor3 = T.yellow
-open.Label.TextSize = 22
-
--- Panel: asphalt with a sunset header, like the lobby panels -------------------
-local panel = Instance.new("Frame")
-panel.Name = "Panel"
-panel.AnchorPoint = Vector2.new(0.5, 0.5)
-panel.Position = UDim2.fromScale(0.5, 0.5)
-panel.Size = UDim2.fromOffset(440, 250)
-panel.BackgroundColor3 = T.asphalt
-panel.Visible = false
-panel.Parent = gui
-if not Theme.panelArt(panel) then
-	round(panel, 8)
-	stroke(panel, 4)
-end
-
-local header = Instance.new("Frame")
-header.Position = UDim2.fromOffset(5, 5)
-header.Size = UDim2.new(1, -10, 0, 56)
-header.BackgroundColor3 = T.sunsetTop
-header.Parent = panel
-round(header, 8)
-Theme.sunset(header)
-Theme.chainlink(header)
-Theme.tape(header, "REDEEM A CODE", { pos = UDim2.fromOffset(12, 8), sz = UDim2.fromOffset(230, 40), rot = -2, size = 22 })
-
-local close = Theme.button(header, "X", T.red, UDim2.fromOffset(44, 44), UDim2.new(1, -52, 0, 6))
-
-local box = Instance.new("TextBox")
-box.Size = UDim2.new(1, -36, 0, 48)
-box.Position = UDim2.fromOffset(18, 76)
-box.BackgroundColor3 = T.slate
-box.PlaceholderText = "Type a code..."
-box.PlaceholderColor3 = T.muted
-box.Text = ""
-box.TextSize = 22
-box.FontFace = Theme.HEAD
-box.TextColor3 = T.ink
-box.ClearTextOnFocus = false
-box.Parent = panel
-round(box, 6)
-stroke(box, 3)
-box:FindFirstChildOfClass("UIStroke").Color = T.line
-
-local redeem = Theme.button(panel, "REDEEM", T.lime, UDim2.new(1, -36, 0, 54), UDim2.fromOffset(18, 134))
-redeem.Label.TextSize = 26
-
-local result = label(panel, "", 15, Enum.Font.GothamBold, T.ink)
-result.Size = UDim2.new(1, -36, 0, 40)
-result.Position = UDim2.fromOffset(18, 196)
-
-local busy = false
-local function submit()
-	if busy then
-		return
-	end
-	busy = true
-	redeem.Label.Text = "..."
-	local ok, res = pcall(function()
-		return Net.request():InvokeServer("redeemCode", box.Text)
-	end)
-	if ok and res and res.ok then
-		Audio.play("CodeRedeemed")
-		result.TextColor3 = Theme.C.lime
-		result.Text = res.data.message
-		box.Text = ""
-	else
-		Audio.play("UIError")
-		result.TextColor3 = Theme.C.red
-		result.Text = (ok and res and res.err) or "Couldn't reach the server."
-	end
-	redeem.Label.Text = "REDEEM"
-	busy = false
-end
-
-open.Activated:Connect(function()
-	Audio.play(panel.Visible and "UIClosePanel" or "UIOpenPanel")
-	panel.Visible = not panel.Visible
-	result.Text = ""
-end)
-close.Activated:Connect(function()
-	panel.Visible = false
-end)
-redeem.Activated:Connect(submit)
-box.FocusLost:Connect(function(enter)
-	if enter then
-		submit()
-	end
-end)
 
 -- Notices (admin replies, "Quest complete!") ------------------------------------
 local toastHolder = Instance.new("Frame")

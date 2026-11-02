@@ -286,51 +286,152 @@ end
 
 local KIND_TEXT = { players = "Players, badges, item", badges = "Badges only", coach = "One coach" }
 
-function openShop()
-	openPanel("SHOP")
-	local ok, data = call("getShop")
-	local loading = body:FindFirstChild("Loading")
-	if loading then
-		loading:Destroy()
-	end
-	if not ok then
-		text(body, { text = tostring(data), font = HEAD, size = 20, color = C.muted, z = 12 })
-		return
-	end
-	local s = scroller(body)
-	make("UIGridLayout", { CellSize = UDim2.fromOffset(160, 262), CellPadding = UDim2.fromOffset(10, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
-	for i, pack in ipairs(data.packs) do
-		local card = make("Frame", { BackgroundTransparency = 1, LayoutOrder = i, ZIndex = 12 }, s)
-		-- The pack itself: a rendered foil wrapper when we have one.
-		local art = Theme.IMG["pack_" .. pack.id]
-		if art then
-			local img = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 0), Size = UDim2.fromOffset(124, 186), BackgroundTransparency = 1, Image = art, ScaleType = Enum.ScaleType.Fit, ZIndex = 13 }, card)
-			-- Gentle bob so the shelf feels alive.
-			TweenService:Create(img, TweenInfo.new(1.6 + (i % 3) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = UDim2.new(0.5, 0, 0, 5) }):Play()
-		else
-			local best
-			for id in pairs(pack.odds or {}) do
-				if not best or Config.RarityById[id].order > Config.RarityById[best].order then
-					best = id
-				end
+-- The shop has three tabs, like the bigger games: PACKS (coins), ROBUX and CODES.
+local SHOP_TABS = { { "PACKS", T.yellow }, { "ROBUX", T.lime }, { "CODES", T.sky } }
+
+local function packArt(card, pack, i)
+	-- The pack itself: a rendered foil wrapper when we have one.
+	local art = Theme.IMG["pack_" .. pack.id]
+	if art then
+		local img = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 0), Size = UDim2.fromOffset(124, 186), BackgroundTransparency = 1, Image = art, ScaleType = Enum.ScaleType.Fit, ZIndex = 13 }, card)
+		-- Gentle bob so the shelf feels alive.
+		TweenService:Create(img, TweenInfo.new(1.6 + (i % 3) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = UDim2.new(0.5, 0, 0, 5) }):Play()
+	else
+		local best
+		for id in pairs(pack.odds or {}) do
+			if not best or Config.RarityById[id].order > Config.RarityById[best].order then
+				best = id
 			end
-			local box = make("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 4), Size = UDim2.fromOffset(116, 176), BackgroundColor3 = best and rarityColor(best) or C.pink, ZIndex = 13 }, card)
-			round(box, 6)
-			stroke(box, 3, C.black)
-			make("UIGradient", { Rotation = 70, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.5, 0.25), NumberSequenceKeypoint.new(1, 0) }) }, box)
-			local tag = text(box, { text = pack.name:gsub(" Pack", ""), font = MARK, size = 24, color = C.white, z = 14, scaled = true, rot = -6, sz = UDim2.new(1, -10, 0, 60), pos = UDim2.new(0, 5, 0.5, -30) })
-			tag.TextStrokeTransparency = 0
-			tag.TextStrokeColor3 = C.black
 		end
-		-- Price on a strip of tape under the pack, then BUY.
-		local _, priceText = Theme.tape(card, comma(pack.prices[1].coins) .. " coins", { anchor = Vector2.new(0.5, 0), pos = UDim2.new(0.5, 0, 0, 190), sz = UDim2.fromOffset(132, 28), rot = (i % 2 == 0) and 2 or -2, z = 14, font = HEAD, size = 17 })
+		local box = make("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 4), Size = UDim2.fromOffset(116, 176), BackgroundColor3 = best and rarityColor(best) or C.pink, ZIndex = 13 }, card)
+		round(box, 6)
+		stroke(box, 3, C.black)
+		make("UIGradient", { Rotation = 70, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.5, 0.25), NumberSequenceKeypoint.new(1, 0) }) }, box)
+		local tag = text(box, { text = pack.name:gsub(" Pack", ""), font = MARK, size = 24, color = C.white, z = 14, scaled = true, rot = -6, sz = UDim2.new(1, -10, 0, 60), pos = UDim2.new(0, 5, 0.5, -30) })
+		tag.TextStrokeTransparency = 0
+		tag.TextStrokeColor3 = C.black
+	end
+end
+
+local function packGrid(parent, packs, currency)
+	local s = scroller(parent)
+	make("UIGridLayout", { CellSize = UDim2.fromOffset(160, 262), CellPadding = UDim2.fromOffset(10, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
+	for i, pack in ipairs(packs) do
+		local card = make("Frame", { BackgroundTransparency = 1, LayoutOrder = i, ZIndex = 12 }, s)
+		packArt(card, pack, i)
+		local robux = (Config.Packs[pack.id] or {}).robux
+		local priceLabel = currency == "robux" and ("R$ " .. comma(robux or 0)) or (comma(pack.prices[1].coins) .. " coins")
+		-- Price on a strip of tape under the pack, then the buy button.
+		local _, priceText = Theme.tape(card, priceLabel, { anchor = Vector2.new(0.5, 0), pos = UDim2.new(0.5, 0, 0, 190), sz = UDim2.fromOffset(132, 28), rot = (i % 2 == 0) and 2 or -2, z = 14, font = HEAD, size = 17 })
 		priceText.TextColor3 = C.black
-		local buy = button(card, "BUY", C.orange, UDim2.new(1, -16, 0, 40), UDim2.new(0, 8, 1, -42))
+		local buy = button(card, currency == "robux" and "BUY  R$" or "BUY", currency == "robux" and T.lime or C.orange, UDim2.new(1, -16, 0, 40), UDim2.new(0, 8, 1, -42))
 		buy.ZIndex = 13
 		buy.MouseButton1Click:Connect(function()
-			bundlePopup(pack)
+			if currency == "robux" then
+				-- Robux products aren't set up on Roblox yet, so nothing is charged.
+				Audio.play("UIError")
+				say("Robux buying opens at launch")
+			else
+				bundlePopup(pack)
+			end
 		end)
 	end
+end
+
+local function codesTab(parent)
+	local card = make("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 10), Size = UDim2.new(1, -40, 0, 250), BackgroundColor3 = T.slate, ZIndex = 12 }, parent)
+	make("UISizeConstraint", { MaxSize = Vector2.new(460, 250) }, card)
+	round(card, 16)
+	stroke(card, 3, T.line)
+	text(card, { text = "Got a code?", font = HEAD, size = 30, color = T.yellow, sz = UDim2.new(1, 0, 0, 40), pos = UDim2.fromOffset(0, 14), z = 13 })
+	text(card, { text = "New codes drop with updates and milestones.", size = 15, color = C.muted, sz = UDim2.new(1, -20, 0, 20), pos = UDim2.fromOffset(10, 54), z = 13 })
+	local box = make("TextBox", {
+		Size = UDim2.new(1, -40, 0, 50),
+		Position = UDim2.fromOffset(20, 88),
+		BackgroundColor3 = T.deep,
+		PlaceholderText = "Type code here...",
+		PlaceholderColor3 = C.muted,
+		Text = "",
+		TextSize = 24,
+		FontFace = HEAD,
+		TextColor3 = T.ink,
+		ClearTextOnFocus = false,
+		ZIndex = 13,
+	}, card)
+	round(box, 12)
+	stroke(box, 2, T.line)
+	local claim = button(card, "CLAIM", T.lime, UDim2.new(1, -40, 0, 54), UDim2.fromOffset(20, 148))
+	claim.ZIndex = 13
+	claim.Label.TextSize = 26
+	local result = text(card, { text = "", size = 15, sz = UDim2.new(1, -20, 0, 36), pos = UDim2.fromOffset(10, 206), z = 13 })
+	local busyClaim = false
+	local function submit()
+		if busyClaim or box.Text == "" then
+			return
+		end
+		busyClaim = true
+		claim.Label.Text = "..."
+		local ok, res = call("redeemCode", box.Text)
+		if ok then
+			pcall(Audio.play, "CodeRedeemed")
+			result.TextColor3 = T.lime
+			result.Text = (type(res) == "table" and res.message) or "Code claimed!"
+			box.Text = ""
+			loadProfile()
+		else
+			pcall(Audio.play, "UIError")
+			result.TextColor3 = T.red
+			result.Text = tostring(res)
+		end
+		claim.Label.Text = "CLAIM"
+		busyClaim = false
+	end
+	claim.MouseButton1Click:Connect(submit)
+	box.FocusLost:Connect(function(enter)
+		if enter then
+			submit()
+		end
+	end)
+end
+
+local function showShopTab(tab)
+	clearBody()
+	-- Tab bar along the top of the panel; the open tab is lit up.
+	local bar = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 44), ZIndex = 12 }, body)
+	make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 8) }, bar)
+	for i, t in ipairs(SHOP_TABS) do
+		local active = t[1] == tab
+		local b = button(bar, t[1], active and t[2] or T.slate, UDim2.fromOffset(120, 42))
+		b.LayoutOrder = i
+		b.ZIndex = 12
+		b.Label.TextSize = 20
+		if not active then
+			b.Label.TextColor3 = C.muted
+		end
+		b.MouseButton1Click:Connect(function()
+			if not active then
+				showShopTab(t[1])
+			end
+		end)
+	end
+	local content = make("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -52), Position = UDim2.fromOffset(0, 52), ZIndex = 12 }, body)
+	if tab == "CODES" then
+		codesTab(content)
+		return
+	end
+	local loading = text(content, { text = "Loading...", font = HEAD, size = 20, color = C.muted, z = 12 })
+	local ok, data = call("getShop")
+	loading:Destroy()
+	if not ok then
+		text(content, { text = tostring(data), font = HEAD, size = 20, color = C.muted, z = 12 })
+		return
+	end
+	packGrid(content, data.packs, tab == "ROBUX" and "robux" or "coins")
+end
+
+function openShop(tab)
+	openPanel("SHOP")
+	showShopTab(tab or "PACKS")
 end
 
 -- Card reveal -------------------------------------------------------------------------------
