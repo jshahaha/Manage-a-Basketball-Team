@@ -57,10 +57,10 @@ function LobbyDecor.terrain(bounds)
 	-- A pond beside the plaza, ringed with sand.
 	local pond = bounds.pond
 	if pond then
-		T:FillCylinder(CFrame.new(pond + Vector3.new(0, -2, 0)), 4, 30, Enum.Material.Sand)
-		T:FillCylinder(CFrame.new(pond + Vector3.new(0, -3, 0)), 6, 24, Enum.Material.Air)
-		T:FillCylinder(CFrame.new(pond + Vector3.new(0, -4.5, 0)), 3, 24, Enum.Material.Water)
-		T:FillCylinder(CFrame.new(pond + Vector3.new(0, -8, 0)), 4, 26, Enum.Material.Mud)
+		-- Smooth terrain renders cylinder tops about 3 studs higher than asked, hence the low numbers.
+		T:FillCylinder(CFrame.new(pond + Vector3.new(0, -10.5, 0)), 12, 30, Enum.Material.Sand)
+		T:FillCylinder(CFrame.new(pond + Vector3.new(0, -1, 0)), 8, 24, Enum.Material.Air)
+		T:FillCylinder(CFrame.new(pond + Vector3.new(0, -8, 0)), 6, 24, Enum.Material.Water)
 	end
 	T.WaterColor = Color3.fromRGB(40, 140, 170)
 	T.WaterTransparency = 0.6
@@ -71,7 +71,7 @@ end
 -- Swap the grass under built areas for plain ground, so grass blades don't poke through
 -- paving, courts and floors.
 function LobbyDecor.clearGrassBlock(center, size)
-	workspace.Terrain:FillBlock(CFrame.new(center.X, -9, center.Z), Vector3.new(size.X, 12, size.Z), Enum.Material.Ground)
+	workspace.Terrain:FillBlock(CFrame.new(center.X, -9, center.Z), Vector3.new(size.X, 12, size.Z), Enum.Material.LeafyGrass) -- no grass blades on this one
 end
 function LobbyDecor.clearGrassDisc(center, radius)
 	LobbyDecor.clearGrassBlock(center, Vector3.new(radius * 2, 0, radius * 2)) -- FillCylinder rounds the top up a whole voxel
