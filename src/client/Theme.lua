@@ -226,19 +226,81 @@ function Theme.icon(parent, name, sz, pos, z)
 	}, parent)
 end
 
--- Put an icon on the left of a Theme.button and move its label over to make room.
+-- Put an icon on the left of a Theme.button. The label stays centred on the whole button
+-- (js 2026-11-02: "make sure buttons are centred"), and only slides right as far as it must
+-- to clear the icon.
 function Theme.withIcon(b, name, scale, height)
 	local h = height or (b.Size.Y.Offset > 0 and b.Size.Y.Offset) or 50
 	local size = math.floor(h * (scale or 1.05))
-	local ic = Theme.icon(b, name, UDim2.fromOffset(size, size), UDim2.new(0, -math.floor(size * 0.18), 0.5, -math.floor(size * 0.55)), b.ZIndex + 1)
+	local left = -math.floor(size * 0.18)
+	local ic = Theme.icon(b, name, UDim2.fromOffset(size, size), UDim2.new(0, left, 0.5, -math.floor(size * 0.55)), b.ZIndex + 1)
 	if ic then
-		b.Label.Position = UDim2.fromOffset(math.floor(size * 0.7), 1)
-		b.Label.Size = UDim2.new(1, -math.floor(size * 0.7) - 6, 0.82, -2)
+		local label = b.Label
+		local iconRight = left + size - math.floor(size * 0.12) -- the art has a little transparent margin
+		local function fit()
+			local w = b.AbsoluteSize.X
+			if w <= 0 then
+				return
+			end
+			local tw = label.TextBounds.X
+			local shift = math.max(0, iconRight + 4 - (w - tw) / 2)
+			label.Position = UDim2.fromOffset(4 + shift, label.Position.Y.Offset)
+		end
+		label:GetPropertyChangedSignal("TextBounds"):Connect(fit)
+		b:GetPropertyChangedSignal("AbsoluteSize"):Connect(fit)
+		label:GetPropertyChangedSignal("Position"):Connect(function()
+			-- The press nudge resets X; put the shift back.
+			if label.Position.X.Offset == 4 then
+				fit()
+			end
+		end)
+		task.defer(fit)
 		b:GetPropertyChangedSignal("ZIndex"):Connect(function()
 			ic.ZIndex = b.ZIndex + 1
 		end)
 	end
 	return ic
+end
+
+-- A centred row of text and icons, e.g. { {icon="coin"}, {text="1,000"} }, used for prices so
+-- they show the coin sticker instead of the word "coins".
+function Theme.row(parent, parts, p)
+	p = p or {}
+	local z = p.z or parent.ZIndex + 1
+	local f = make("Frame", { Name = "Row", BackgroundTransparency = 1, Size = p.sz or UDim2.fromScale(1, 1), Position = p.pos or UDim2.new(), ZIndex = z }, parent)
+	make("UIListLayout", {
+		FillDirection = Enum.FillDirection.Horizontal,
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		VerticalAlignment = Enum.VerticalAlignment.Center,
+		Padding = UDim.new(0, p.gap or 4),
+		SortOrder = Enum.SortOrder.LayoutOrder,
+	}, f)
+	local size = p.size or 18
+	for i, part in ipairs(parts) do
+		if part.icon then
+			local isz = part.iconSize or math.floor(size * 1.35)
+			local ic = Theme.icon(f, part.icon, UDim2.fromOffset(isz, isz), nil, z)
+			if ic then
+				ic.LayoutOrder = i
+			end
+		else
+			local t = make("TextLabel", {
+				BackgroundTransparency = 1,
+				AutomaticSize = Enum.AutomaticSize.X,
+				Size = UDim2.new(0, 0, 1, 0),
+				Text = part.text,
+				FontFace = p.font or Theme.HEAD,
+				TextSize = part.size or size,
+				TextColor3 = part.color or p.color or C.white,
+				LayoutOrder = i,
+				ZIndex = z,
+			}, f)
+			if p.outline ~= false then
+				make("UIStroke", { Thickness = p.outline or 2, Color = C.black, LineJoinMode = Enum.LineJoinMode.Round }, t)
+			end
+		end
+	end
+	return f
 end
 
 -- The asphalt panel image behind a frame (9-slice). Returns true when the art is used.

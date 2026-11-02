@@ -262,13 +262,14 @@ local function bundlePopup(pack)
 	text(pop, { text = "Buy " .. pack.name, font = HEAD, size = 22, sz = UDim2.new(1, -20, 0, 36), pos = UDim2.fromOffset(10, 8), z = 21 })
 	local buying = false
 	for i, pr in ipairs(pack.prices) do
-		local label = string.format("%dx   %s coins", pr.size, comma(pr.coins))
-		if pr.discount > 0 then
-			label ..= string.format("   -%d%%", math.floor(pr.discount * 100 + 0.5))
-		end
-		local b = button(pop, label, i == 1 and C.blue or C.green, UDim2.new(1, -30, 0, 42), UDim2.fromOffset(15, 6 + i * 48))
+		local b = button(pop, "", i == 1 and C.blue or C.green, UDim2.new(1, -30, 0, 42), UDim2.fromOffset(15, 6 + i * 48))
 		b.ZIndex = 21
-		b.Label.TextSize = 18
+		-- "5x  (coin) 1,000  -10%": the coin sticker instead of the word.
+		local parts = { { text = pr.size .. "x" }, { text = " " }, { icon = "coin" }, { text = comma(pr.coins) } }
+		if pr.discount > 0 then
+			table.insert(parts, { text = string.format("  -%d%%", math.floor(pr.discount * 100 + 0.5)), color = C.gold })
+		end
+		Theme.row(b, parts, { size = 18, z = 22, sz = UDim2.new(1, 0, 0.82, -2) })
 		b.MouseButton1Click:Connect(function()
 			if buying then
 				return
@@ -337,10 +338,14 @@ local function packGrid(parent, packs, currency)
 		local card = make("Frame", { BackgroundTransparency = 1, LayoutOrder = i, ZIndex = 12 }, s)
 		packArt(card, pack, i)
 		local robux = (Config.Packs[pack.id] or {}).robux
-		local priceLabel = currency == "robux" and ("R$ " .. comma(robux or 0)) or (comma(pack.prices[1].coins) .. " coins")
+		local priceLabel = currency == "robux" and ("R$ " .. comma(robux or 0)) or ""
 		-- Price on a strip of tape under the pack, then the buy button.
-		local _, priceText = Theme.tape(card, priceLabel, { anchor = Vector2.new(0.5, 0), pos = UDim2.new(0.5, 0, 0, 190), sz = UDim2.fromOffset(132, 28), rot = (i % 2 == 0) and 2 or -2, z = 14, font = HEAD, size = 17 })
+		local tape, priceText = Theme.tape(card, priceLabel, { anchor = Vector2.new(0.5, 0), pos = UDim2.new(0.5, 0, 0, 190), sz = UDim2.fromOffset(132, 28), rot = (i % 2 == 0) and 2 or -2, z = 14, font = HEAD, size = 17 })
 		priceText.TextColor3 = C.black
+		if currency ~= "robux" then
+			-- Coin sticker and the number, no "coins" word.
+			Theme.row(tape, { { icon = "coin", iconSize = 26 }, { text = comma(pack.prices[1].coins) } }, { size = 18, z = 15, color = C.black, outline = false, gap = 3 })
+		end
 		local buy = button(card, currency == "robux" and "BUY  R$" or "BUY", currency == "robux" and T.lime or C.orange, UDim2.new(1, -16, 0, 40), UDim2.new(0, 8, 1, -42))
 		buy.ZIndex = 13
 		buy.MouseButton1Click:Connect(function()
@@ -883,7 +888,7 @@ end)
 -- Menu ---------------------------------------------------------------------------------------
 -- Drawn sticker buttons, one neon each, tilted a touch.
 for i, m in ipairs({ { "SHOP", C.orange, openShop, "shop" }, { "PACKS", C.green, openPacks, "pack" }, { "CLUB", C.blue, openClub, "club" }, { "QUESTS", C.pink, openQuests, "quests" } }) do
-	local holder = make("Frame", { Size = UDim2.fromOffset(140, 50), BackgroundTransparency = 1, LayoutOrder = i }, menu)
+	local holder = make("Frame", { Size = UDim2.fromOffset(170, 50), BackgroundTransparency = 1, LayoutOrder = i }, menu)
 	local b = button(holder, m[1], m[2], UDim2.new(1, 0, 0, 50))
 	b.Rotation = 0
 	b.Label.TextSize = 24
