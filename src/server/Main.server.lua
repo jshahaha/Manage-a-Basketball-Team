@@ -14,6 +14,7 @@ local CodeService = require(Services.CodeService)
 local ProgressService = require(Services.ProgressService)
 local ClubService = require(Services.ClubService)
 local MatchService = require(Services.MatchService)
+local LobbyWorld = require(script.Parent:WaitForChild("LobbyWorld"))
 
 -- Route table: action -> handler(player, profile, payload) -> ok, data | error message
 local routes = {}
@@ -70,6 +71,10 @@ Net.request().OnServerInvoke = function(player, action, payload)
 end
 
 DataService.start()
+LobbyWorld.start(function(player)
+	local profile = DataService.get(player)
+	return profile and profile.club and profile.club.name or nil
+end)
 CodeService.start()
 
 local function onPlayer(player)

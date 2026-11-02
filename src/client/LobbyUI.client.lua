@@ -213,7 +213,7 @@ end
 local menu = make("Frame", {
 	AnchorPoint = Vector2.new(1, 0.5),
 	Position = UDim2.new(1, -12, 0.5, 0),
-	Size = UDim2.fromOffset(120, 3 * 54),
+	Size = UDim2.fromOffset(120, 4 * 54),
 	BackgroundTransparency = 1,
 }, gui)
 make("UIListLayout", { Padding = UDim.new(0, 8) }, menu)
@@ -589,8 +589,92 @@ function openClub()
 	end)
 end
 
+-- Quests -------------------------------------------------------------------------------------
+local function openQuests()
+	openPanel("DAILY QUESTS")
+	local ok, data = call("getQuests")
+	local loading = body:FindFirstChild("Loading")
+	if loading then
+		loading:Destroy()
+	end
+	if not ok then
+		text(body, { text = tostring(data), font = HEAD, size = 20, color = C.muted, z = 12 })
+		return
+	end
+	local list = make("Frame", { Size = UDim2.new(1, 0, 1, -40), BackgroundTransparency = 1, ZIndex = 12 }, body)
+	make("UIListLayout", { Padding = UDim.new(0, 8) }, list)
+	for i, q in ipairs(data.list) do
+		local row = make("Frame", { Size = UDim2.new(1, 0, 0, 62), BackgroundColor3 = C.panel, ZIndex = 12 }, list)
+		round(row, 10)
+		stroke(row, 2, C.rule)
+		text(row, { text = q.text, font = HEAD, size = 18, sz = UDim2.new(1, -170, 0, 32), pos = UDim2.fromOffset(14, 4), align = Enum.TextXAlignment.Left, z = 13 })
+		text(row, { text = string.format("%d / %d   ·   %s coins", q.progress, q.target, comma(q.coins)), size = 14, color = C.muted, sz = UDim2.new(1, -170, 0, 20), pos = UDim2.fromOffset(14, 36), align = Enum.TextXAlignment.Left, z = 13 })
+		local done = q.progress >= q.target
+		local b = button(row, q.claimed and "CLAIMED" or (done and "CLAIM" or "IN PROGRESS"), q.claimed and C.muted or (done and C.green or C.stage), UDim2.fromOffset(140, 42), UDim2.new(1, -150, 0, 10))
+		b.ZIndex = 13
+		b.TextSize = 16
+		if not done or q.claimed then
+			b.TextColor3 = q.claimed and C.white or C.muted
+			b.AutoButtonColor = false
+		else
+			b.MouseButton1Click:Connect(function()
+				local ok2, res = call("claimQuest", i)
+				if ok2 then
+					profile.coins = (profile.coins or 0) + res.coins
+					refreshBar()
+					Audio.play("CoinsGainM")
+					openQuests()
+				else
+					say(res)
+				end
+			end)
+		end
+	end
+	local h = math.floor((data.resetsIn or 0) / 3600)
+	local m = math.floor((data.resetsIn or 0) % 3600 / 60)
+	text(body, { text = string.format("New quests in %dh %02dm", h, m), size = 14, color = C.muted, sz = UDim2.new(1, 0, 0, 30), pos = UDim2.new(0, 0, 1, -30), z = 12 })
+end
+
+local function comingSoon(name, line)
+	openPanel(name)
+	local loading = body:FindFirstChild("Loading")
+	if loading then
+		loading:Destroy()
+	end
+	text(body, { text = "Coming soon", font = HEAD, size = 30, sz = UDim2.new(1, 0, 0, 50), pos = UDim2.fromScale(0, 0.3), z = 12 })
+	text(body, { text = line, size = 16, color = C.muted, sz = UDim2.new(1, -40, 0, 60), pos = UDim2.new(0, 20, 0.3, 56), z = 12 })
+end
+
+-- Walk-up stations in the plaza.
+local STATION = {
+	Shop = function()
+		openShop()
+	end,
+	Club = function()
+		openClub()
+	end,
+	Quests = function()
+		openQuests()
+	end,
+	Scout = function()
+		comingSoon("SCOUT OFFICE", "Send scouts out to find players. Each report shows 5 players with their OVR hidden.")
+	end,
+	Trade = function()
+		comingSoon("TRADE BOARD", "Buy and sell players with other managers.")
+	end,
+	HallOfFame = function()
+		comingSoon("HALL OF FAME", "Leaderboards for Elo, fans and collection value.")
+	end,
+}
+game:GetService("ProximityPromptService").PromptTriggered:Connect(function(prompt)
+	local f = STATION[prompt:GetAttribute("Station") or ""]
+	if f and gui.Enabled then
+		f()
+	end
+end)
+
 -- Menu ---------------------------------------------------------------------------------------
-for _, m in ipairs({ { "SHOP", C.orange, openShop }, { "PACKS", C.green, openPacks }, { "CLUB", C.blue, openClub } }) do
+for _, m in ipairs({ { "SHOP", C.orange, openShop }, { "PACKS", C.green, openPacks }, { "CLUB", C.blue, openClub }, { "QUESTS", C.pink, openQuests } }) do
 	local b = button(menu, m[1], m[2], UDim2.fromOffset(120, 46))
 	b.TextSize = 22
 	b.MouseButton1Click:Connect(m[3])

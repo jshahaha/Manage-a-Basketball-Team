@@ -121,10 +121,31 @@ function MatchView.run(data)
 	end
 	local kits = { HOME_KIT, awayKit }
 
-	local court = Court.build({ home = HOME_KIT, away = awayKit })
-	court:PivotTo(CFrame.new(ORIGIN + Vector3.new(0, 0.5, 0)))
-	court.Parent = folder
+	-- Your Home Court in the lobby when you have one; otherwise a court of our own off to the side.
+	local lobbyPlot = data.plot and workspace:FindFirstChild("Lobby") and workspace.Lobby.Plots:FindFirstChild("Plot" .. data.plot)
+	local court
+	local paintBefore = {}
+	if lobbyPlot then
+		court = lobbyPlot.Court
+		for _, p in ipairs(court:GetChildren()) do
+			if p.Name == "Paint" then
+				paintBefore[p] = p.Color
+				p.Color = p.Position.X > court.Floor.Position.X and HOME_KIT or awayKit
+			end
+		end
+	else
+		court = Court.build({ home = HOME_KIT, away = awayKit })
+		court:PivotTo(CFrame.new(Vector3.new(0, 0, 400) + Vector3.new(0, 0.5, 0)))
+		court.Parent = folder
+	end
 	local floor = court:FindFirstChild("Floor")
+	ORIGIN = Vector3.new(floor.Position.X, 0, floor.Position.Z)
+	-- Stand your avatar courtside, on the camera side.
+	local char = player.Character
+	if char and char:FindFirstChild("HumanoidRootPart") then
+		local spot = Vector3.new(ORIGIN.X + 6, floor.Position.Y + 4, ORIGIN.Z + Court.Width / 2 + 6)
+		char:PivotTo(CFrame.lookAt(spot, Vector3.new(ORIGIN.X, spot.Y, ORIGIN.Z)))
+	end
 	local floorY = floor.Position.Y + floor.Size.Y / 2
 
 	-- All twenty players. Whoever isn't on the floor waits on the bench across the court.
@@ -509,6 +530,9 @@ function MatchView.run(data)
 	camera.CameraType = Enum.CameraType.Custom
 	gui:Destroy()
 	folder:Destroy()
+	for p, c in pairs(paintBefore) do
+		p.Color = c
+	end
 	for _, g in ipairs(hidden) do
 		g.Enabled = true
 	end

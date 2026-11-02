@@ -181,6 +181,7 @@ function H.playMatch(player, profile)
 		mvp = homeIndex[result.mvp] and { side = 1, index = homeIndex[result.mvp] } or { side = 2, index = awayIndex[result.mvp] },
 		rewards = { won = won, coins = coins, fans = fans, elo = newElo.elo, eloDelta = delta, tier = tier.id },
 		quarterSeconds = Config.QuarterSeconds.queued,
+		plot = player:GetAttribute("Plot"), -- played on your Home Court in the lobby
 	}
 end
 
