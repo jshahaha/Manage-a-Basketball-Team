@@ -38,7 +38,7 @@ function CourtView.new(opts)
 	self.rims = { [1] = Court.rimPosition(self.court, 1), [-1] = Court.rimPosition(self.court, -1) }
 	self.S = {}
 	for i, body in ipairs(self.bodies) do
-		self.S[i] = PoseSolver.setup(body)
+		self.S[i] = opts.S and opts.S[i] or PoseSolver.setup(body) -- reuse solver state when given
 	end
 	self.dunks = setmetatable({}, { __mode = "k" })
 	return self

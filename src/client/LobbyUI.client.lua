@@ -15,6 +15,7 @@ local Config = require(Shared:WaitForChild("Config"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local Net = require(Shared:WaitForChild("Net"))
 local Audio = require(script.Parent:WaitForChild("Audio"))
+local MatchView = require(script.Parent:WaitForChild("MatchView"))
 
 local player = Players.LocalPlayer
 
@@ -580,6 +581,42 @@ for _, m in ipairs({ { "SHOP", C.orange, openShop }, { "PACKS", C.green, openPac
 	b.TextSize = 22
 	b.MouseButton1Click:Connect(m[3])
 end
+
+-- PLAY: the big button at the bottom. The server plays the game; the match screen acts it out.
+local playB = button(gui, "PLAY", C.green, UDim2.fromOffset(200, 60), UDim2.new(0.5, -100, 1, -84))
+playB.TextSize = 32
+local playing = false
+playB.MouseButton1Click:Connect(function()
+	if playing then
+		return
+	end
+	playing = true
+	playB.Text = "FINDING GAME..."
+	playB.TextSize = 20
+	local ok, data = call("playMatch")
+	playB.Text = "PLAY"
+	playB.TextSize = 32
+	if ok then
+		closePanel()
+		local ran, err = pcall(MatchView.run, data, gui)
+		if not ran then
+			warn("[Lobby] match view failed: " .. tostring(err))
+			game:GetService("RunService"):UnbindFromRenderStep("MatchCamera")
+			workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+			for _, x in ipairs({ workspace:FindFirstChild("Match") or false, player.PlayerGui:FindFirstChild("MatchUI") or false }) do
+				if x then
+					x:Destroy()
+				end
+			end
+			gui.Enabled = true
+			say(data.rewards.won and "You won! Rewards added." or "Game over. Rewards added.")
+		end
+		loadProfile()
+	else
+		say(data)
+	end
+	playing = false
+end)
 
 -- Keep the bar fresh: load once the server has the profile, then every 20 s.
 task.spawn(function()

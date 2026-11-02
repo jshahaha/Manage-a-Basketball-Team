@@ -13,6 +13,7 @@ local DataService = require(Services.DataService)
 local CodeService = require(Services.CodeService)
 local ProgressService = require(Services.ProgressService)
 local ClubService = require(Services.ClubService)
+local MatchService = require(Services.MatchService)
 
 -- Route table: action -> handler(player, profile, payload) -> ok, data | error message
 local routes = {}
@@ -33,7 +34,7 @@ end
 
 routes.redeemCode = CodeService.redeem
 
-for _, service in ipairs({ ProgressService, ClubService }) do
+for _, service in ipairs({ ProgressService, ClubService, MatchService }) do
 	for name, fn in pairs(service.handlers) do
 		assert(routes[name] == nil, "duplicate route " .. name)
 		routes[name] = fn

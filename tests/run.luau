@@ -27,6 +27,7 @@ local Achievements = require("../src/shared/Achievements")
 local Projection = require("../src/shared/Projection")
 local Stats = require("../src/shared/Stats")
 local Sounds = require("../src/shared/Sounds")
+local MatchSim = require("../src/shared/MatchSim")
 
 local passed, failed = 0, 0
 local function test(name: string, fn: () -> ())
@@ -989,6 +990,66 @@ test("buying and opening packs", function()
 		ids[p.id] = true
 	end
 	assert(not Store.open(profile, "Pro x5", rng), "can't open twice")
+end)
+
+test("match engine: box scores add up", function()
+	local rng = Rng.new(11)
+	for g = 1, 30 do
+		local res = MatchSim.play(rng, { players = PlayerFactory.starterRoster(g) }, { players = PlayerFactory.starterRoster(g + 500) })
+		assert(res.score[1] ~= res.score[2], "no ties")
+		local extra = (#res.quarters - 4) * 25
+		for side, key in ipairs({ "home", "away" }) do
+			local pts, mins = 0, 0
+			for _, l in pairs(res.box[key]) do
+				assert(Stats.isConsistent(l), "box line inconsistent")
+				pts += l.pts
+				mins += l.min
+			end
+			assert(pts == res.score[side], "points match the score")
+			assert(mins == 240 + extra, "minutes add up: " .. mins)
+			local q = 0
+			for _, qs in ipairs(res.quarters) do
+				q += qs[side]
+			end
+			assert(q == res.score[side], "quarters add up")
+		end
+		local last = { 0, 0 }
+		for _, ev in ipairs(res.events) do
+			assert(ev.score[1] >= last[1] and ev.score[2] >= last[2], "score only goes up")
+			last = ev.score
+			assert(#ev.onCourt[1] == 5 and #ev.onCourt[2] == 5, "five a side")
+			local pr = MatchSim.planResult(ev)
+			if pr then
+				local sets = { AnimSets.clips(nil), AnimSets.clips(nil), AnimSets.clips(nil), AnimSets.clips(nil), AnimSets.clips(nil) }
+				local plan = Possession.plan({ offense = sets, dir = 1, result = pr })
+				assert(plan.length > 0)
+			end
+		end
+		assert(last[1] == res.score[1] and last[2] == res.score[2], "last event has the final score")
+		assert(res.mvp ~= nil)
+	end
+end)
+
+test("match engine: better teams win more, scores look real", function()
+	local rng = Rng.new(5)
+	local function team(seed, ovr)
+		local rr = Rng.new(seed)
+		local t = {}
+		for i, pos in ipairs({ "PG", "SG", "SF", "PF", "C", "PG", "SG", "SF", "PF", "C" }) do
+			t[i] = PlayerFactory.generate(rr, { rarity = "Common", pos = pos, ovr = i <= 5 and ovr or ovr - 6, finish = false })
+		end
+		return { players = t }
+	end
+	local wins, pts = 0, 0
+	for g = 1, 120 do
+		local res = MatchSim.play(rng, team(g, 72), team(g + 999, 63))
+		if res.winner == 1 then
+			wins += 1
+		end
+		pts += res.score[1] + res.score[2]
+	end
+	assert(wins > 95, "stronger team wins most: " .. wins)
+	assert(pts / 120 > 170 and pts / 120 < 240, "total points per game: " .. pts / 120)
 end)
 
 print(string.format("%d passed, %d failed", passed, failed))

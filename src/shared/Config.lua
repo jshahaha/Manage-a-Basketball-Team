@@ -101,6 +101,11 @@ Config.TimeoutsPerGame = 4
 Config.TimeoutSeconds = 15
 Config.QuarterBreakSeconds = 12
 
+-- Match rewards before the tier's coin multiplier (Config.Tiers coinMult).
+Config.MatchRewards = { winCoins = 60, lossCoins = 20, winFans = 25, lossFans = 5 }
+-- A club can start a new PLAY match this often (about one match's real length).
+Config.MatchCooldownSeconds = 200
+
 -- Home court edge. Small on purpose: home teams should win about 54% of even games.
 Config.HomeCourt = {
 	pointsEdge = 1, -- projection bonus
