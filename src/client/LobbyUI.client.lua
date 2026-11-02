@@ -267,9 +267,9 @@ local function packArt(card, pack, i)
 	-- The pack itself: a rendered foil wrapper when we have one.
 	local art = Theme.IMG["pack_" .. pack.id]
 	if art then
-		local img = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 0), Size = UDim2.fromOffset(124, 186), BackgroundTransparency = 1, Image = art, ScaleType = Enum.ScaleType.Fit, ZIndex = 13 }, card)
+		local img = make("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 14), Size = UDim2.fromOffset(110, 165), BackgroundTransparency = 1, Image = art, ScaleType = Enum.ScaleType.Fit, ZIndex = 13 }, card)
 		-- Gentle bob so the shelf feels alive, a shine across the foil, and sparkles on the top packs.
-		TweenService:Create(img, TweenInfo.new(1.6 + (i % 3) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = UDim2.new(0.5, 0, 0, 5) }):Play()
+		TweenService:Create(img, TweenInfo.new(1.6 + (i % 3) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = UDim2.new(0.5, 0, 0, 19) }):Play()
 		Theme.shine(img, 3.5, 14, 0.45)
 		local fancy = { AllStar = C.gold, HallOfFame = C.pink, EliteCoach = C.gold }
 		if fancy[pack.id] then
@@ -320,8 +320,8 @@ local function qtyArrow(card, dir, onClick)
 	local art = Theme.IMG[dir < 0 and "icon_arrow_left" or "icon_arrow_right"]
 	local b = make("ImageButton", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.new(dir < 0 and 0 or 1, dir < 0 and 14 or -14, 0, 92),
-		Size = UDim2.fromOffset(36, 36),
+		Position = UDim2.new(dir < 0 and 0 or 1, dir < 0 and 15 or -15, 0, 96),
+		Size = UDim2.fromOffset(30, 30),
 		BackgroundTransparency = art and 1 or 0,
 		BackgroundColor3 = C.white,
 		Image = art or "",
@@ -329,9 +329,9 @@ local function qtyArrow(card, dir, onClick)
 		ZIndex = 17,
 	}, card)
 	if not art then
-		round(b, 18)
+		round(b, 15)
 		stroke(b, 2.5, C.black)
-		text(b, { text = dir < 0 and "<" or ">", font = HEAD, size = 24, color = C.black, z = 18 })
+		text(b, { text = dir < 0 and "<" or ">", font = HEAD, size = 22, color = C.black, z = 18 })
 	end
 	local sc = make("UIScale", {}, b)
 	b.MouseButton1Down:Connect(function()
@@ -349,7 +349,7 @@ end
 
 local function packGrid(parent, packs, currency)
 	local s = scroller(parent)
-	make("UIGridLayout", { CellSize = UDim2.fromOffset(170, 262), CellPadding = UDim2.fromOffset(8, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
+	make("UIGridLayout", { CellSize = UDim2.fromOffset(160, 262), CellPadding = UDim2.fromOffset(10, 10), SortOrder = Enum.SortOrder.LayoutOrder }, s)
 	for i, pack in ipairs(packs) do
 		local card = make("Frame", { BackgroundTransparency = 1, LayoutOrder = i, ZIndex = 12 }, s)
 		local img = packArt(card, pack, i)
@@ -392,8 +392,8 @@ local function packGrid(parent, packs, currency)
 					for k = n, 1, -1 do
 						local ghost = make("ImageLabel", {
 							AnchorPoint = Vector2.new(0.5, 0),
-							Position = UDim2.new(0.5, k * 9, 0, 4 + k * 2),
-							Size = UDim2.fromOffset(124, 186),
+							Position = UDim2.new(0.5, k * 7, 0, 14 + k * 2),
+							Size = UDim2.fromOffset(110, 165),
 							Rotation = k * 5,
 							BackgroundTransparency = 1,
 							Image = baseArt,
@@ -403,7 +403,7 @@ local function packGrid(parent, packs, currency)
 						}, stack)
 						if animate then
 							local from = ghost.Position
-							ghost.Position = UDim2.new(0.5, 0, 0, 4)
+							ghost.Position = UDim2.new(0.5, 0, 0, 14)
 							ghost.Rotation = 0
 							TweenService:Create(ghost, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = from, Rotation = k * 5 }):Play()
 						end
@@ -416,7 +416,7 @@ local function packGrid(parent, packs, currency)
 				badge = nil
 			end
 			if pr.size > 1 and not qtyArt then
-				badge = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -30, 0, 160), Size = UDim2.fromOffset(50, 50), BackgroundColor3 = C.gold, ZIndex = 16 }, card)
+				badge = make("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -40, 0, 158), Size = UDim2.fromOffset(46, 46), BackgroundColor3 = C.gold, ZIndex = 16 }, card)
 				round(badge, 25)
 				stroke(badge, 3, C.black)
 				local bt = text(badge, { text = "x" .. pr.size, font = HEAD, size = 22, color = C.white, z = 17 })
@@ -456,6 +456,16 @@ local function packGrid(parent, packs, currency)
 		show(false)
 		buy.MouseButton1Click:Connect(function()
 			buyPackSize(pack, pack.prices[q])
+		end)
+		-- Same as tapping the arrows; also lets playtests set the amount directly.
+		card:GetAttributeChangedSignal("Qty"):Connect(function()
+			local want = card:GetAttribute("Qty")
+			for k, pr in ipairs(pack.prices) do
+				if pr.size == want and k ~= q then
+					q = k
+					show(true)
+				end
+			end
 		end)
 	end
 end
