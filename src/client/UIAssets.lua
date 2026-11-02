@@ -3,7 +3,7 @@
 -- pack renders, icons from tools/ui/make_icons.py, and effect sprites from tools/ui/make_fx.py.
 -- Theme falls back to plain frames for any id missing here.
 return {
-	fx_glow = "rbxassetid://98894174724010",
+	fx_glow = "rbxassetid://139082337284563",
 	fx_rays = "rbxassetid://105287952057839",
 	fx_shine = "rbxassetid://74905296396610",
 	fx_sparkle = "rbxassetid://123928714102997",
